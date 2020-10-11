@@ -23,8 +23,10 @@ class Basic(Model):
         super().__init__(name)
 
     def create_groups(self):
+        self.groups = []
         self.groups.append(Composite("Blues", {"color": BLUE}))
         self.groups.append(Composite("Reds", {"color": RED}))
+        return self.groups
 
     def run(self):
         super().run()

@@ -23,7 +23,6 @@ class Model():
         self.props = init_props(self.name, props)
         self.user_type = os.getenv("user_type", TERMINAL)
         self.create_user()
-        self.groups = []
         self.groups = self.create_groups()
         self.env = self.create_env()
 
