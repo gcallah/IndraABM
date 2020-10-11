@@ -1,5 +1,5 @@
 """
-This module will contain the code for the base class of all Indra models.
+This module contains the code for the base class of all Indra models.
 """
 import os
 from lib.utils import init_props
@@ -37,7 +37,7 @@ class Model():
         it will run it for that many periods. Otherwise, on
         a terminal, it will display the menu.
         """
-        self.user.tell("Running model", self.name)
+        self.user.tell("Running model " + self.name)
 
     def create_env(self):
         """
