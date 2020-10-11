@@ -10,14 +10,6 @@ REQ_DIR = $(DOCKER_DIR)
 REPO = indras_net
 MODELS_DIR = models
 NB_DIR = notebooks
-REACT_TOP = webapp
-REACT_BUILD = $(REACT_TOP)/build
-REACT_PUBLIC = $(REACT_TOP)/public
-REACT_SRC = $(REACT_TOP)/src
-REACT_MAIN = webapp.html
-REACT_FILES = $(shell ls $(REACT_SRC)/*.js)
-REACT_FILES += $(shell ls $(REACT_SRC)/components/*.js)
-REACT_FILES += $(shell ls $(REACT_SRC)/*.css)
 WEB_STATIC = static
 API_DIR = APIServer
 PYLINT = flake8
@@ -60,14 +52,6 @@ create_dev_env: FORCE
 setup_react: FORCE
 	cd $(REACT_TOP); npm install
 
-# Build react files to generate static assets (HTML, CSS, JS)
-webapp: $(REACT_PUBLIC)/$(REACT_MAIN)
-
-$(REACT_PUBLIC)/$(REACT_MAIN): $(REACT_FILES)
-	- cd $(REACT_TOP); npm run build
-	mv $(REACT_BUILD)/index.html $(REACT_BUILD)/$(REACT_MAIN)
-	cp -r $(REACT_BUILD)/* .
-
 # build tags file for vim:
 tags: FORCE
 	ctags --recurse .
@@ -78,39 +62,23 @@ submods:
 
 # run tests then commit all, then push
 # add notebooks back in as target once debugged!
-prod: local pytests js github
+prod: local pytests github
 
 # run tests then push just what is already committed:
 prod1: tests
 	git push origin master
 
-tests: pytests jstests dockertests
+tests: pytests 
 
 python: pytests github
 
-js: jstests webapp 
-	git add $(WEB_STATIC)/js/*js
-	git add $(WEB_STATIC)/js/*map
-	git add $(WEB_STATIC)/css/*
-	git add $(WEB_STATIC)/media/*
-	git add $(REACT_BUILD)/static/js/*js
-	git add $(REACT_BUILD)/static/js/*map
-	git add $(REACT_BUILD)/$(REACT_MAIN)
-	- git commit -a
-	git push origin master
-	cd $(REACT_TOP); npm run deploy
-	
 pytests: FORCE
 	cd registry; make tests
 	cd epidemics; make tests
 	cd models; make tests
 	cd APIServer; make tests
 	cd indra; make tests
-	cd ml; make tests
 	cd capital; make tests
-
-jstests: FORCE
-	cd webapp; make tests
 
 dockertests:
 	docker build -t gcallah/$(REPO) docker/
@@ -145,7 +113,3 @@ nocrud:
 	-rm .*swp
 	-rm *.csv
 	-rm models/.coverage
-
-# Build the webapp react docker image
-webapp-image:
-	docker build -f webapp/Dockerfile.dev -t gcallah/indras_webapp webapp
