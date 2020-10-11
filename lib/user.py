@@ -8,10 +8,6 @@ from abc import abstractmethod
 from IPython import embed
 
 from indra.agent import Agent
-from registry.execution_registry import EXEC_KEY, \
-    CLI_EXEC_KEY
-from registry.registry import get_env, set_user
-import registry.registry as reg
 
 TERMINAL = "terminal"
 TEST = "test"
@@ -22,100 +18,10 @@ DEF_STEPS = 1
 DEFAULT_CHOICE = '1'
 USER_EXIT = -999
 
-menu_dir = os.getenv("INDRA_HOME", "/home/indrasnet/indras_net") + "/indra"
+MENU_SUBDIR = "lib"
+menu_dir = os.getenv("INDRA_HOME", "/home/indrasnet/indras_net") + "/" + MENU_SUBDIR
 menu_file = "menu.json"
 menu_src = menu_dir + "/" + menu_file
-
-
-def user_tell(msg):
-    return reg.user_tell(msg)
-
-
-def user_debug(msg):
-    return reg.user_debug(msg)
-
-
-def user_log(msg):
-    return reg.user_log(msg)
-
-
-def user_log_err(msg):
-    return reg.user_log_err(msg)
-
-
-def user_log_warn(msg):
-    return reg.user_log(msg)
-
-
-def user_log_notif(msg):
-    return reg.user_log(msg)
-
-
-def run_notice(model_nm):
-    return reg.user_log_notif(model_nm)
-
-
-def not_impl(user, **kwargs):
-    return reg.not_impl(user)
-
-
-def run(user, test_run=False, execution_key=None):
-    # steps = 0
-    # acts = 0
-    if not test_run:
-        steps = user.ask("How many periods?")
-        if steps is None or steps == "" or steps.isspace():
-            steps = DEF_STEPS
-        else:
-            steps = int(steps)
-            user.tell("Steps = " + str(steps))
-    else:
-        steps = DEF_STEPS
-
-    acts = get_env(execution_key=execution_key)\
-        .runN(periods=steps, execution_key=execution_key)
-    return acts
-
-
-def leave(user, **kwargs):
-    user.tell("Goodbye, " + user.name + ", I will miss you!")
-    return USER_EXIT
-
-
-def scatter_plot(user, update=False, execution_key=CLI_EXEC_KEY):
-    return get_env(execution_key=execution_key).scatter_graph()
-
-
-def line_graph(user, update=False, execution_key=CLI_EXEC_KEY):
-    if update:
-        user.tell("Updating the line graph.")
-    else:
-        user.tell("Drawing a line graph.")
-    return get_env(execution_key=execution_key).line_graph()
-
-
-def bar_graph(user, update=False, execution_key=CLI_EXEC_KEY):
-    if update:
-        user.tell("Updating the bar graph.")
-    else:
-        user.tell("Drawing a bar graph.")
-    return get_env(execution_key=execution_key).bar_graph()
-
-
-def debug(user, **kwargs):
-    embed()
-    return 0
-
-
-menu_functions = {
-    "run": run,
-    "leave": leave,
-    "scatter_plot": scatter_plot,
-    "line_graph": line_graph,
-    "bar_graph": bar_graph,
-    "debug": debug,
-    "logs": not_impl,
-}
 
 
 def get_menu_json():
@@ -135,14 +41,14 @@ class User(Agent):
     It is an abstract class!
     """
 
-    def __init__(self, name, env, **kwargs):
+    def __init__(self, name="User", **kwargs):
         super().__init__(name, **kwargs)
         # we shouldn't need self.env any more!
         self.menu = get_menu_json()
         self.user_msgs = ''
         self.debug_msg = ''
         self.error_message = {}
-        set_user(self)
+        # here we should register this user
 
     def to_json(self):
         return {"user_msgs": self.user_msgs,
@@ -198,12 +104,8 @@ class TermUser(User):
     A representation of the user on a terminal.
     """
 
-    def __init__(self, name, env, **kwargs):
-        super().__init__(name, env, **kwargs)
-
-        self.execution_key = CLI_EXEC_KEY
-        if EXEC_KEY in kwargs:
-            self.execution_key = kwargs["execution_key"]
+    def __init__(self, name=TERMINAL, **kwargs):
+        super().__init__(name, **kwargs)
         self.menu_title = "Menu of Actions"
         self.stars = "*" * len(self.menu_title)
         self.exclude_menu_item("source")

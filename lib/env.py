@@ -2,24 +2,15 @@
 This file defines an Env, which is a collection
 of agents that share a timeline and a Space.
 """
-import getpass
 import json
 import os
 from types import FunctionType
 
-# we mean to add logging soon!
-# import logging
-import indra.display_methods as disp
-import registry.registry as regis
-from registry.execution_registry import execution_registry, \
-    EXEC_KEY, CLI_EXEC_KEY
-from registry.registry import get_prop
-from indra.agent import join, switch, Agent, AgentEncoder
-from indra.space import Space
+from lib.agent import join, switch, Agent, AgentEncoder
+from lib.space import Space
 import traceback
-from indra.user import TEST, TestUser, USER_EXIT, APIUser
-from indra.user import TermUser, TERMINAL, API
-from indra.user import user_log_notif
+from lib.user import TEST, TestUser, USER_EXIT, APIUser
+from lib.user import TermUser, TERMINAL, API
 
 DEBUG = False
 DEBUG2 = False
@@ -114,9 +105,6 @@ class Env(Space):
         super().__init__(name, action=action,
                          random_placing=random_placing, serial_obj=serial_obj,
                          reg=False, members=members, **kwargs)
-        self.execution_key = CLI_EXEC_KEY
-        if EXEC_KEY in kwargs:
-            self.execution_key = kwargs[EXEC_KEY]
         self.type = type(self).__name__
         self.user_type = os.getenv("user_type", TERMINAL)
         # this func is only used once, so no need to restore it
@@ -130,16 +118,6 @@ class Env(Space):
             self.construct_anew(line_data_func, exclude_member,
                                 census, pop_hist_func)
 
-        self.set_menu_excludes()
-        # now we set our global singleton:
-        execution_registry.set_env(self.execution_key, self)
-        # regis.set_env(self)
-
-    def set_menu_excludes(self):
-        if not get_prop('use_line', True, execution_key=self.execution_key):
-            self.exclude_menu_item("line_graph")
-        if not get_prop('use_scatter', True, execution_key=self.execution_key):
-            self.exclude_menu_item("scatter_plot")
 
     def construct_anew(self, line_data_func=None, exclude_member=None,
                        census=None, pop_hist_func=None):
@@ -152,7 +130,6 @@ class Env(Space):
                 self.pop_hist.record_pop(mbr, self.pop_count(mbr))
 
         self.plot_title = self.name
-        self.user = None
         # these funcs will be stored as attrs...
         # but only if they're really funcs!
         # cause we're gonna try to call them
@@ -166,28 +143,11 @@ class Env(Space):
         self.exclude_member = exclude_member
         self.womb = []  # for agents waiting to be born
         self.switches = []  # for agents waiting to switch groups
-        self.handle_user_type()
-
-    def handle_user_type(self):
-        if self.user_type == TERMINAL:
-            self.user = TermUser(getpass.getuser(), self,
-                                 execution_key=self.execution_key)
-            self.user.tell("Welcome to Indra, " + str(self.user) + "!")
-        elif self.user_type == TEST:
-            self.user = TestUser(getpass.getuser(), self,
-                                 execution_key=self.execution_key)
-        elif self.user_type == API:
-            self.user = APIUser(getpass.getuser(), self,
-                                execution_key=self.execution_key)
 
     def from_json(self, serial_obj):
         super().from_json(serial_obj)
         self.pop_hist = PopHist(serial_pops=serial_obj["pop_hist"])
         self.plot_title = serial_obj["plot_title"]
-        nm = serial_obj["user"]["name"]
-        msg = serial_obj["user"]["user_msgs"]
-        self.user = APIUser(nm, self, execution_key=self.execution_key)
-        self.user.tell(msg)
         self.name = serial_obj["name"]
         self.switches = serial_obj["switches"]
         self.womb = serial_obj["womb"]
@@ -196,7 +156,6 @@ class Env(Space):
     def to_json(self):
         rep = super().to_json()
         rep["type"] = self.type
-        rep["user"] = self.user.to_json()
         rep["plot_title"] = self.plot_title
         rep["pop_hist"] = self.pop_hist.to_json()
         rep["womb"] = self.womb
@@ -211,35 +170,8 @@ class Env(Space):
     def restore_env(self, serial_obj):
         self.from_json(serial_obj)
 
-    def exclude_menu_item(self, to_exclude):
-        """
-        Just a pass-through call to our user object.
-        """
-        self.user.exclude_menu_item(to_exclude)
-
     def get_periods(self):
         return self.pop_hist.periods
-
-    def __call__(self, **kwargs):
-        """
-        Calling the env makes it run. If we are on a terminal, we ask the user
-        to put up a menu and choose. For tests, we just run N (default) turns.
-        """
-        if (self.user is None) or (self.user_type == TEST):
-            self.runN(execution_key=self.execution_key)
-        else:
-            while True:
-                # run until user exit!
-                if self.user() == USER_EXIT:
-                    break
-
-    def add_member(self, member):
-        """
-        Don't think we really need this here!
-        It is just a pass-through call at present.
-        Must examine further: eliminate if not needed.
-        """
-        return super().add_member(member)
 
     def add_child(self, group):
         """
@@ -251,9 +183,6 @@ class Env(Space):
         else:
             grp_nm = agent_by_name(group)
         self.womb.append(grp_nm)
-        if DEBUG:
-            user_log_notif("An agent was added to the womb for "
-                           + grp_nm)
 
     def pending_switches(self):
         return str(len(self.switches))
@@ -282,48 +211,19 @@ class Env(Space):
         This should be re-written as dict with:
             {"group_name": #agents_to_create}
         """
-        if self.womb is not None:
-            for group_nm in self.womb:
-                group = regis.get_group(group_nm,
-                                        execution_key=self.execution_key)
-                if group is not None and group.member_creator is not None:
-                    group.num_members_ever += 1
-                    agent = group \
-                        .member_creator("", group.num_members_ever,
-                                        execution_key=self.execution_key)
-                    regis.register(agent.name, agent,
-                                   execution_key=self.execution_key)
-                    join(group, agent)
-                if self.random_placing:
-                    self.place_member(agent, None)
-            self.womb.clear()
+        pass
 
     def handle_switches(self):
-        if self.switches is not None:
-            for (agent_nm, from_grp_nm, to_grp_nm) in self.switches:
-                switch(agent_nm, from_grp_nm, to_grp_nm, self.execution_key)
-                self.num_switches += 1
-            self.switches.clear()
+        pass
 
     def handle_pop_hist(self):
-        self.pop_hist.add_period()
-        if "pop_hist_func" in self.attrs:
-            self.attrs["pop_hist_func"](self.pop_hist,
-                                        execution_key=self.execution_key)
-        else:
-            for mbr in self.pop_hist.pops:
-                if mbr in self.members and self.is_mbr_comp(mbr):
-                    self.pop_hist.record_pop(mbr, self.pop_count(mbr))
-                else:
-                    self.pop_hist.record_pop(mbr, 0)
+        pass
 
-    def runN(self, periods=DEF_TIME, execution_key=CLI_EXEC_KEY):
+    def runN(self, periods=DEF_TIME):
         """
             Run our model for N periods.
             Return the total number of actions taken.
         """
-        user_log_notif("Running env " + self.name + " for "
-                       + str(periods) + " periods.")
         num_acts = 0
         num_moves = 0
         for i in range(periods):
@@ -332,7 +232,7 @@ class Env(Space):
             self.handle_switches()
             self.handle_pop_hist()
 
-            (a, m) = super().__call__(execution_key=self.execution_key)
+            # (a, m) = super().__call__(execution_key=self.execution_key)
             num_acts += a
             num_moves += m
             census_rpt = self.get_census(num_moves)
