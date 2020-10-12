@@ -70,15 +70,13 @@ prod1: tests
 
 tests: pytests 
 
-python: pytests github
-
 pytests: FORCE
-	cd registry; make tests
-	cd epidemics; make tests
 	cd models; make tests
-	cd APIServer; make tests
-	cd indra; make tests
-	cd capital; make tests
+	cd lib; make tests
+	# cd APIServer; make tests
+	# cd capital; make tests
+	# cd registry; make tests
+	# cd epidemics; make tests
 
 dockertests:
 	docker build -t gcallah/$(REPO) docker/

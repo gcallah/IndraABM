@@ -6,8 +6,8 @@ do nothing except move around randomly.
 """
 
 from lib.model import Model
-from indra.composite import Composite
-from indra.display_methods import RED, BLUE
+from lib.composite import Composite
+from lib.display_methods import RED, BLUE
 
 
 MODEL_NAME = "basic"
@@ -41,4 +41,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

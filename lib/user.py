@@ -19,8 +19,8 @@ DEFAULT_CHOICE = '1'
 USER_EXIT = -999
 
 MENU_SUBDIR = "lib"
-menu_dir = os.getenv("INDRA_HOME", "/home/indrasnet/indras_net"
-                     + "/" + MENU_SUBDIR)
+menu_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
+menu_dir += "/" + MENU_SUBDIR
 menu_file = "menu.json"
 menu_src = menu_dir + "/" + menu_file
 
@@ -32,7 +32,7 @@ def get_menu_json():
             menu_db = json.load(f)
             menu_json = menu_db["menu_database"]
     except FileNotFoundError:
-        print("Could not open menu file.")
+        print("Could not open menu file:", menu_src)
     return menu_json
 
 
