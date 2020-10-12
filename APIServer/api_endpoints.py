@@ -12,7 +12,7 @@ from APIServer.model_creator_api import put_model_creator
 from APIServer.models_api import get_models
 from APIServer.props_api import get_props_for_current_execution, put_props
 from APIServer.run_model_api import run_model_put
-from indra.user import APIUser
+from lib.user import APIUser
 from registry.execution_registry import execution_registry, \
     EXEC_KEY, CLI_EXEC_KEY
 

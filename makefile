@@ -7,11 +7,12 @@ BOX_DATA = $(BOX_DIR)/data
 BOXPLOTS = $(shell ls $(BOX_DATA)/plot*.pdf)
 DOCKER_DIR = docker
 REQ_DIR = $(DOCKER_DIR)
-REPO = indras_net
+REPO = IndraABM
 MODELS_DIR = models
 NB_DIR = notebooks
 WEB_STATIC = static
 API_DIR = APIServer
+LIB_DIR = lib
 PYLINT = flake8
 PYLINTFLAGS =
 PYTHONFILES = $(shell ls $(MODELS_DIR)/*.py)
@@ -71,9 +72,10 @@ prod1: tests
 tests: pytests 
 
 pytests: FORCE
-	cd models; make tests
-	cd lib; make tests
-	# cd APIServer; make tests
+	cd $(MODELS_DIR); make tests
+	cd $(LIB_DIR); make tests
+	# put these back in once working:
+	# cd $(API_DIR); make tests
 	# cd capital; make tests
 	# cd registry; make tests
 	# cd epidemics; make tests
