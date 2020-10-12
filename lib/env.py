@@ -5,11 +5,12 @@ of agents that share a timeline and a Space.
 import json
 import os
 from types import FunctionType
-
-from lib.agent import join, switch, Agent, AgentEncoder
-from lib.space import Space
 import traceback
-from lib.user import TEST, TestUser, USER_EXIT, APIUser
+
+from lib.agent import Agent, AgentEncoder
+import lib.display_methods as disp
+from lib.space import Space
+from lib.user import TEST
 from lib.user import TermUser, TERMINAL, API
 
 DEBUG = False
@@ -107,6 +108,8 @@ class Env(Space):
                          reg=False, members=members, **kwargs)
         self.type = type(self).__name__
         self.user_type = os.getenv("user_type", TERMINAL)
+        # we're just going to hardcode a terminal user:
+        self.user = TermUser()
         # this func is only used once, so no need to restore it
         self.pop_hist_setup = pop_hist_setup
 
@@ -117,7 +120,6 @@ class Env(Space):
         else:
             self.construct_anew(line_data_func, exclude_member,
                                 census, pop_hist_func)
-
 
     def construct_anew(self, line_data_func=None, exclude_member=None,
                        census=None, pop_hist_func=None):
@@ -233,8 +235,8 @@ class Env(Space):
             self.handle_pop_hist()
 
             # (a, m) = super().__call__(execution_key=self.execution_key)
-            num_acts += a
-            num_moves += m
+            num_acts += 10   # should be a
+            num_moves += 10  # should be m
             census_rpt = self.get_census(num_moves)
             self.user.tell(census_rpt)
             self.num_switches = 0

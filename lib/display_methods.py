@@ -9,7 +9,7 @@ import logging
 import os
 from functools import wraps
 
-from indra.user import TERMINAL, API
+from lib.user import TERMINAL, API
 
 plt_present = True
 plt_present_error_message = ""

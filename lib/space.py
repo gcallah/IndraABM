@@ -6,12 +6,8 @@ import json
 import math
 from math import sqrt, atan, degrees
 from random import randint
-from indra.agent import is_composite, AgentEncoder, X, Y
-from indra.composite import Composite
-from registry.registry import register, get_registration, get_group, get_env
-from registry.execution_registry import EXEC_KEY, \
-    CLI_EXEC_KEY, get_exec_key
-from indra.user import user_debug, user_log, user_log_warn
+from lib.agent import is_composite, AgentEncoder, X, Y
+from lib.composite import Composite
 
 DEF_WIDTH = 10
 DEF_HEIGHT = 10
@@ -108,6 +104,8 @@ def get_xy_from_str(coord_str):
 
 def exists_neighbor(agent, pred=None, exclude_self=True, size=1,
                     region_type=None, **kwargs):
+    pass
+    """
     execution_key = get_exec_key(kwargs=kwargs)
     return get_env(execution_key=execution_key) \
         .exists_neighbor(agent,
@@ -115,10 +113,13 @@ def exists_neighbor(agent, pred=None, exclude_self=True, size=1,
                          exclude_self=exclude_self,
                          size=size,
                          region_type=region_type)
+    """
 
 
 def get_neighbor(agent, pred=None, exclude_self=True, size=1,
                  region_type=None, **kwargs):
+    pass
+    """
     exec_key = get_exec_key(kwargs=kwargs)
     return get_env(execution_key=exec_key) \
         .get_neighbor(agent,
@@ -126,10 +127,13 @@ def get_neighbor(agent, pred=None, exclude_self=True, size=1,
                       exclude_self=exclude_self,
                       size=size,
                       region_type=region_type)
+    """
 
 
 def get_num_of_neighbors(agent, exclude_self=False, pred=None, size=1,
                          region_type=None, **kwargs):
+    pass
+    """
     exec_key = get_exec_key(kwargs=kwargs)
     return get_env(execution_key=exec_key) \
         .get_num_of_neighbors(agent,
@@ -137,16 +141,20 @@ def get_num_of_neighbors(agent, exclude_self=False, pred=None, size=1,
                               pred=None,
                               size=size,
                               region_type=region_type)
+    """
 
 
 def neighbor_ratio(agent, pred_one, pred_two=None, size=1, region_type=None,
                    **kwargs):
+    pass
+    """
     execution_key = get_exec_key(kwargs=kwargs)
     return get_env(execution_key=execution_key) \
         .neighbor_ratio(agent, pred_one,
                         pred_two=pred_two,
                         size=size,
                         region_type=region_type)
+    """
 
 
 def degrees_between(x_dif, y_dif):
@@ -209,9 +217,6 @@ class Space(Composite):
                          action=action, serial_obj=serial_obj,
                          reg=False, **kwargs)
 
-        self.execution_key = CLI_EXEC_KEY
-        if EXEC_KEY in kwargs:
-            self.execution_key = kwargs[EXEC_KEY]
         self.type = type(self).__name__
         if serial_obj is not None:
             self.restore(serial_obj)
@@ -228,7 +233,8 @@ class Space(Composite):
             else:
                 self.consec_place_members(self.members)
         if reg:
-            register(self.name, self, execution_key=self.execution_key)
+            pass
+            # register(self.name, self, execution_key=self.execution_key)
 
     def restore(self, serial_obj):
         self.from_json(serial_obj)
@@ -376,7 +382,8 @@ class Space(Composite):
         if self.is_empty(x, y):
             return None
         agent_nm = self.locations[str((x, y))]
-        return get_registration(agent_nm, execution_key=self.execution_key)
+        return agent_nm  # should be actual agent!
+        # return get_registration(agent_nm, execution_key=self.execution_key)
 
     def place_member(self, mbr, max_move=None, xy=None):
         """
@@ -386,7 +393,8 @@ class Space(Composite):
         `xy` must be a tuple!
         """
         if self.is_full():
-            user_log(ALL_FULL)
+            # must replace with proper logging call:
+            print(ALL_FULL)
             raise (SpaceFull(ALL_FULL))
 
         if not is_composite(mbr):
@@ -436,13 +444,15 @@ class Space(Composite):
         new_loc = str((nx, ny))
         if new_loc not in self.locations:
             if old_loc not in self.locations:
-                user_log_warn("Trying to move agent not in locations: "
-                              + agent_name + " at " + old_loc)
+                # must replace with proper logging call:
+                print("Trying to move agent not in locations: "
+                      + agent_name + " at " + old_loc)
             else:
                 self.locations[new_loc] = self.locations[old_loc]
                 del self.locations[old_loc]
         else:
-            user_debug("Trying to place agent in occupied space.")
+            # must replace with proper logging call:
+            print("Trying to place agent in occupied space.")
 
     def remove_location(self, coord):
         """
@@ -452,7 +462,8 @@ class Space(Composite):
         if str_coord in self.locations:
             del self.locations[str_coord]
         else:
-            user_log_warn("Trying to remove unlocated agent from space.")
+            # must replace with proper logging call:
+            print("Trying to remove unlocated agent from space.")
 
     def get_row_hood(self, row_num, pred=None, save_neighbors=False):
         """
@@ -564,9 +575,9 @@ class Space(Composite):
                                     hood_size=hood_size)
         if isinstance(group, str):
             # lookup group by name
-            group = get_group(group, self.execution_key)
-            if group is None:
-                return None
+            # group = get_group(group, self.execution_key)
+            # if group is None:
+            return None
         for agent_name in hood:
             if group.ismember(agent_name):
                 return group[agent_name]
@@ -575,7 +586,6 @@ class Space(Composite):
     def get_closest_agent(self, agent):
         """
         Get the agent' closest to agent on grid.
-        """
         closest = None
         min_distance_seen = MAX_WIDTH * MAX_HEIGHT
         for key, other_nm in self.locations.items():
@@ -594,6 +604,7 @@ class Space(Composite):
                 min_distance_seen = d
                 closest = other
         return closest
+        """
 
     def get_max_distance(self):
         return sqrt((self.height ** 2) + (self.width ** 2))
@@ -711,12 +722,9 @@ class Region():
                  SE=None, center=None, size=None, agents_move=True, **kwargs):
         # alternate structure?
         # self.corners[NW] = nw
-        self.execution_key = CLI_EXEC_KEY
-        if EXEC_KEY in kwargs:
-            self.execution_key = kwargs[EXEC_KEY]
         self.name = gen_region_name(NW, NE, SW, SE, center, size)
-        if (space is None):
-            space = get_env(self.execution_key)
+        # if (space is None):
+        #     space = get_env(self.execution_key)
         self.space = space
         if (center is not None and size is not None):
             self.NW = (center[X] - size, center[Y] + size)
@@ -887,9 +895,8 @@ class Region():
 class CircularRegion(Region):
     def __init__(self, space=None, center=None, radius=None, agents_move=True,
                  **kwargs):
-        self.execution_key = get_exec_key(kwargs)
-        if (space is None):
-            space = get_env(execution_key=self.execution_key)
+        # if (space is None):
+        #     space = get_env(execution_key=self.execution_key)
         self.space = space
         self.center = center
         self.radius = radius

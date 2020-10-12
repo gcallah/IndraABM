@@ -5,22 +5,21 @@ of one or more Agents (see agent.py).
 """
 import json
 from collections import OrderedDict
-from copy import copy
+# from copy import copy
 from random import choice
 
-from indra.agent import Agent, join, INF, is_composite, AgentEncoder
-from registry.execution_registry import EXEC_KEY, \
-    CLI_EXEC_KEY
-from registry.registry import add_group
-from indra.utils import get_func_name
+from lib.agent import Agent, join, INF, is_composite, AgentEncoder
+from lib.utils import get_func_name
 
 DEBUG = False
 
 
+"""
 def grp_from_nm_dict(nm, dictionary, execution_key=CLI_EXEC_KEY):
     grp = Composite(nm, execution_key=execution_key)
     grp.members = dictionary
     return grp
+"""
 
 
 class Composite(Agent):
@@ -42,10 +41,6 @@ class Composite(Agent):
 
         self.num_members_ever = 0
         self.members = OrderedDict()
-        self.execution_key = CLI_EXEC_KEY
-
-        if EXEC_KEY in kwargs:
-            self.execution_key = kwargs[EXEC_KEY]
 
         super().__init__(name, attrs=attrs, duration=duration,
                          action=action, serial_obj=serial_obj,
@@ -69,7 +64,8 @@ class Composite(Agent):
                 for i in range(num_members):
                     join(self, member_creator(self.name, i, **kwargs))
         if reg:
-            add_group(self.name, self, execution_key=self.execution_key)
+            pass
+            # add_group(self.name, self, execution_key=self.execution_key)
 
     def restore(self, serial_obj):
         """
@@ -89,7 +85,7 @@ class Composite(Agent):
         return rep
 
     def from_json(self, serial_obj):
-        from registry.run_dict import member_creator_dict
+        # from registry.run_dict import member_creator_dict
         super().from_json(serial_obj)
         self.num_members_ever = serial_obj["num_members_ever"]
         # we loop through the members of this composite
@@ -102,12 +98,14 @@ class Composite(Agent):
                 self.members[nm] = Composite(name=nm, serial_obj=member,
                                              execution_key=self.execution_key)
         mem_create_nm = serial_obj["member_creator"]
+        """
         if mem_create_nm in member_creator_dict:
             self.member_creator = member_creator_dict[mem_create_nm]
         else:
             # if it's not in the above dict, we don't need the func,
             # we can just store its name:
-            self.member_creator = mem_create_nm
+        """
+        self.member_creator = mem_create_nm
 
     def __repr__(self):
         return json.dumps(self.to_json(), cls=AgentEncoder, indent=4)
@@ -189,13 +187,12 @@ class Composite(Agent):
             del self.members[key]
         return total_acts, total_moves
 
+    """
     def __add__(self, other):
-        """
         This implements set union and returns
         a new Composite that is self union other.
         If other is an atomic agent, just add it to
         this group.
-        """
         if other is None:
             return self
 
@@ -209,6 +206,7 @@ class Composite(Agent):
         self.add_group(new_grp)
         other.add_group(new_grp)
         return new_grp
+    """
 
     def __iadd__(self, other):
         """
@@ -226,45 +224,18 @@ class Composite(Agent):
             join(self, other)
         return self
 
-    def __sub__(self, other):
-        """
-        This implements set difference and returns
-        a new Composite that is self - other.
-        """
-        new_dict = copy(self.members)
-        if is_composite(other):
-            for mem in other.members:
-                if mem in self.members:
-                    del new_dict[mem]
-        else:
-            if other.name in self:
-                del new_dict[other.name]
-        return grp_from_nm_dict(self.name + "-" + other.name, new_dict)
-
-    def __isub__(self, other):
-        """
-        Remove item(s) in other if there, otherwise do nothing.
-        """
-        if is_composite(other):
-            for member in other.members:
-                self.members.pop(member, None)
-        else:
-            if other.name in self.members:
-                del self[other.name]
-        return self
-
+    """
     def __mul__(self, other):
-        """
         This implements set intersection and returns
         a new Composite that is self intersect other.
         This has no useful meaning if `other` is an
         atom.
-        """
         new_dict = copy(self.members)
         for mbr in self.members:
             if mbr not in other.members:
                 del new_dict[mbr]
         return grp_from_nm_dict(str(self) + "X" + str(other), new_dict)
+    """
 
     def __imul__(self, other):
         """
@@ -307,12 +278,14 @@ class Composite(Agent):
         else:
             return None
 
+    """
     def subset(self, predicate, *args, name=None):  # noqa E999
         new_dict = OrderedDict()
         for mbr in self:
             if predicate(self[mbr], *args):
                 new_dict[mbr] = self[mbr]
         return grp_from_nm_dict(name, new_dict)
+    """
 
     def is_active(self):
         """

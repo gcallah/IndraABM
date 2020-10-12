@@ -5,9 +5,9 @@ import json
 import os
 from abc import abstractmethod
 
-from IPython import embed
+# from IPython import embed
 
-from indra.agent import Agent
+from lib.agent import Agent
 
 TERMINAL = "terminal"
 TEST = "test"
@@ -19,7 +19,8 @@ DEFAULT_CHOICE = '1'
 USER_EXIT = -999
 
 MENU_SUBDIR = "lib"
-menu_dir = os.getenv("INDRA_HOME", "/home/indrasnet/indras_net") + "/" + MENU_SUBDIR
+menu_dir = os.getenv("INDRA_HOME", "/home/indrasnet/indras_net"
+                     + "/" + MENU_SUBDIR)
 menu_file = "menu.json"
 menu_src = menu_dir + "/" + menu_file
 
@@ -66,11 +67,12 @@ class User(Agent):
         This will immediately remove an item from the menu.
         """
         to_del = -1  # just some invalid index!
-        for index, item in enumerate(self.menu):
-            if item["func"] == to_exclude:
-                to_del = index
-        if to_del >= 0:
-            del self.menu[to_del]
+        if self.menu is not None:
+            for index, item in enumerate(self.menu):
+                if item["func"] == to_exclude:
+                    to_del = index
+            if to_del >= 0:
+                del self.menu[to_del]
 
     @abstractmethod
     def tell(self, msg, end='\n'):
@@ -158,11 +160,14 @@ class TermUser(User):
         for item in self.menu:
             print(str(item["id"]) + ". ", item["question"])
         if self.show_line_graph:
-            line_graph(self, update=True)
+            pass
+            # line_graph(self, update=True)
         if self.show_scatter_plot:
-            scatter_plot(self, update=True, execution_key=self.execution_key)
+            pass
+            # scatter_plot(self, update=True, execution_key=self.execution_key)
         if self.show_bar_graph:
-            bar_graph(self, update=True)
+            pass
+            # bar_graph(self, update=True)
         self.tell("Please choose a number from the menu above:")
         c = input()
         if not c or c.isspace():
@@ -183,8 +188,9 @@ class TermUser(User):
                             self.show_bar_graph = True
                             self.show_line_graph = False
                             self.show_scatter_plot = False
-                        return menu_functions[item["func"]](
-                            self, execution_key=self.execution_key)
+                        return None
+                        # menu_functions[item["func"]](
+                        # self, execution_key=self.execution_key)
             self.tell_err(str(c) + " is an invalid option. "
                           + "Please enter a valid option.")
         else:
@@ -208,7 +214,8 @@ class TestUser(TermUser):
         """
             Can't present menu to a scripted test!
         """
-        run(self)  # noqa: W391
+        # run(self)  # noqa: W391
+        pass
 
 
 class APIUser(User):
@@ -217,8 +224,8 @@ class APIUser(User):
     frontend.
     """
 
-    def __init__(self, name, env, **kwargs):
-        super().__init__(name, env, **kwargs)
+    def __init__(self, name, **kwargs):
+        super().__init__(name, **kwargs)
 
     def tell(self, msg, end='\n'):
         """
@@ -255,8 +262,8 @@ class APIUser(User):
         menu = get_menu_json()
         if menu_id is None:
             return menu
-        else:
-            return menu_functions[menu[menu_id]["func"]](self)
+        # else:
+        #     return menu_functions[menu[menu_id]["func"]](self)
 
     def to_json(self):
         return {"user_msgs": self.user_msgs,

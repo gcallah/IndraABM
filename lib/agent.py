@@ -10,11 +10,7 @@ from functools import wraps
 
 import numpy as np
 
-from registry.registry import register, get_registration, get_env
-from registry.registry import get_group, user_log_notif, user_log_err
-from registry.execution_registry import EXEC_KEY, \
-    CLI_EXEC_KEY
-from indra.utils import get_func_name
+from lib.utils import get_func_name
 
 DEBUG = False  # turns debugging code on or off
 DEBUG2 = False  # turns deeper debugging code on or off
@@ -97,18 +93,18 @@ def join(agent1, agent2):
     Create connection between agent1 and agent2.
     """
     if not is_composite(agent1):
-        user_log_err("Attempt to place " + str(agent2)
-                     + " in non-group " + str(agent1))
+        print("Attempt to place " + str(agent2)
+              + " in non-group " + str(agent1))
         return False
     else:
         if not agent1.add_member(agent2):
-            user_log_notif("Could not add mbr " + str(agent2)
-                           + " to " + str(agent1))
+            print("Could not add mbr " + str(agent2)
+                  + " to " + str(agent1))
         if not agent2.add_group(agent1):
-            user_log_notif("Could not add grp "
-                           + str(agent2)
-                           + " to "
-                           + str(agent1))
+            print("Could not add grp "
+                  + str(agent2)
+                  + " to "
+                  + str(agent1))
         return True
 
 
@@ -117,8 +113,8 @@ def split(agent1, agent2):
     Break connection between agent1 and agent2.
     """
     if not is_composite(agent1):
-        user_log_err("Attempt to remove " + str(agent2)
-                     + " from non-group " + str(agent1))
+        print("Attempt to remove " + str(agent2)
+              + " from non-group " + str(agent1))
         return False
     else:
         agent1.del_member(agent2)
@@ -130,6 +126,8 @@ def switch(agent_nm, grp1_nm, grp2_nm, execution_key=None):
     """
     Move agent from grp1 to grp2.
     We first must recover agent objects from the registry.
+    """
+    pass
     """
     agent = get_registration(agent_nm, execution_key=execution_key)
     if agent is None:
@@ -148,6 +146,7 @@ def switch(agent_nm, grp1_nm, grp2_nm, execution_key=None):
                        + "(id: " + str(id(grp1)) + ")"
                        + " to grp " + grp2_nm
                        + "(id: " + str(id(grp2)) + ")")
+    """
 
 
 class AgentEncoder(json.JSONEncoder):
@@ -171,24 +170,10 @@ class Agent(object):
     """
     This is the base class of all agents, environments,
     and objects contained in an environment.
-    Its basic character is that it is a vector, and basic
-    vector and matrix operations will be implemented
-    here.
-    We are going to stop passing `env` around: we can call
-    `env.get_env()` to get it when needed. So *soon* the
-    env param here should go away, but only when every model
-    is using the new call.
     """
 
     def __init__(self, name, attrs=None, action=None, duration=INF,
                  prim_group=None, serial_obj=None, reg=True, **kwargs):
-        self.registry = {}
-
-        self.execution_key = CLI_EXEC_KEY
-
-        if EXEC_KEY in kwargs:
-            self.execution_key = kwargs[EXEC_KEY]
-
         if serial_obj is not None:
             self.restore(serial_obj)
         else:  # or build it anew:
@@ -196,7 +181,8 @@ class Agent(object):
                                  duration=duration, prim_group=prim_group,
                                  reg=reg)
         if reg:
-            register(self.name, self, execution_key=self.execution_key)
+            pass
+            # register(self.name, self, execution_key=self.execution_key)
 
     def _construct_anew(self, name, attrs=None, action=None,
                         duration=INF, prim_group=None, reg=True):
@@ -240,15 +226,8 @@ class Agent(object):
         We use `registry.get_env()` to return whatever
         the registry has.
         """
-        return get_env(execution_key=self.execution_key)
-
-    @property
-    def locator(self):
-        """
-        This is the locator property.
-        We are cutting this over to just be the env!
-        """
-        return get_env(execution_key=self.execution_key)
+        pass
+        # return get_env(execution_key=self.execution_key)
 
     def restore(self, serial_obj):
         self.from_json(serial_obj)
@@ -266,10 +245,10 @@ class Agent(object):
                 }
 
     def from_json(self, serial_agent):
-        from registry.run_dict import action_dict
+        # from registry.run_dict import action_dict
         self.action = None
-        if serial_agent["action_key"] is not None:
-            self.action = action_dict[serial_agent["action_key"]]
+        # if serial_agent["action_key"] is not None:
+        #     self.action = action_dict[serial_agent["action_key"]]
         self.action_key = serial_agent["action_key"]
         self.active = serial_agent["active"]
         self.attrs = serial_agent["attrs"]
@@ -287,7 +266,8 @@ class Agent(object):
         return json.dumps(self.to_json(), cls=AgentEncoder, indent=4)
 
     def primary_group(self):
-        return get_group(self.prim_group, execution_key=self.execution_key)
+        return self.prim_group
+        # return get_group(self.prim_group, execution_key=self.execution_key)
 
     def group_name(self):
         return self.prim_group
@@ -304,9 +284,9 @@ class Agent(object):
         def wrapper(*args, **kwargs):
             # args[0] is self!
             if args[0].pos is None:
-                user_log_err("Using the pos of an unlocated agent: "
-                             + args[0].name + " in function "
-                             + fn.__name__)
+                print("Using the pos of an unlocated agent: "
+                      + args[0].name + " in function "
+                      + fn.__name__)
                 return 0
             return fn(*args, **kwargs)
 
@@ -396,8 +376,8 @@ class Agent(object):
                     self.move(max_move=max_move, angle=angle)
                     moved = True
             elif DEBUG2:
-                user_log_notif("I'm " + self.name
-                               + " and I have no action!")
+                print("I'm " + self.name
+                      + " and I have no action!")
         else:
             self.active = False
         return acted, moved
@@ -424,7 +404,7 @@ class Agent(object):
         """
         Adds agent and group to make new group.
         """
-        from indra import composite
+        from lib import composite
         if isinstance(other, Agent):
             return composite.Composite(
                 self.name + other.name,
@@ -441,8 +421,6 @@ class Agent(object):
                 and not self.locator.is_full()):
             new_xy = None
             if angle is not None:
-                if DEBUG2:
-                    user_log_notif("Using angled move")
                 new_xy = self.locator.point_from_vector(angle,
                                                         max_move, self.pos)
             self.locator.place_member(self, max_move=max_move, xy=new_xy)
@@ -469,6 +447,6 @@ class Agent(object):
 
     def switch_groups(self, g1, g2):
         if not self.del_group(g1):
-            user_log_notif("Could not delete ", str(g1))
+            print("Could not delete ", str(g1))
         if not self.add_group(g2):
-            user_log_notif("Could not add agent to ", str(g2))
+            print("Could not add agent to ", str(g2))

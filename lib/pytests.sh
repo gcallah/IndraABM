@@ -12,4 +12,4 @@ else
   export capture="--nocapture"
 fi
 
-nosetests --ignore-files=$ignores --exe --verbose --with-coverage --cover-package=indra $capture
+nosetests --ignore-files=$ignores --exe --verbose --with-coverage --cover-package=lib $capture

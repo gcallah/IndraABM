@@ -4,13 +4,13 @@ This is the test suite for env.py.
 import os
 from unittest import TestCase, main, skip
 
-import indra.display_methods as disp
-from indra.composite import Composite
-from indra.env import Env, PopHist, POP_HIST_HDR, POP_SEP
-from indra.space import DEF_HEIGHT, DEF_WIDTH
-from indra.tests.test_agent import create_newton
-from indra.tests.test_composite import create_calcguys, create_cambguys
-from indra.user import TEST, API
+import lib.display_methods as disp
+from lib.composite import Composite
+from lib.env import Env, PopHist, POP_HIST_HDR, POP_SEP
+from lib.space import DEF_HEIGHT, DEF_WIDTH
+from lib.tests.test_agent import create_newton
+from lib.tests.test_composite import create_calcguys, create_cambguys
+from lib.user import TEST, API
 
 travis = False
 
@@ -55,6 +55,7 @@ class EnvTestCase(TestCase):
         """
         self.assertEqual(self.env.user_type, TEST)
 
+    @skip("This test awaits new registry.")
     def test_runN(self):
         """
         Test running for N turns.

@@ -4,7 +4,7 @@ This module contains the code for the base class of all Indra models.
 import os
 from lib.utils import init_props
 from lib.env import Env
-from lib.user import TermUser, TERMINAL, API
+from lib.user import TermUser, TERMINAL  # , API
 
 PROPS_PATH = "./props"
 
@@ -46,6 +46,7 @@ class Model():
         the groups.
         """
         self.env = Env(self.name, members=self.groups)
+        return self.env
 
     def create_groups(self):
         """

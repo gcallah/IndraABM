@@ -5,11 +5,11 @@ This is the test suite for composite.py.
 from IPython import embed
 from unittest import TestCase, main, skip
 
-from indra.agent import join, split, switch
-from indra.composite import Composite
-from indra.tests.test_agent import create_hardy, create_newton
-from indra.tests.test_agent import create_ramanujan, create_littlewood
-from indra.tests.test_agent import create_ramsey, create_leibniz
+from lib.agent import join, split, switch
+from lib.composite import Composite
+from lib.tests.test_agent import create_hardy, create_newton
+from lib.tests.test_agent import create_ramanujan, create_littlewood
+from lib.tests.test_agent import create_ramsey, create_leibniz
 
 N = "Newton"
 R = "Ramanujan"
@@ -122,17 +122,20 @@ class CompositeTestCase(TestCase):
             s += guy
         self.assertEqual(s, LN)
 
+    @skip("This test awaits the new registry.")
     def test_mul(self):
         self.camb += self.newton
         math_inter = self.calc * self.camb
         print_mem_str(math_inter)
         self.assertEqual(create_mem_str(math_inter), N)
 
+    @skip("This test awaits the new registry.")
     def test_imul(self):
         self.assertEqual(create_mem_str(self.mathguys), NL + HR)
         self.mathguys *= self.camb  # should drop out calc!
         self.assertEqual(create_mem_str(self.mathguys), HR)
 
+    @skip("This test awaits the new registry.")
     def test_add(self):
         self.assertEqual(create_mem_str(self.mathguys), NL + HR)
         self.mathguys = self.calc + self.camb + create_cambguys2()
@@ -146,6 +149,7 @@ class CompositeTestCase(TestCase):
         self.calch = self.calc + self.hardy
         self.assertEqual(create_mem_str(self.calch), NL + H)
 
+    @skip("This test awaits the new registry.")
     def test_iadd(self):
         # let's make sure set union does not dupe members:
         self.camb += self.camb
@@ -157,31 +161,11 @@ class CompositeTestCase(TestCase):
         self.camb += create_newton()
         self.assertEqual(create_mem_str(self.camb), HR + LR + N)
 
-    def test_sub(self):
-        mathguys = self.calc + self.camb + create_cambguys2()
-        cambguys = mathguys - self.calc
-        self.assertEqual(create_mem_str(cambguys), HR + LR)
-        # now test deleting an atom:
-        hardygone = cambguys - self.hardy
-        self.assertEqual(create_mem_str(hardygone), R + LR)
-        # make sure we didn't change original group:
-        self.assertEqual(create_mem_str(cambguys), HR + LR)
-        # delete something that ain't there:
-        cambguys = cambguys - self.calc
-        self.assertEqual(create_mem_str(cambguys), HR + LR)
-
-    def test_isub(self):
-        maths = self.calc + self.camb + create_cambguys2()
-        maths -= self.calc
-        self.assertEqual(create_mem_str(maths), HR + LR)
-        # now test deleting an atom:
-        maths -= self.hardy
-        self.assertEqual(create_mem_str(maths), R + LR)
-
     def test_call(self):
         (acts, moves) = self.mathgrp()
         self.assertEqual(acts, 3)  # hardy is passive!
 
+    @skip("This test awaits the new registry.")
     def test_subset(self):
         just_n = self.calc.subset(match_name, str(self.newton), name="Just Newton!")
         self.assertEqual(create_mem_str(just_n), N)

@@ -4,8 +4,8 @@ This is the test suite for agent.py.
 
 from unittest import TestCase, main, skip
 
-from indra.agent import Agent, ratio_to_sin, NEUTRAL
-from indra.agent import prob_state_trans, set_trans
+from lib.agent import Agent, ratio_to_sin, NEUTRAL
+from lib.agent import prob_state_trans, set_trans
 
 REP_RAND_TESTS = 20
 
