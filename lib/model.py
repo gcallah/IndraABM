@@ -4,7 +4,7 @@ This module contains the code for the base class of all Indra models.
 import os
 from lib.utils import init_props
 from lib.env import Env
-from lib.user import TermUser, TERMINAL  # , API
+from lib.user import TestUser, TermUser, TERMINAL, TEST
 
 PROPS_PATH = "./props"
 
@@ -27,17 +27,24 @@ class Model():
         self.env = self.create_env()
 
     def create_user(self):
+        """
+        This will create a user of the correct type.
+        """
         if self.user_type == TERMINAL:
             self.user = TermUser()
             self.user.tell("Welcome to Indra, " + str(self.user) + "!")
+        elif self.user_type == TEST:
+            self.user = TestUser()
 
     def run(self, periods=None):
         """
         This method runs the model. If `periods` is not None,
         it will run it for that many periods. Otherwise, on
         a terminal, it will display the menu.
+        Return: 0 if run was fine.
         """
         self.user.tell("Running model " + self.name)
+        return 0
 
     def create_env(self):
         """

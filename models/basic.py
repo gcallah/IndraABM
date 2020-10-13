@@ -29,8 +29,8 @@ class Basic(Model):
         return self.groups
 
     def run(self):
-        super().run()
         print("My groups are:", self.groups)
+        return super().run()
 
 
 def main():
