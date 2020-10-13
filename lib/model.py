@@ -5,6 +5,7 @@ import os
 from lib.utils import init_props
 from lib.env import Env
 from lib.user import TestUser, TermUser, TERMINAL, TEST
+from lib.user import USER_EXIT
 
 PROPS_PATH = "./props"
 
@@ -44,6 +45,14 @@ class Model():
         Return: 0 if run was fine.
         """
         self.user.tell("Running model " + self.name)
+        if (self.user is None) or (self.user_type == TEST):
+            self.env.runN()
+        else:
+            while True:
+                # run until user exit!
+                if self.user() == USER_EXIT:
+                    break
+
         return 0
 
     def create_env(self):

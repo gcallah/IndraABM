@@ -10,7 +10,7 @@ import traceback
 from lib.agent import Agent, AgentEncoder
 import lib.display_methods as disp
 from lib.space import Space
-from lib.user import TEST
+from lib.user import TEST, TestUser
 from lib.user import TermUser, TERMINAL, API
 
 DEBUG = False
@@ -108,8 +108,10 @@ class Env(Space):
                          reg=False, members=members, **kwargs)
         self.type = type(self).__name__
         self.user_type = os.getenv("user_type", TERMINAL)
-        # we're just going to hardcode a terminal user:
-        self.user = TermUser()
+        if self.user_type == TERMINAL:
+            self.user = TermUser()
+        elif self.user_type == TEST:
+            self.user = TestUser()
         # this func is only used once, so no need to restore it
         self.pop_hist_setup = pop_hist_setup
 
