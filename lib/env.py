@@ -16,7 +16,6 @@ from lib.user import TermUser, TERMINAL, API
 DEBUG = False
 DEBUG2 = False
 DEF_USER = "User"
-DEF_TIME = 10
 
 UNLIMITED = 1000
 
@@ -222,27 +221,6 @@ class Env(Space):
 
     def handle_pop_hist(self):
         pass
-
-    def runN(self, periods=DEF_TIME):
-        """
-            Run our model for N periods.
-            Return the total number of actions taken.
-        """
-        num_acts = 0
-        num_moves = 0
-        for i in range(periods):
-            # these things need to be done before action loop:
-            self.handle_womb()
-            self.handle_switches()
-            self.handle_pop_hist()
-
-            # (a, m) = super().__call__(execution_key=self.execution_key)
-            num_acts += 10   # should be a
-            num_moves += 10  # should be m
-            census_rpt = self.get_census(num_moves)
-            self.user.tell(census_rpt)
-            self.num_switches = 0
-        return num_acts
 
     def get_census(self, num_moves):
         """

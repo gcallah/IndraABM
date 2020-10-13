@@ -8,6 +8,7 @@ from lib.user import TestUser, TermUser, TERMINAL, TEST
 from lib.user import USER_EXIT
 
 PROPS_PATH = "./props"
+DEF_TIME = 10
 
 
 class Model():
@@ -26,6 +27,7 @@ class Model():
         self.create_user()
         self.groups = self.create_groups()
         self.env = self.create_env()
+        self.period = 0
 
     def create_user(self):
         """
@@ -44,16 +46,40 @@ class Model():
         a terminal, it will display the menu.
         Return: 0 if run was fine.
         """
-        self.user.tell("Running model " + self.name)
         if (self.user is None) or (self.user_type == TEST):
-            self.env.runN()
+            self.runN()
         else:
+            self.user.tell("Running model " + self.name)
             while True:
                 # run until user exit!
                 if self.user() == USER_EXIT:
                     break
 
         return 0
+
+    def runN(self, periods=DEF_TIME):
+        """
+            Run our model for N periods.
+            Return the total number of actions taken.
+        """
+        num_acts = 0
+        num_moves = 0
+        for i in range(periods):
+            self.period += 1
+            # these things need to be done before action loop:
+            # self.handle_womb()
+            # self.handle_switches()
+            # self.handle_pop_hist()
+
+            # now we call upon the env to act:
+            self.env()
+            num_acts += 10   # should be a
+            num_moves += 10  # should be m
+            # census_rpt = self.get_census(num_moves)
+            census_rpt = "Ran period {}". format(self.period)
+            self.user.tell(census_rpt)
+            self.num_switches = 0
+        return num_acts
 
     def create_env(self):
         """

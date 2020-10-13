@@ -36,6 +36,39 @@ def get_menu_json():
     return menu_json
 
 
+def run(user, test_run=False):
+    # steps = 0
+    # acts = 0
+    if not test_run:
+        steps = user.ask("How many periods?")
+        if steps is None or steps == "" or steps.isspace():
+            steps = DEF_STEPS
+        else:
+            steps = int(steps)
+            user.tell("Steps = " + str(steps))
+    else:
+        steps = DEF_STEPS
+
+    acts = steps  # just for now!
+    return acts
+
+
+def leave(user, **kwargs):
+    user.tell("Goodbye, " + user.name + ", I will miss you!")
+    return USER_EXIT
+
+
+menu_functions = {
+    "run": run,
+    "leave": leave,
+    # "scatter_plot": scatter_plot,
+    # "line_graph": line_graph,
+    # "bar_graph": bar_graph,
+    # "debug": debug,
+    # "logs": not_impl,
+}
+
+
 class User(Agent):
     """
     A representation of the user in the system.
@@ -181,16 +214,14 @@ class TermUser(User):
                             self.show_line_graph = True
                             self.show_scatter_plot = False
                             self.show_bar_graph = False
-                        if item["func"] == "scatter_plot":
+                        elif item["func"] == "scatter_plot":
                             self.show_scatter_plot = True
                             self.show_line_graph = False
-                        if item["func"] == "bar_graph":
+                        elif item["func"] == "bar_graph":
                             self.show_bar_graph = True
                             self.show_line_graph = False
                             self.show_scatter_plot = False
-                        return None
-                        # menu_functions[item["func"]](
-                        # self, execution_key=self.execution_key)
+                        return menu_functions[item["func"]](self)
             self.tell_err(str(c) + " is an invalid option. "
                           + "Please enter a valid option.")
         else:
@@ -214,8 +245,7 @@ class TestUser(TermUser):
         """
             Can't present menu to a scripted test!
         """
-        # run(self)  # noqa: W391
-        pass
+        run(self)  # noqa: W391
 
 
 class APIUser(User):
