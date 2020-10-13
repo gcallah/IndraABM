@@ -19,6 +19,8 @@ class Model():
     display the menu (if on a terminal), and register all
     methods necessary to be registered for the API server
     to work properly.
+    It should also make the notebook generator much simpler,
+    since the class methods will necessarily be present.
     """
     def __init__(self, model_nm="BaseModel", props=None):
         self.name = model_nm
