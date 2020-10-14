@@ -3,7 +3,8 @@ This module contains the code for the base class of all Indra models.
 """
 import os
 from lib.utils import init_props
-from lib.agent import Agent
+from lib.agent import Agent, DONT_MOVE
+from lib.composite import Composite
 from lib.env import Env
 from lib.user import TestUser, TermUser, TERMINAL, TEST
 from lib.user import USER_EXIT
@@ -11,22 +12,33 @@ from lib.display_methods import RED, BLUE
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
+DEF_NUM_MEMBERS = 1
 
 
-def create_agent(name, i, **kwargs):
+def def_agent_action(agent, **kwargs):
+    """
+    A simple default agent action.
+    """
+    print("Agent {} is acting".format(agent.name))
+    return DONT_MOVE
+
+
+def create_agent(name, i, action=def_agent_action, **kwargs):
     """
     Create an agent.
     """
-    return Agent(name + str(i), action=None, kwargs=kwargs)
+    return Agent(name + str(i), action=action, kwargs=kwargs)
 
 
 DEF_GROUP_STRUCT = {
     "blue_group": {
-        "member_creator": create_agent,
+        "mbr_creator": create_agent,
+        "num_members": DEF_NUM_MEMBERS,
         "color": BLUE
     },
     "red_group": {
-        "member_creator": create_agent,
+        "mbr_creator": create_agent,
+        "num_members": DEF_NUM_MEMBERS,
         "color": RED
     },
 }
@@ -44,9 +56,9 @@ class Model():
     since the class methods will necessarily be present.
     """
     def __init__(self, model_nm="BaseModel", props=None,
-                 group_struct=DEF_GROUP_STRUCT):
+                 grp_struct=DEF_GROUP_STRUCT):
         self.name = model_nm
-        self.group_struct = group_struct
+        self.grp_struct = grp_struct
         self.props = init_props(self.name, props)
         self.user_type = os.getenv("user_type", TERMINAL)
         self.create_user()
@@ -78,7 +90,14 @@ class Model():
         """
         Override this method in your model to create all of your groups.
         """
-        return []
+        self.groups = []
+        grps = self.grp_struct
+        for grp_nm in self.grp_struct:
+            self.groups.append(Composite(grp_nm,
+                               {"color": grps[grp_nm]["color"]},
+                               num_members=DEF_NUM_MEMBERS,
+                               mbr_creator=grps[grp_nm]["mbr_creator"]))
+        return self.groups
 
     def run(self, periods=None):
         """
