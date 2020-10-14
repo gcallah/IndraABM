@@ -6,6 +6,7 @@ from unittest import TestCase, main, skip
 
 from lib.model import Model
 from lib.env import Env
+from lib.user import User
 
 MSG = "Hello world"
 
@@ -24,6 +25,10 @@ class ModelTestCase(TestCase):
     def test_create_groups(self):
         groups = self.model.create_groups()
         self.assertTrue(isinstance(groups, list))
+
+    def test_create_user(self):
+        user = self.model.create_user()
+        self.assertTrue(isinstance(user, User))
 
     def test_to_json(self):
         rep = self.model.to_json()

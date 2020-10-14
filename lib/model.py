@@ -3,12 +3,33 @@ This module contains the code for the base class of all Indra models.
 """
 import os
 from lib.utils import init_props
+from lib.agent import Agent
 from lib.env import Env
 from lib.user import TestUser, TermUser, TERMINAL, TEST
 from lib.user import USER_EXIT
+from lib.display_methods import RED, BLUE
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
+
+
+def create_agent(name, i, **kwargs):
+    """
+    Create an agent.
+    """
+    return Agent(name + str(i), action=None, kwargs=kwargs)
+
+
+DEF_GROUP_STRUCT = {
+    "blue_group": {
+        "member_creator": create_agent,
+        "color": BLUE
+    },
+    "red_group": {
+        "member_creator": create_agent,
+        "color": RED
+    },
+}
 
 
 class Model():
@@ -22,8 +43,10 @@ class Model():
     It should also make the notebook generator much simpler,
     since the class methods will necessarily be present.
     """
-    def __init__(self, model_nm="BaseModel", props=None):
+    def __init__(self, model_nm="BaseModel", props=None,
+                 group_struct=DEF_GROUP_STRUCT):
         self.name = model_nm
+        self.group_struct = group_struct
         self.props = init_props(self.name, props)
         self.user_type = os.getenv("user_type", TERMINAL)
         self.create_user()
@@ -40,6 +63,22 @@ class Model():
             self.user.tell("Welcome to Indra, " + str(self.user) + "!")
         elif self.user_type == TEST:
             self.user = TestUser()
+        return self.user
+
+    def create_env(self):
+        """
+        Override this method to create a unique env...
+        but this one will already set the model name and add
+        the groups.
+        """
+        self.env = Env(self.name, members=self.groups)
+        return self.env
+
+    def create_groups(self):
+        """
+        Override this method in your model to create all of your groups.
+        """
+        return []
 
     def run(self, periods=None):
         """
@@ -82,21 +121,6 @@ class Model():
             self.user.tell(census_rpt)
             self.num_switches = 0
         return num_acts
-
-    def create_env(self):
-        """
-        Override this method to create a unique env...
-        but this one will already set the model name and add
-        the groups.
-        """
-        self.env = Env(self.name, members=self.groups)
-        return self.env
-
-    def create_groups(self):
-        """
-        Override this method in your model to create all of your groups.
-        """
-        return []
 
     def from_json(self, serial_obj):
         """
