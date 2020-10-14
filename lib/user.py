@@ -36,9 +36,10 @@ def get_menu_json():
     return menu_json
 
 
-def run(user, test_run=False):
-    # steps = 0
-    # acts = 0
+def run(user, model=None, test_run=False):
+    """
+    Run the model for the number of periods the user wants.
+    """
     if not test_run:
         steps = user.ask("How many periods?")
         if steps is None or steps == "" or steps.isspace():
@@ -49,7 +50,8 @@ def run(user, test_run=False):
     else:
         steps = DEF_STEPS
 
-    acts = steps  # just for now!
+    if model is not None:
+        acts = model.runN(steps)
     return acts
 
 
@@ -75,14 +77,25 @@ class User(Agent):
     It is an abstract class!
     """
 
-    def __init__(self, name="User", **kwargs):
+    def __init__(self, name="User", env=None,
+                 model=None, **kwargs):
         super().__init__(name, **kwargs)
-        # we shouldn't need self.env any more!
         self.menu = get_menu_json()
+        if env is None:
+            print("ERROR: creating user with null env.")
+        else:
+            self.env = env
         self.user_msgs = ''
         self.debug_msg = ''
         self.error_message = {}
+        self.model = model
         # here we should register this user
+
+    def __call__(self):
+        """
+        Can't present menu to a scripted test!
+        """
+        run(self, self.model)
 
     def to_json(self):
         return {"user_msgs": self.user_msgs,
@@ -197,7 +210,7 @@ class TermUser(User):
             # line_graph(self, update=True)
         if self.show_scatter_plot:
             pass
-            # scatter_plot(self, update=True, execution_key=self.execution_key)
+            # scatter_plot(self, update=True)
         if self.show_bar_graph:
             pass
             # bar_graph(self, update=True)
@@ -237,15 +250,9 @@ class TestUser(TermUser):
 
     def ask(self, msg, default=None):
         """
-            Can't ask anything of a scripted test!
+        Can't ask anything of a scripted test!
         """
         return self.tell(CANT_ASK_TEST, end=' ')
-
-    def __call__(self):
-        """
-            Can't present menu to a scripted test!
-        """
-        run(self)  # noqa: W391
 
 
 class APIUser(User):

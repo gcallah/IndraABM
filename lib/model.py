@@ -71,10 +71,10 @@ class Model():
         This will create a user of the correct type.
         """
         if self.user_type == TERMINAL:
-            self.user = TermUser()
+            self.user = TermUser(model=self)
             self.user.tell("Welcome to Indra, " + str(self.user) + "!")
         elif self.user_type == TEST:
-            self.user = TestUser()
+            self.user = TestUser(model=self)
         return self.user
 
     def create_env(self):
@@ -132,14 +132,20 @@ class Model():
             # self.handle_pop_hist()
 
             # now we call upon the env to act:
-            self.env()
-            num_acts += 10   # should be a
-            num_moves += 10  # should be m
-            # census_rpt = self.get_census(num_moves)
-            census_rpt = "Ran period {}". format(self.period)
+            (num_acts, num_moves) = self.env()
+            census_rpt = self.rpt_census(num_acts, num_moves)
+            print(census_rpt)
             self.user.tell(census_rpt)
             self.num_switches = 0
         return num_acts
+
+    def rpt_census(self, acts, moves):
+        """
+        This is the default census report.
+        Return: a string saying what happened in a period.
+        """
+        return "In period {} there were {} actionsn".format(self.period,
+                                                            acts)
 
     def from_json(self, serial_obj):
         """

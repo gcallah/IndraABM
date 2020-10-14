@@ -173,7 +173,6 @@ class Composite(Agent):
             if self.action is not None:
                 # the action was defined outside this class, so pass self:
                 self.action(self, **kwargs)
-
             for (key, member) in self.members.items():
                 if member.is_active():
                     (acted, moved) = member(**kwargs)
