@@ -8,7 +8,6 @@ from lib.composite import Composite
 from lib.env import Env
 from lib.user import TestUser, TermUser, TERMINAL, TEST
 from lib.user import USER_EXIT
-from lib.utils import agent_by_name
 from lib.display_methods import RED, BLUE
 
 PROPS_PATH = "./props"
@@ -180,16 +179,11 @@ class Model():
         return "# switches = " + self.pending_switches() + "; id: " \
                + str(id(self.switches))
 
-    def add_switch(self, agent, from_grp, to_grp):
+    def add_switch(self, agent_nm, from_grp_nm, to_grp_nm):
         """
-        Switch agent from 1 grp to another
-        We allow the parameters to be passed as the names of the agents,
-        or as the agents themselves.
-        In the future, it should be just names.
+        Switch agent from 1 group to another.
+        The agent and groups should be passed by name.
         """
-        agent_nm = agent_by_name(agent)
-        from_grp_nm = agent_by_name(from_grp)
-        to_grp_nm = agent_by_name(to_grp)
         self.switches.append((agent_nm, from_grp_nm, to_grp_nm))
 
     def handle_switches(self):
