@@ -6,7 +6,13 @@ well.
 While this is (right now) a simple dictionary, providing this
 interface means that in the future, we can have something fancier,
 if need be.
+For instance, we might turn the registry into an object, but so long
+as these functions still work, and no code goes straight at the dict,
+that should break nothing.
+We will add to the dict a check that what is being registered is an
+agent!
 """
+from lib.agent import Agent
 
 agent_reg = {}
 
@@ -14,8 +20,11 @@ agent_reg = {}
 def reg_agent(name, agent):
     """
     Register an agent in the registry.
+    Raises an exception if `agent` is not an `Agent`.
     Return: None
     """
+    if not isinstance(agent, Agent):
+        raise ValueError("Object being registered is not an agent.")
     agent_reg[name] = agent
 
 

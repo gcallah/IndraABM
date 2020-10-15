@@ -13,6 +13,7 @@ NB_DIR = notebooks
 WEB_STATIC = static
 API_DIR = APIServer
 LIB_DIR = lib
+REG_DIR = registry
 PYLINT = flake8
 PYLINTFLAGS =
 PYTHONFILES = $(shell ls $(MODELS_DIR)/*.py)
@@ -23,8 +24,8 @@ INCS = $(TEMPLATE_DIR)/head.txt $(TEMPLATE_DIR)/logo.txt $(TEMPLATE_DIR)/menu.tx
 
 HTMLFILES = $(shell ls $(PTML_DIR)/*.ptml | sed -e 's/.ptml/.html/' | sed -e 's/html_src\///')
 
-MODEL_REGISTRY = registry/models
-MODELJSON_FILES = $(shell ls $(MODELS_DIR)/*.py | sed -e 's/.py/_model.json/' | sed -e 's/$(MODELS_DIR)\//registry\/models\//')
+MODEL_REGISTRY = $(REG_DIR)/models
+MODELJSON_FILES = $(shell ls $(MODELS_DIR)/*.py | sed -e 's/.py/_model.json/' | sed -e 's/$(MODELS_DIR)\//$(REG_DIR)\/models\//')
 JSON_DESTINATION = $(MODEL_REGISTRY)/models.json
 
 FORCE:
@@ -74,10 +75,10 @@ tests: pytests
 pytests: FORCE
 	cd $(MODELS_DIR); make tests
 	cd $(LIB_DIR); make tests
+	cd $(REG_DIR); make tests
 	# put these back in once working:
 	# cd $(API_DIR); make tests
 	# cd capital; make tests
-	# cd registry; make tests
 	# cd epidemics; make tests
 
 dockertests:

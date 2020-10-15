@@ -4,7 +4,7 @@ This is the test suite for agent_registry.py.
 
 from unittest import TestCase, main
 
-from registry.agent_registry import get_agent, register_agent, del_agent
+from registry.agent_registry import get_agent, reg_agent, del_agent
 
 
 class AgentRegistryTestCase(TestCase):
