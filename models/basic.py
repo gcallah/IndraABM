@@ -6,9 +6,6 @@ do nothing except move around randomly.
 """
 
 from lib.model import Model
-from lib.composite import Composite
-from lib.display_methods import RED, BLUE
-
 
 MODEL_NAME = "basic"
 
@@ -21,12 +18,6 @@ class Basic(Model):
     """
     def __init__(self, name=MODEL_NAME):
         super().__init__(name)
-
-    def create_groups(self):
-        self.groups = []
-        self.groups.append(Composite("Blues", {"color": BLUE}))
-        self.groups.append(Composite("Reds", {"color": RED}))
-        return self.groups
 
     def run(self):
         print("My groups are:", self.groups)

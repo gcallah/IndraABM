@@ -132,6 +132,7 @@ class Model():
             # self.handle_pop_hist()
 
             # now we call upon the env to act:
+            print("From model, calling env to act.")
             (num_acts, num_moves) = self.env()
             census_rpt = self.rpt_census(num_acts, num_moves)
             print(census_rpt)
@@ -144,8 +145,8 @@ class Model():
         This is the default census report.
         Return: a string saying what happened in a period.
         """
-        return "In period {} there were {} actionsn".format(self.period,
-                                                            acts)
+        return "In period {} there were {} actions".format(self.period,
+                                                           acts)
 
     def from_json(self, serial_obj):
         """

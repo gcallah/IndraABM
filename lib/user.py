@@ -36,7 +36,7 @@ def get_menu_json():
     return menu_json
 
 
-def run(user, model=None, test_run=False):
+def run(user, test_run=False):
     """
     Run the model for the number of periods the user wants.
     """
@@ -50,8 +50,10 @@ def run(user, model=None, test_run=False):
     else:
         steps = DEF_STEPS
 
-    if model is not None:
-        acts = model.runN(steps)
+    acts = 0
+    if user.model is not None:
+        print("In user, calling model to run {} steps.".format(steps))
+        acts = user.model.runN(steps)
     return acts
 
 
@@ -77,14 +79,9 @@ class User(Agent):
     It is an abstract class!
     """
 
-    def __init__(self, name="User", env=None,
-                 model=None, **kwargs):
+    def __init__(self, name="User", model=None, **kwargs):
         super().__init__(name, **kwargs)
         self.menu = get_menu_json()
-        if env is None:
-            print("ERROR: creating user with null env.")
-        else:
-            self.env = env
         self.user_msgs = ''
         self.debug_msg = ''
         self.error_message = {}
@@ -192,7 +189,7 @@ class TermUser(User):
 
     def is_number(self, c):
         """
-        Check if it is a numeric number.
+        Check if `c` is a number.
         """
         try:
             int(c)

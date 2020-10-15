@@ -30,12 +30,12 @@ class Composite(Agent):
         attrs: a dictionary of group properties
         members: a list of members, that will be turned
             into a dictionary
-        member_creator: a function to create members
+        mbr_creator: a function to create members
         num_members: how many to create
     """
 
     def __init__(self, name, attrs=None, members=None,
-                 duration=INF, action=None, member_creator=None,
+                 duration=INF, action=None, mbr_creator=None,
                  num_members=None, serial_obj=None,
                  reg=True, **kwargs):
 
@@ -56,13 +56,13 @@ class Composite(Agent):
             if num_members is None:
                 num_members = 1  # A default if they forgot to pass this.
             self.num_members_ever = num_members
-            self.member_creator = None
-            if member_creator is not None:
-                self.member_creator = member_creator
+            self.mbr_creator = None
+            if mbr_creator is not None:
+                self.mbr_creator = mbr_creator
                 # If we have a member creator function, call it
                 # `num_members` times to create group members.
                 for i in range(num_members):
-                    join(self, member_creator(self.name, i, **kwargs))
+                    join(self, mbr_creator(self.name, i, **kwargs))
         if reg:
             pass
             # add_group(self.name, self, execution_key=self.execution_key)
@@ -81,11 +81,11 @@ class Composite(Agent):
         rep["num_members_ever"] = self.num_members_ever
         rep["type"] = self.type
         rep["members"] = self.members
-        rep["member_creator"] = get_func_name(self.member_creator)
+        rep["mbr_creator"] = get_func_name(self.mbr_creator)
         return rep
 
     def from_json(self, serial_obj):
-        # from registry.run_dict import member_creator_dict
+        # from registry.run_dict import mbr_creator_dict
         super().from_json(serial_obj)
         self.num_members_ever = serial_obj["num_members_ever"]
         # we loop through the members of this composite
@@ -97,15 +97,15 @@ class Composite(Agent):
             elif member["type"] == "Composite":
                 self.members[nm] = Composite(name=nm, serial_obj=member,
                                              execution_key=self.execution_key)
-        mem_create_nm = serial_obj["member_creator"]
+        mem_create_nm = serial_obj["mbr_creator"]
         """
-        if mem_create_nm in member_creator_dict:
-            self.member_creator = member_creator_dict[mem_create_nm]
+        if mem_create_nm in mbr_creator_dict:
+            self.mbr_creator = mbr_creator_dict[mem_create_nm]
         else:
             # if it's not in the above dict, we don't need the func,
             # we can just store its name:
         """
-        self.member_creator = mem_create_nm
+        self.mbr_creator = mem_create_nm
 
     def __repr__(self):
         return json.dumps(self.to_json(), cls=AgentEncoder, indent=4)
@@ -165,6 +165,7 @@ class Composite(Agent):
         This should return the total of all
         agents who acted in a particular call.
         """
+        print("Calling {} to act.".format(self.name))
         total_acts = 0
         total_moves = 0
         del_list = []
