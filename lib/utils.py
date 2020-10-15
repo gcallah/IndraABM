@@ -7,6 +7,10 @@ import random
 from propargs.propargs import PropArgs
 
 
+def agent_by_name(agent):
+    return agent if isinstance(agent, str) else agent.name
+
+
 def gaussian(mean, sigma, trim_at_zero=True):
     sample = random.gauss(mean, sigma)
     if trim_at_zero:

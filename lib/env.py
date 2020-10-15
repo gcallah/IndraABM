@@ -12,6 +12,7 @@ import lib.display_methods as disp
 from lib.space import Space
 from lib.user import TEST, TestUser
 from lib.user import TermUser, TERMINAL, API
+from lib.utils import agent_by_name
 
 DEBUG = False
 DEBUG2 = False
@@ -28,10 +29,6 @@ POP_HIST_HDR = "PopHist for "
 POP_SEP = ", "
 
 color_num = 0
-
-
-def agent_by_name(agent):
-    return agent if isinstance(agent, str) else agent.name
 
 
 class PopHist:
@@ -114,7 +111,6 @@ class Env(Space):
         # this func is only used once, so no need to restore it
         self.pop_hist_setup = pop_hist_setup
 
-        self.num_switches = 0
         if serial_obj is not None:
             # are we restoring env from json?
             self.restore_env(serial_obj)
@@ -145,14 +141,12 @@ class Env(Space):
             self.attrs["line_data_func"] = line_data_func
         self.exclude_member = exclude_member
         self.womb = []  # for agents waiting to be born
-        self.switches = []  # for agents waiting to switch groups
 
     def from_json(self, serial_obj):
         super().from_json(serial_obj)
         self.pop_hist = PopHist(serial_pops=serial_obj["pop_hist"])
         self.plot_title = serial_obj["plot_title"]
         self.name = serial_obj["name"]
-        self.switches = serial_obj["switches"]
         self.womb = serial_obj["womb"]
         self.num_members_ever = serial_obj["num_members_ever"]
 
@@ -162,7 +156,6 @@ class Env(Space):
         rep["plot_title"] = self.plot_title
         rep["pop_hist"] = self.pop_hist.to_json()
         rep["womb"] = self.womb
-        rep["switches"] = self.switches
         rep["num_members_ever"] = self.num_members_ever
         return rep
 
@@ -187,25 +180,6 @@ class Env(Space):
             grp_nm = agent_by_name(group)
         self.womb.append(grp_nm)
 
-    def pending_switches(self):
-        return str(len(self.switches))
-
-    def rpt_switches(self):
-        return "# switches = " + self.pending_switches() + "; id: " \
-               + str(id(self.switches))
-
-    def add_switch(self, agent, from_grp, to_grp):
-        """
-        Switch agent from 1 grp to another
-        We allow the parameters to be passed as the names of the agents,
-        or as the agents themselves.
-        In the future, it should be just names.
-        """
-        agent_nm = agent_by_name(agent)
-        from_grp_nm = agent_by_name(from_grp)
-        to_grp_nm = agent_by_name(to_grp)
-        self.switches.append((agent_nm, from_grp_nm, to_grp_nm))
-
     def handle_womb(self):
         """
         The womb just contains group names -- they will be repeated
@@ -214,9 +188,6 @@ class Env(Space):
         This should be re-written as dict with:
             {"group_name": #agents_to_create}
         """
-        pass
-
-    def handle_switches(self):
         pass
 
     def handle_pop_hist(self):

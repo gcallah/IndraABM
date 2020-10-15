@@ -8,6 +8,7 @@ from lib.composite import Composite
 from lib.env import Env
 from lib.user import TestUser, TermUser, TERMINAL, TEST
 from lib.user import USER_EXIT
+from lib.utils import agent_by_name
 from lib.display_methods import RED, BLUE
 
 PROPS_PATH = "./props"
@@ -64,6 +65,8 @@ class Model():
         self.create_user()
         self.groups = self.create_groups()
         self.env = self.create_env()
+        self.num_switches = 0
+        self.switches = []  # for agents waiting to switch groups
         self.period = 0
 
     def create_user(self):
@@ -125,11 +128,8 @@ class Model():
         num_acts = 0
         num_moves = 0
         for i in range(periods):
+            self.num_switches = 0
             self.period += 1
-            # these things need to be done before action loop:
-            # self.handle_womb()
-            # self.handle_switches()
-            # self.handle_pop_hist()
 
             # now we call upon the env to act:
             print("From model, calling env to act.")
@@ -137,7 +137,10 @@ class Model():
             census_rpt = self.rpt_census(num_acts, num_moves)
             print(census_rpt)
             self.user.tell(census_rpt)
-            self.num_switches = 0
+            # these things need to be done before action loop:
+            self.handle_switches()
+            # self.handle_pop_hist()
+            # self.handle_womb()
         return num_acts
 
     def rpt_census(self, acts, moves):
@@ -153,6 +156,7 @@ class Model():
         This method restores a model from its JSON rep.
         """
         self.name = serial_obj["name"]
+        self.switches = serial_obj["switches"]
 
     def to_json(self):
         """
@@ -160,7 +164,39 @@ class Model():
         """
         rep = {}
         rep["name"] = self.name
+        rep["switches"] = self.switches
         return rep
+
+    def pending_switches(self):
+        """
+        How many switches are there to execute?
+        """
+        return str(len(self.switches))
+
+    def rpt_switches(self):
+        """
+        Generate a string to report our switches.
+        """
+        return "# switches = " + self.pending_switches() + "; id: " \
+               + str(id(self.switches))
+
+    def add_switch(self, agent, from_grp, to_grp):
+        """
+        Switch agent from 1 grp to another
+        We allow the parameters to be passed as the names of the agents,
+        or as the agents themselves.
+        In the future, it should be just names.
+        """
+        agent_nm = agent_by_name(agent)
+        from_grp_nm = agent_by_name(from_grp)
+        to_grp_nm = agent_by_name(to_grp)
+        self.switches.append((agent_nm, from_grp_nm, to_grp_nm))
+
+    def handle_switches(self):
+        """
+        This will actually process the pending switches.
+        """
+        pass
 
 
 def main():
