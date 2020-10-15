@@ -97,11 +97,10 @@ class Env(Space):
                  pop_hist_setup=None,
                  pop_hist_func=None,
                  members=None,
-                 reg=True,
                  **kwargs):
         super().__init__(name, action=action,
                          random_placing=random_placing, serial_obj=serial_obj,
-                         reg=False, members=members, **kwargs)
+                         members=members, **kwargs)
         self.type = type(self).__name__
         self.user_type = os.getenv("user_type", TERMINAL)
         if self.user_type == TERMINAL:

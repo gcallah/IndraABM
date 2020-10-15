@@ -173,25 +173,20 @@ class Agent(object):
     """
 
     def __init__(self, name, attrs=None, action=None, duration=INF,
-                 prim_group=None, serial_obj=None, reg=True, **kwargs):
+                 prim_group=None, serial_obj=None, **kwargs):
+        from registry.agent_registry import reg_agent
         if serial_obj is not None:
             self.restore(serial_obj)
         else:  # or build it anew:
             self._construct_anew(name, attrs=attrs, action=action,
-                                 duration=duration, prim_group=prim_group,
-                                 reg=reg)
-        if reg:
-            pass
-            # register(self.name, self, execution_key=self.execution_key)
+                                 duration=duration, prim_group=prim_group)
+        reg_agent(self.name, self)
 
     def _construct_anew(self, name, attrs=None, action=None,
-                        duration=INF, prim_group=None, reg=True):
+                        duration=INF, prim_group=None):
         self.type = type(self).__name__
         self.name = name
-        self.action_key = None
         self.action = action
-        if action is not None:
-            self.action_key = get_func_name(action)
         self.duration = duration
         self.neighbors = None
         self.attrs = {}
@@ -241,15 +236,10 @@ class Agent(object):
                 "active": self.active,
                 "prim_group": self.prim_group,
                 "neighbors": None,
-                "action_key": self.action_key
                 }
 
     def from_json(self, serial_agent):
-        # from registry.run_dict import action_dict
         self.action = None
-        # if serial_agent["action_key"] is not None:
-        #     self.action = action_dict[serial_agent["action_key"]]
-        self.action_key = serial_agent["action_key"]
         self.active = serial_agent["active"]
         self.attrs = serial_agent["attrs"]
         if not serial_agent["pos"]:

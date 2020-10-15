@@ -37,14 +37,14 @@ class Composite(Agent):
     def __init__(self, name, attrs=None, members=None,
                  duration=INF, action=None, mbr_creator=None,
                  num_members=None, serial_obj=None,
-                 reg=True, **kwargs):
+                 **kwargs):
 
         self.num_members_ever = 0
         self.members = OrderedDict()
 
         super().__init__(name, attrs=attrs, duration=duration,
                          action=action, serial_obj=serial_obj,
-                         reg=False, **kwargs)
+                         **kwargs)
         self.type = type(self).__name__
 
         if serial_obj is not None:
@@ -63,9 +63,6 @@ class Composite(Agent):
                 # `num_members` times to create group members.
                 for i in range(num_members):
                     join(self, mbr_creator(self.name, i, **kwargs))
-        if reg:
-            pass
-            # add_group(self.name, self, execution_key=self.execution_key)
 
     def restore(self, serial_obj):
         """
