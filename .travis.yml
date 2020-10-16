@@ -9,7 +9,7 @@ services:
 before_install:
 
 install:
-    - pip install -r docker/requirements-dev.txt
+    - pip install -r requirements/requirements-dev.txt
     - cd webapp; npm install; cd /home/travis/build/gcallah/indraABM
 
 env:
