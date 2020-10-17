@@ -34,6 +34,7 @@ class Group(Agent):
 
     def __init__(self, name, attrs=None, members=None,
                  duration=INF, action=None, mbr_creator=None,
+                 mbr_action=None,
                  num_members=None, serial_obj=None,
                  **kwargs):
 
@@ -54,13 +55,15 @@ class Group(Agent):
             if num_members is None:
                 num_members = 1  # A default if they forgot to pass this.
             self.num_members_ever = num_members
-            self.mbr_creator = None
+            self.mbr_creator = mbr_creator
+            self.mbr_action = mbr_action
             if mbr_creator is not None:
-                self.mbr_creator = mbr_creator
                 # If we have a member creator function, call it
                 # `num_members` times to create group members.
                 for i in range(num_members):
-                    join(self, mbr_creator(self.name, i, **kwargs))
+                    join(self, mbr_creator(self.name, i,
+                                           action=mbr_action,
+                                           **kwargs))
 
     def restore(self, serial_obj):
         """
