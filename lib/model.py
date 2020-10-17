@@ -4,7 +4,7 @@ This module contains the code for the base class of all Indra models.
 import os
 from lib.utils import init_props
 from lib.agent import Agent, DONT_MOVE
-from lib.composite import Composite
+from lib.group import Group
 from lib.env import Env
 from lib.user import TestUser, TermUser, TERMINAL, TEST
 from lib.user import USER_EXIT
@@ -15,7 +15,7 @@ DEF_TIME = 10
 DEF_NUM_MEMBERS = 1
 
 
-def def_agent_action(agent, **kwargs):
+def def_action(agent, **kwargs):
     """
     A simple default agent action.
     """
@@ -23,7 +23,7 @@ def def_agent_action(agent, **kwargs):
     return DONT_MOVE
 
 
-def create_agent(name, i, action=def_agent_action, **kwargs):
+def create_agent(name, i, action=None, **kwargs):
     """
     Create an agent.
     """
@@ -33,11 +33,13 @@ def create_agent(name, i, action=def_agent_action, **kwargs):
 DEF_GROUP_STRUCT = {
     "blue_group": {
         "mbr_creator": create_agent,
+        "mbr_action": def_action,
         "num_members": DEF_NUM_MEMBERS,
         "color": BLUE
     },
     "red_group": {
         "mbr_creator": create_agent,
+        "mbr_action": def_action,
         "num_members": DEF_NUM_MEMBERS,
         "color": RED
     },
@@ -95,10 +97,12 @@ class Model():
         self.groups = []
         grps = self.grp_struct
         for grp_nm in self.grp_struct:
-            self.groups.append(Composite(grp_nm,
-                               {"color": grps[grp_nm]["color"]},
+            grp = grps[grp_nm]
+            self.groups.append(Group(grp_nm,
+                               {"color": grp["color"]},
                                num_members=DEF_NUM_MEMBERS,
-                               mbr_creator=grps[grp_nm]["mbr_creator"]))
+                               mbr_creator=grp["mbr_creator"],
+                               mbr_action=grp["mbr_action"]))
         return self.groups
 
     def run(self, periods=None):

@@ -1,12 +1,12 @@
 """
-This is the test suite for composite.py.
+This is the test suite for group.py.
 """
 
 from IPython import embed
 from unittest import TestCase, main, skip
 
 from lib.agent import join, split, switch
-from lib.composite import Composite
+from lib.group import Group
 from lib.tests.test_agent import create_hardy, create_newton
 from lib.tests.test_agent import create_ramanujan, create_littlewood
 from lib.tests.test_agent import create_ramsey, create_leibniz
@@ -32,21 +32,21 @@ def max_duration(agent, duration):
 
 
 def create_calcguys(members=[create_newton(), create_leibniz()]):
-    return Composite(CALC_GUYS, members=members)
+    return Group(CALC_GUYS, members=members)
 
 
 def create_cambguys():
-    return Composite("Cambridge guys", members=[create_hardy(),
+    return Group("Cambridge guys", members=[create_hardy(),
                                                 create_ramanujan()])
 
 
 def create_cambguys2():
-    return Composite("Other Cambridge guys",
+    return Group("Other Cambridge guys",
                      members=[create_littlewood(), create_ramsey()])
 
 
 def create_mathgrp():
-    return Composite("Math groups",
+    return Group("Math groups",
                      members=[create_calcguys(), create_cambguys()])
 
 
@@ -66,7 +66,7 @@ def print_mem_str(comp):
     print(create_mem_str(comp))
 
 
-class CompositeTestCase(TestCase):
+class GroupTestCase(TestCase):
     def setUp(self):
         self.hardy = create_hardy()
         self.newton = create_newton()
@@ -92,7 +92,7 @@ class CompositeTestCase(TestCase):
 
     def test_str(self):
         name = "Ramanujan"
-        c = Composite(name)
+        c = Group(name)
         self.assertEqual(name, str(c))
 
     def test_repr(self):
@@ -145,7 +145,7 @@ class CompositeTestCase(TestCase):
         # let's make sure set union does not dupe members:
         camb_self_union = self.camb + self.camb
         self.assertEqual(create_mem_str(camb_self_union), HR)
-        # now let's add an atom rather than a composite:
+        # now let's add an atom rather than a group:
         self.calch = self.calc + self.hardy
         self.assertEqual(create_mem_str(self.calch), NL + H)
 
@@ -175,7 +175,7 @@ class CompositeTestCase(TestCase):
     def test_rand_member(self):
         rand_guy = self.calc.rand_member()
         self.assertIsNotNone(rand_guy)
-        empty_set = Composite("Empty")
+        empty_set = Group("Empty")
         rand_guy = empty_set.rand_member()
         self.assertIsNone(rand_guy)
 
@@ -193,7 +193,7 @@ class CompositeTestCase(TestCase):
     def test_leave_group(self):
         """
         Test leaving a group.
-        This test is here rather than in agent because it requires Composite!
+        This test is here rather than in agent because it requires Group!
         """
         split(self.calc, self.newton)
         self.assertEqual(create_mem_str(self.calc), L)
@@ -201,7 +201,7 @@ class CompositeTestCase(TestCase):
     def test_join_group(self):
         """
         Test joining a group.
-        This test is here rather than in agent because it requires Composite!
+        This test is here rather than in agent because it requires Group!
         """
         join(self.calc, self.hardy)
         self.assertEqual(create_mem_str(self.calc), NL + H)
@@ -210,7 +210,7 @@ class CompositeTestCase(TestCase):
     def test_switch_groups(self):
         """
         Test switching groups.
-        This test is here rather than in agent because it requires Composite!
+        This test is here rather than in agent because it requires Group!
         """
         switch(self.hardy.name, self.camb.name, self.calc.name)
         self.assertIn(str(self.hardy), self.calc)

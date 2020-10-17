@@ -74,9 +74,9 @@ def ratio_to_sin(ratio):
     return sin(ratio * pi / 2)
 
 
-def is_composite(thing):
+def is_group(thing):
     """
-    Is this thing a composite?
+    Is this thing a group?
     """
     return hasattr(thing, 'members')
 
@@ -92,7 +92,7 @@ def join(agent1, agent2):
     """
     Create connection between agent1 and agent2.
     """
-    if not is_composite(agent1):
+    if not is_group(agent1):
         print("Attempt to place " + str(agent2)
               + " in non-group " + str(agent1))
         return False
@@ -112,7 +112,7 @@ def split(agent1, agent2):
     """
     Break connection between agent1 and agent2.
     """
-    if not is_composite(agent1):
+    if not is_group(agent1):
         print("Attempt to remove " + str(agent2)
               + " from non-group " + str(agent1))
         return False
@@ -394,9 +394,9 @@ class Agent(object):
         """
         Adds agent and group to make new group.
         """
-        from lib import composite
+        from lib import group
         if isinstance(other, Agent):
-            return composite.Composite(
+            return group.Group(
                 self.name + other.name,
                 members=[self, other])
         else:

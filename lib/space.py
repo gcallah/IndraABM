@@ -6,8 +6,8 @@ import json
 import math
 from math import sqrt, atan, degrees
 from random import randint
-from lib.agent import is_composite, AgentEncoder, X, Y
-from lib.composite import Composite
+from lib.agent import is_group, AgentEncoder, X, Y
+from lib.group import Group
 
 DEF_WIDTH = 10
 DEF_HEIGHT = 10
@@ -203,7 +203,7 @@ def get_move_angle(agent, agents_in_range):
     return opposing_angle([0, 0], [vector_x, vector_y])
 
 
-class Space(Composite):
+class Space(Group):
     """
     A collection of entities that share a space.
     The way we handle space assignment is, default to random,
@@ -284,7 +284,7 @@ class Space(Composite):
         """
         if members is not None:
             for nm, mbr in members.items():
-                if not is_composite(mbr):  # by default don't locate groups
+                if not is_group(mbr):  # by default don't locate groups
                     self.place_member(mbr, max_move)
                 else:  # place composite's members
                     self.rand_place_members(mbr.members, max_move)
@@ -297,7 +297,7 @@ class Space(Composite):
         """
         if members is not None:
             for nm, mbr in members.items():
-                if not is_composite(mbr):
+                if not is_group(mbr):
                     if curr_col < self.width:
                         self.place_member(mbr, xy=(curr_col, curr_row))
                         if DEBUG:
@@ -397,7 +397,7 @@ class Space(Composite):
             print(ALL_FULL)
             raise (SpaceFull(ALL_FULL))
 
-        if not is_composite(mbr):
+        if not is_group(mbr):
             if xy is not None:
                 (x, y) = xy
             else:
@@ -467,7 +467,7 @@ class Space(Composite):
 
     def get_row_hood(self, row_num, pred=None, save_neighbors=False):
         """
-        Collects all agents in row `row_num` into a Composite
+        Collects all agents in row `row_num` into a Group
         and returns it.
         """
         if row_num < 0 or row_num >= self.height:
@@ -482,13 +482,13 @@ class Space(Composite):
     def get_x_hood(self, agent, width=1, pred=None, include_self=False,
                    save_neighbors=False):
         """
-        Takes in an agent  and returns a Composite
+        Takes in an agent  and returns a Group
         of its x neighbors.
         For example, if the agent is located at (0, 0),
         get_x_hood would return (-1, 0) and (1, 0).
         """
         if agent is not None:
-            x_hood = Composite("x neighbors", execution_key=self.execution_key)
+            x_hood = Group("x neighbors", execution_key=self.execution_key)
             agent_x, agent_y, neighbor_x_coords \
                 = fill_neighbor_coords(agent,
                                        width,
@@ -506,12 +506,12 @@ class Space(Composite):
     def get_y_hood(self, agent, height=1, pred=None, include_self=False,
                    save_neighbors=False):
         """
-        Takes in an agent and returns a Composite
+        Takes in an agent and returns a Group
         of its y neighbors.
         For example, if the agent is located at (0, 0),
         get_y_hood would return agents at (0, 2) and (0, 1).
         """
-        y_hood = Composite("y neighbors", execution_key=self.execution_key)
+        y_hood = Group("y neighbors", execution_key=self.execution_key)
         agent_x, agent_y, neighbor_y_coords \
             = fill_neighbor_coords(agent,
                                    height,
@@ -527,7 +527,7 @@ class Space(Composite):
 
     def get_vonneumann_hood(self, agent, pred=None, save_neighbors=False):
         """
-        Takes in an agent and returns a Composite of its
+        Takes in an agent and returns a Group of its
         Von Neumann neighbors.
         """
         vonneumann_hood = self.get_x_hood(agent) + self.get_y_hood(agent)
@@ -538,7 +538,7 @@ class Space(Composite):
     def get_moore_hood(self, agent, pred=None, save_neighbors=False,
                        include_self=False, hood_size=1):
         """
-        Takes in an agent and returns a Composite of its Moore neighbors.
+        Takes in an agent and returns a Group of its Moore neighbors.
         Should call the region_factory!
         """
         region = region_factory(space=self,
@@ -546,8 +546,8 @@ class Space(Composite):
                                 size=hood_size,
                                 agents_move=not save_neighbors)
         members = region.get_agents(exclude_self=not include_self, pred=pred)
-        return Composite("Moore neighbors",
-                         members=members, execution_key=self.execution_key)
+        return Group("Moore neighbors",
+                     members=members, execution_key=self.execution_key)
 
     def get_square_hood(self, agent, pred=None, save_neighbors=False,
                         include_self=False, hood_size=1):

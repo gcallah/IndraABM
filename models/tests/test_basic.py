@@ -4,7 +4,7 @@ This is the test suite for basic.py.
 
 from unittest import TestCase, main
 
-from lib.composite import Composite
+from lib.group import Group
 from models.basic import Basic
 
 
@@ -21,7 +21,7 @@ class BasicTestCase(TestCase):
         """
         groups = self.basic.create_groups()
         for group in groups:
-            if not isinstance(group, Composite):
+            if not isinstance(group, Group):
                 return False
         return True
 

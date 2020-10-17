@@ -23,7 +23,7 @@ maths = create_mathguys()
 gauss = Agent("Gauss")
 euler = Agent("Euler")
 laplace = Agent("Laplace")
-germans = Composite("Germans", members=[gauss, euler])
+germans = Group("Germans", members=[gauss, euler])
 
 print("Gauss in Germans = ", germans.ismember(str(gauss)))
 

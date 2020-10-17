@@ -5,11 +5,11 @@ import os
 from unittest import TestCase, main, skip
 
 import lib.display_methods as disp
-from lib.composite import Composite
+from lib.group import Group
 from lib.env import Env, PopHist, POP_HIST_HDR, POP_SEP
 from lib.space import DEF_HEIGHT, DEF_WIDTH
 from lib.tests.test_agent import create_newton
-from lib.tests.test_composite import create_calcguys, create_cambguys
+from lib.tests.test_group import create_calcguys, create_cambguys
 from lib.user import TEST, API
 
 travis = False
@@ -110,7 +110,7 @@ class EnvTestCase(TestCase):
         global travis
         travis = os.getenv("TRAVIS")
         if not travis:
-            our_grp = Composite(GRP1, members=[self.newton])
+            our_grp = Group(GRP1, members=[self.newton])
             self.env = Env("Test env", members=[our_grp])
             ret = self.env.plot_data()
             (x, y) = self.newton.pos

@@ -1,11 +1,11 @@
 """
-This file defines barrier, a type of composite,
+This file defines barrier, a type of group,
 which blocks agent's movement
 """
-from lib.composite import Composite
+from lib.group import Group
 
 
-class Barrier(Composite):
+class Barrier(Group):
     """
     The barrier class
     """

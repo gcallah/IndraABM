@@ -1,28 +1,26 @@
 """
-This file defines a Composite, which is composed
+This file defines a Group, which is composed
 of one or more Agents (see agent.py).
 (A group might have its membership reduced to one!)
 """
 import json
 from collections import OrderedDict
-# from copy import copy
+from copy import copy
 from random import choice
 
-from lib.agent import Agent, join, INF, is_composite, AgentEncoder
+from lib.agent import Agent, join, INF, is_group, AgentEncoder
 from lib.utils import get_func_name
 
 DEBUG = False
 
 
-"""
-def grp_from_nm_dict(nm, dictionary, execution_key=CLI_EXEC_KEY):
-    grp = Composite(nm, execution_key=execution_key)
+def grp_from_nm_dict(nm, dictionary):
+    grp = Group(nm)
     grp.members = dictionary
     return grp
-"""
 
 
-class Composite(Agent):
+class Group(Agent):
     """
     This is the base class of all collections
     of entities. It itself is an agent.
@@ -66,13 +64,13 @@ class Composite(Agent):
 
     def restore(self, serial_obj):
         """
-        Here we restore a composite from a serialized object.
+        Here we restore a group from a serialized object.
         """
         self.from_json(serial_obj)
 
     def to_json(self):
         """
-        Here we turn a composite into a serialized object.
+        Here we turn a group into a serialized object.
         """
         rep = super().to_json()
         rep["num_members_ever"] = self.num_members_ever
@@ -85,15 +83,15 @@ class Composite(Agent):
         # from registry.run_dict import mbr_creator_dict
         super().from_json(serial_obj)
         self.num_members_ever = serial_obj["num_members_ever"]
-        # we loop through the members of this composite
+        # we loop through the members of this group
         for nm in serial_obj["members"]:
             member = serial_obj["members"][nm]
             if member["type"] == "Agent":
                 self.members[nm] = Agent(name=nm, serial_obj=member,
                                          execution_key=self.execution_key)
-            elif member["type"] == "Composite":
-                self.members[nm] = Composite(name=nm, serial_obj=member,
-                                             execution_key=self.execution_key)
+            elif member["type"] == "Group":
+                self.members[nm] = Group(name=nm, serial_obj=member,
+                                         execution_key=self.execution_key)
         mem_create_nm = serial_obj["mbr_creator"]
         """
         if mem_create_nm in mbr_creator_dict:
@@ -132,14 +130,14 @@ class Composite(Agent):
     def __setitem__(self, key, member):
         """
         In contrast to agent, which sets a val
-        for setitem, for composites, we are going to set
+        for setitem, for groups, we are going to set
         the 'key' member.
         """
         join(self, member)
 
     def __delitem__(self, key):
         """
-        This will delete a member from this composite.
+        This will delete a member from this group.
         """
         del self.members[key]
 
@@ -157,7 +155,7 @@ class Composite(Agent):
 
     def __call__(self, **kwargs):
         """
-        Call the members' functions, and the composite's
+        Call the members' functions, and the group's
         action func if it has one.
         This should return the total of all
         agents who acted in a particular call.
@@ -177,68 +175,67 @@ class Composite(Agent):
                     total_acts += acted
                     total_moves += moved
                 else:
-                    # delete agents but not composites:
-                    if not is_composite(member):
+                    # delete agents but not group:
+                    if not is_group(member):
                         del_list.append(key)
         for key in del_list:
             del self.members[key]
         return total_acts, total_moves
 
-    """
     def __add__(self, other):
+        """
         This implements set union and returns
-        a new Composite that is self union other.
+        a new Group that is self union other.
         If other is an atomic agent, just add it to
         this group.
+        """
         if other is None:
             return self
 
         new_dict = copy(self.members)
-        if is_composite(other):
+        if is_group(other):
             new_dict.update(other.members)
         else:
             new_dict[other.name] = other
-        new_grp = grp_from_nm_dict(self.name + "+" + other.name, new_dict,
-                                   execution_key=self.execution_key)
+        new_grp = grp_from_nm_dict(self.name + "+" + other.name, new_dict)
         self.add_group(new_grp)
         other.add_group(new_grp)
         return new_grp
-    """
 
     def __iadd__(self, other):
         """
         Add other to set self.
-        If other is a composite, add all its members.
+        If other is a group, add all its members.
         If other is an atom, add it.
         """
         if other is None:
             return self
 
-        if is_composite(other):
+        if is_group(other):
             for key in other:
                 join(self, other[key])
         else:
             join(self, other)
         return self
 
-    """
     def __mul__(self, other):
+        """
         This implements set intersection and returns
-        a new Composite that is self intersect other.
+        a new Group that is self intersect other.
         This has no useful meaning if `other` is an
         atom.
+        """
         new_dict = copy(self.members)
         for mbr in self.members:
             if mbr not in other.members:
                 del new_dict[mbr]
         return grp_from_nm_dict(str(self) + "X" + str(other), new_dict)
-    """
 
     def __imul__(self, other):
         """
-        When `other` is a Composite,
+        When `other` is a Group,
         this implements set intersection and makes the current
-        Composite equal to self intersect other.
+        Group equal to self intersect other.
         """
         del_list = []
         for mbr in self.members:
@@ -275,18 +272,16 @@ class Composite(Agent):
         else:
             return None
 
-    """
     def subset(self, predicate, *args, name=None):  # noqa E999
         new_dict = OrderedDict()
         for mbr in self:
             if predicate(self[mbr], *args):
                 new_dict[mbr] = self[mbr]
         return grp_from_nm_dict(name, new_dict)
-    """
 
     def is_active(self):
         """
-        For now, composites just stay active.
+        For now, group just stay active.
         """
         return True
         # we should look at bringing back this logic at some point,
@@ -301,7 +296,7 @@ class Composite(Agent):
         return str(agent) in self.members
 
     def is_mbr_comp(self, mbr):
-        return is_composite(self.members[mbr])
+        return is_group(self.members[mbr])
 
     def pop_count(self, mbr):
         if self.is_mbr_comp(mbr):
