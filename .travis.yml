@@ -10,7 +10,7 @@ before_install:
 
 install:
     - pip install -r requirements/requirements-dev.txt
-    - cd webapp; npm install; cd /home/travis/build/gcallah/indraABM
+    - cd webapp; npm install;
 
 env:
     - PYTHONPATH=/home/travis/build/gcallah/indraABM:$(pwd) props_dir=/home/travis/build/gcallah/indraABM/APIServer/data/
