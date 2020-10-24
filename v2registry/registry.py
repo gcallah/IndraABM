@@ -7,7 +7,7 @@ behaviors that we need for our registry.
 import json
 import warnings
 
-from registry.execution_registry import execution_registry, \
+from v2registry.execution_registry import execution_registry, \
     CLI_EXEC_KEY, EXEC_KEY, get_exec_key
 
 REGISTRY = "Registry"

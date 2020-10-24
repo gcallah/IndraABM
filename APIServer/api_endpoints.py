@@ -28,8 +28,7 @@ indra_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
 We can remove this after all models have been ported to new execution
 registry system
 '''
-APIUser("Dennis", None,
-        execution_key=CLI_EXEC_KEY)
+APIUser("Dennis", execution_key=CLI_EXEC_KEY)
 
 
 @api.route('/test', endpoint="test",
@@ -118,8 +117,7 @@ class Props(Resource):
 
         props = \
             get_props_for_current_execution(model_id, indra_dir)
-        APIUser("Dennis", None,
-                execution_key=props[EXEC_KEY].get("val"))
+        APIUser("Dennis", execution_key=props[EXEC_KEY].get("val"))
         return props
 
     @api.expect(props)

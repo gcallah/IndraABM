@@ -1,4 +1,4 @@
-from registry import registry
+from v2registry import registry
 from numpy import random
 from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
 

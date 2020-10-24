@@ -1,7 +1,7 @@
 import json
 
-from indra.agent import AgentEncoder
-from registry.execution_registry import CLI_EXEC_KEY
+from lib.agent import AgentEncoder
+from v2registry.execution_registry import CLI_EXEC_KEY
 
 ERROR = "Error:"
 
