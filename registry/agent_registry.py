@@ -13,27 +13,40 @@ We will add to the dict a check that what is being registered is an
 agent!
 """
 from lib.agent import Agent
+from registry.registry import registry
 
 agent_reg = {}
 
 
-def reg_agent(name, agent):
+def create_new_registry():
+    return registry.create_new_execution_registry()
+
+
+def reg_agent(name, agent, execution_key):
     """
     Register an agent in the registry.
     Raises an exception if `agent` is not an `Agent`.
     Return: None
     """
-    if not isinstance(agent, Agent):
+    if not isinstance(agent, Agent) or Agent is None:
         raise ValueError("Object being registered is not an agent.")
-    agent_reg[name] = agent
+    if execution_key is None:
+        raise ValueError("Cannot register agent without execution key")
+    if len(name) == 0:
+        raise ValueError("Cannot register agent with empty name")
+    registry[execution_key][name] = agent
 
 
-def get_agent(name):
+def get_agent(name, execution_key):
     """
     Fetch an agent from the registry.
     Return: The agent object.
     """
-    return agent_reg[name]
+    if execution_key is None:
+        raise ValueError("Cannot register agent without execution key")
+    if len(name) == 0:
+        raise ValueError("Cannot register agent with empty name")
+    return registry[execution_key][name]
 
 
 def del_agent(name):

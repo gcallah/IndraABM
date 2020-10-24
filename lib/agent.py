@@ -7,6 +7,8 @@ import sys
 from math import pi, sin
 from random import random
 from functools import wraps
+import os
+import pickle
 
 import numpy as np
 
@@ -175,12 +177,14 @@ class Agent(object):
     def __init__(self, name, attrs=None, action=None, duration=INF,
                  prim_group=None, serial_obj=None, **kwargs):
         from registry.agent_registry import reg_agent
+        if "execution_key" in kwargs:
+            self.exec_key = kwargs["execution_key"]
         if serial_obj is not None:
             self.restore(serial_obj)
         else:  # or build it anew:
             self._construct_anew(name, attrs=attrs, action=action,
                                  duration=duration, prim_group=prim_group)
-        reg_agent(self.name, self)
+        reg_agent(self.name, self, self.exec_key)
 
     def _construct_anew(self, name, attrs=None, action=None,
                         duration=INF, prim_group=None):
@@ -227,19 +231,45 @@ class Agent(object):
     def restore(self, serial_obj):
         self.from_json(serial_obj)
 
+    def __pickle_func(self, pickle_file, func):
+        with open(pickle_file, 'wb') as file:
+            pickle.dump(func, file)
+
     def to_json(self):
-        return {"name": self.name,
-                "type": self.type,
-                "duration": self.duration,
-                "pos": self.pos,
-                "attrs": self.attrs,
-                "active": self.active,
-                "prim_group": self.prim_group,
-                "neighbors": None,
-                }
+        if self.action is not None:
+            indra_dir = os.getenv("INDRA_HOME", "/home/indrasnet/indras_net")
+            db_dir = os.path.join(indra_dir, 'registry', 'db')
+            pickle_file = os.path.join(db_dir,
+                                       '{}-{}.pkl'.format(self.exec_key,
+                                                          self.name))
+            print("Picking to - {}".format(pickle_file))
+            self.__pickle_func(pickle_file, self.action)
+            return {"name": self.name,
+                    "type": self.type,
+                    "duration": self.duration,
+                    "pos": self.pos,
+                    "attrs": self.attrs,
+                    "active": self.active,
+                    "prim_group": self.prim_group,
+                    "neighbors": None,
+                    "action": pickle_file
+                    }
+        else:
+            return {"name": self.name,
+                    "type": self.type,
+                    "duration": self.duration,
+                    "pos": self.pos,
+                    "attrs": self.attrs,
+                    "active": self.active,
+                    "prim_group": self.prim_group,
+                    "neighbors": None,
+                    }
 
     def from_json(self, serial_agent):
-        self.action = None
+        pickle_file = serial_agent["action"]
+        with open(pickle_file, 'rb') as file:
+            action = pickle.load(file)
+        self.action = action
         self.active = serial_agent["active"]
         self.attrs = serial_agent["attrs"]
         if not serial_agent["pos"]:

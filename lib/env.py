@@ -103,10 +103,12 @@ class Env(Space):
                          members=members, **kwargs)
         self.type = type(self).__name__
         self.user_type = os.getenv("user_type", TERMINAL)
+
+        # might not need this here since we already create this in model
         if self.user_type == TERMINAL:
-            self.user = TermUser()
+            self.user = TermUser(**kwargs)
         elif self.user_type == TEST:
-            self.user = TestUser()
+            self.user = TestUser(**kwargs)
         # this func is only used once, so no need to restore it
         self.pop_hist_setup = pop_hist_setup
 
