@@ -30,7 +30,7 @@ def create_agent(name, i, action=None, **kwargs):
     return Agent(name + str(i), action=action, kwargs=kwargs)
 
 
-DEF_GROUP_STRUCT = {
+DEF_GRP_STRUCT = {
     "blue_group": {
         "mbr_creator": create_agent,
         "mbr_action": def_action,
@@ -58,7 +58,7 @@ class Model():
     since the class methods will necessarily be present.
     """
     def __init__(self, model_nm="BaseModel", props=None,
-                 grp_struct=DEF_GROUP_STRUCT):
+                 grp_struct=DEF_GRP_STRUCT):
         self.name = model_nm
         self.grp_struct = grp_struct
         self.props = init_props(self.name, props)
