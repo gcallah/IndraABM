@@ -62,10 +62,19 @@ def leave(user, **kwargs):
     return USER_EXIT
 
 
+def scatter_plot(user, update=False):
+    from registry.agent_registry import get_env
+    env = get_env()
+    if env is not None:
+        return get_env().scatter_graph()
+    else:
+        return None
+
+
 menu_functions = {
     "run": run,
     "leave": leave,
-    # "scatter_plot": scatter_plot,
+    "scatter_plot": scatter_plot,
     # "line_graph": line_graph,
     # "bar_graph": bar_graph,
     # "debug": debug,
