@@ -3,7 +3,7 @@ This module contains the code for the base class of all Indra models.
 """
 import os
 from lib.utils import init_props
-from lib.agent import Agent, DONT_MOVE
+from lib.agent import Agent, DONT_MOVE, switch
 from lib.group import Group
 from lib.env import Env
 from lib.user import TestUser, TermUser, TERMINAL, TEST
@@ -13,6 +13,9 @@ from lib.display_methods import RED, BLUE
 PROPS_PATH = "./props"
 DEF_TIME = 10
 DEF_NUM_MEMBERS = 1
+
+BLUE_GRP = "blue_group"
+RED_GRP = "red_group"
 
 
 def def_action(agent, **kwargs):
@@ -31,13 +34,13 @@ def create_agent(name, i, action=None, **kwargs):
 
 
 DEF_GRP_STRUCT = {
-    "blue_group": {
+    BLUE_GRP: {
         "mbr_creator": create_agent,
         "mbr_action": def_action,
         "num_members": DEF_NUM_MEMBERS,
         "color": BLUE
     },
-    "red_group": {
+    RED_GRP: {
         "mbr_creator": create_agent,
         "mbr_action": def_action,
         "num_members": DEF_NUM_MEMBERS,
@@ -194,6 +197,11 @@ class Model():
         """
         This will actually process the pending switches.
         """
+        if self.switches is not None:
+            for (agent_nm, from_grp_nm, to_grp_nm) in self.switches:
+                switch(agent_nm, from_grp_nm, to_grp_nm)
+                self.num_switches += 1
+            self.switches.clear()
         pass
 
 
