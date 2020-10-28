@@ -1,13 +1,7 @@
-
-"""
-This is a minimal model that inherits from model.py
-and just sets up a couple of agents in two groups that
-do nothing except move around randomly.
-"""
-
 from lib.display_methods import RED, BLUE
 from lib.agent import DONT_MOVE
 from lib.model import Model, create_agent
+from lib.group import Group
 
 MODEL_NAME = "game_of_life"
 
@@ -39,12 +33,20 @@ GAME_GROUP_STRUCT = {
 }
 
 
+def create_groups(self):
+    self.groups = []
+    grps = self.grp_struct
+    for grp_nm in self.grp_struct:
+        grp = grps[grp_nm]
+        self.groups.append(Group(grp_nm,
+                           {"color": grp["color"]},
+                           num_members=DEF_NUM_ALIVE,
+                           mbr_creator=grp["mbr_creator"],
+                           mbr_action=grp["mbr_action"]))
+    return self.groups
+
+
 class GameOfLife(Model):
-    """
-    This class should just create a basic model that runs, has
-    some agents that move around, and allows us to test if
-    the system as a whole is working.
-    """
     def __init__(self, name=MODEL_NAME):
         super().__init__(name, grp_struct=GAME_GROUP_STRUCT)
 
