@@ -62,9 +62,11 @@ def get_agent(name, execution_key):
     return registry[execution_key][name]
 
 
-def del_agent(name, exec_key=None):
+def del_agent(name, exec_key):
     """
     Delete an agent from the registry.
     Return: None
     """
-    del agent_reg[name]
+    if exec_key is None:
+        raise ValueError("Cannot delete agent without execution key")
+    del registry[exec_key][name]
