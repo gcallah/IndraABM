@@ -13,6 +13,7 @@ We will add to the dict a check that what is being registered is an
 agent!
 """
 from lib.agent import Agent
+from lib.env import Env
 from registry.registry import registry
 
 agent_reg = {}
@@ -20,6 +21,14 @@ agent_reg = {}
 
 def create_new_registry():
     return registry.create_new_execution_registry()
+
+
+def get_env(execution_key):
+    """
+    :param execution_key: execution to fetch with
+    :return: Env object
+    """
+    return get_agent('env', execution_key)
 
 
 def reg_agent(name, agent, execution_key):
@@ -34,6 +43,8 @@ def reg_agent(name, agent, execution_key):
         raise ValueError("Cannot register agent without execution key")
     if len(name) == 0:
         raise ValueError("Cannot register agent with empty name")
+    if isinstance(agent, Env):
+        name = 'env'
     registry[execution_key][name] = agent
 
 
@@ -43,9 +54,9 @@ def get_agent(name, execution_key):
     Return: The agent object.
     """
     if execution_key is None:
-        raise ValueError("Cannot register agent without execution key")
+        raise ValueError("Cannot fetch agent without execution key")
     if len(name) == 0:
-        raise ValueError("Cannot register agent with empty name")
+        raise ValueError("Cannot fetch agent with empty name")
     return registry[execution_key][name]
 
 

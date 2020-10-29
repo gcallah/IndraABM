@@ -435,7 +435,7 @@ class Agent(object):
         of its current pos.
         """
         from registry.agent_registry import get_env
-        env = get_env()
+        env = get_env(self.exec_key)
         if (self.is_located() and env is not None
                 and not env.is_full()):
             new_xy = None

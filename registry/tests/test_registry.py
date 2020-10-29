@@ -53,7 +53,7 @@ class RegisteryTestCase(TestCase):
                           .clear_registry, self.exec_key)
 
     def test_agent_registration(self):
-        agent = Agent("test_agent", action=None)
+        agent = Agent("test_agent", action=None, execution_key=self.exec_key)
         registry[self.exec_key][agent.name] = agent
         self.assertTrue(agent == registry[self.exec_key][agent.name])
 
