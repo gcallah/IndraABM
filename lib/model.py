@@ -177,13 +177,13 @@ class Model():
         """
         How many switches are there to execute?
         """
-        return str(len(self.switches))
+        return len(self.switches)
 
     def rpt_switches(self):
         """
         Generate a string to report our switches.
         """
-        return "# switches = " + self.pending_switches() + "; id: " \
+        return "# switches = " + str(self.pending_switches()) + "; id: " \
                + str(id(self.switches))
 
     def add_switch(self, agent_nm, from_grp_nm, to_grp_nm):

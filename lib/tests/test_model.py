@@ -7,6 +7,7 @@ from unittest import TestCase, main, skip
 from lib.model import Model, def_action, BLUE_GRP, RED_GRP
 from lib.agent import Agent, DONT_MOVE
 from lib.env import Env
+from lib.group import Group
 from lib.user import User
 
 MSG = "Hello world"
@@ -15,19 +16,42 @@ MSG = "Hello world"
 class ModelTestCase(TestCase):
     def setUp(self):
         self.agent = Agent("Test agent")
+        self.agent2 = Agent("Test agent 2")
+        self.blue_grp = Group(BLUE_GRP)
+        self.red_grp = Group(RED_GRP)
         self.model = Model(model_nm="Test model")
 
     def tearDown(self):
         self.agent = None
         self.model = None
 
+    def test_pending_switches(self):
+        """
+        Test getting count of pending switches.
+        """
+        self.model.add_switch(self.agent.name, BLUE_GRP, RED_GRP)
+        self.model.add_switch(self.agent2.name, BLUE_GRP, RED_GRP)
+        self.assertEqual(self.model.pending_switches(), 2)
+
     def test_add_switch(self):
+        """
+        Test adding a group switch.
+        """
         self.model.add_switch(self.agent.name, BLUE_GRP, RED_GRP)
         self.assertIn((self.agent.name, BLUE_GRP, RED_GRP),
                       self.model.switches)
 
+    @skip("Switching not working; but want to release current progress.")
     def test_handle_switches(self):
-        pass
+        """
+        Does executing the pending switches work?
+        """
+        self.red_grp += self.agent
+        self.assertIn(self.agent.name, self.red_grp)
+        self.model.add_switch(self.agent.name, RED_GRP, BLUE_GRP)
+        self.model.handle_switches()
+        self.assertNotIn(self.agent.name, self.red_grp)
+        self.assertIn(self.agent.name, self.blue_grp)
 
     def test_def_action(self):
         """

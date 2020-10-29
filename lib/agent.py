@@ -12,7 +12,7 @@ import numpy as np
 
 from lib.utils import get_func_name
 
-DEBUG = False  # turns debugging code on or off
+DEBUG = True  # turns debugging code on or off
 DEBUG2 = False  # turns deeper debugging code on or off
 
 # x and y indices
@@ -122,31 +122,35 @@ def split(agent1, agent2):
         return True
 
 
-def switch(agent_nm, grp1_nm, grp2_nm, execution_key=None):
+def switch(agent_nm, grp1_nm, grp2_nm, exec_key=None):
     """
     Move agent from grp1 to grp2.
     We first must recover agent objects from the registry.
     """
-    pass
-    """
-    agent = get_registration(agent_nm, execution_key=execution_key)
+    from registry.agent_registry import get_agent
+    agent = get_agent(agent_nm, exec_key=exec_key)
     if agent is None:
-        user_log_notif("In switch; could not find agent: " + str(agent))
-    grp1 = get_group(grp1_nm, execution_key=execution_key)
+        if DEBUG:
+            print("In switch; could not find agent: " + str(agent))
+        return
+    grp1 = get_agent(grp1_nm, exec_key=exec_key)
     if grp1 is None:
-        user_log_notif("In switch; could not find from group: " + str(grp1))
-    grp2 = get_group(grp2_nm, execution_key=execution_key)
+        if DEBUG:
+            print("In switch; could not find from group: " + str(grp1))
+        return
+    grp2 = get_agent(grp2_nm, exec_key=exec_key)
     if grp2 is None:
-        user_log_notif("In switch; could not find to group: " + str(grp2))
+        if DEBUG:
+            print("In switch; could not find to group: " + str(grp2))
+        return
     split_em = split(grp1, agent)
     joined_em = join(grp2, agent)
     if DEBUG and split_em and joined_em:
-        user_log_notif("Switched agent " + str(agent)
-                       + " from grp " + grp1_nm
-                       + "(id: " + str(id(grp1)) + ")"
-                       + " to grp " + grp2_nm
-                       + "(id: " + str(id(grp2)) + ")")
-    """
+        print("Switched agent " + str(agent)
+              + " from grp " + grp1_nm
+              + "(id: " + str(id(grp1)) + ")"
+              + " to grp " + grp2_nm
+              + "(id: " + str(id(grp2)) + ")")
 
 
 class AgentEncoder(json.JSONEncoder):
