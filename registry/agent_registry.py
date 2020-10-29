@@ -11,6 +11,8 @@ as these functions still work, and no code goes straight at the dict,
 that should break nothing.
 We will add to the dict a check that what is being registered is an
 agent!
+IMPORTANT: Given our registry structure, *every agent name must be unique in a
+run of a model*!
 """
 from lib.agent import Agent
 from lib.env import Env
@@ -60,7 +62,7 @@ def get_agent(name, execution_key):
     return registry[execution_key][name]
 
 
-def del_agent(name):
+def del_agent(name, exec_key=None):
     """
     Delete an agent from the registry.
     Return: None

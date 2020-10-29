@@ -87,6 +87,9 @@ class AgentTestCase(TestCase):
         self.newt = None
         self.hardy = None
 
+    def test_join(self):
+        pass
+
     def test_eq(self):
         """
         Test if two agents are equal.
