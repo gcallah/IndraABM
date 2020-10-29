@@ -408,8 +408,7 @@ class Space(Group):
                                        mbr.get_y(), mbr.name)
                 else:
                     self.add_location(x, y, mbr)
-                # if I am setting pos, I am agent's locator!
-                mbr.set_pos(self, x, y)
+                mbr.set_pos(x, y)
                 return x, y
             elif (max_move is None) and (xy is None):
                 # if the random position is already taken,x

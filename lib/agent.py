@@ -173,7 +173,6 @@ class Agent(object):
     This is the base class of all agents, environments,
     and objects contained in an environment.
     """
-
     def __init__(self, name, attrs=None, action=None, duration=INF,
                  prim_group=None, serial_obj=None, **kwargs):
         from registry.agent_registry import reg_agent
@@ -299,7 +298,6 @@ class Agent(object):
         """
         Should be used to decorate any function that uses pos[X] or pos[Y]
         """
-
         @wraps(fn)
         def wrapper(*args, **kwargs):
             # args[0] is self!
@@ -309,10 +307,9 @@ class Agent(object):
                       + fn.__name__)
                 return 0
             return fn(*args, **kwargs)
-
         return wrapper
 
-    def set_pos(self, locator, x, y):
+    def set_pos(self, x, y):
         self.pos = (x, y)
 
     def get_pos(self):
@@ -384,7 +381,7 @@ class Agent(object):
             if self.action is not None:
                 acted = True
                 # the action was defined outside this class, so pass self:
-                if not self.action(self, **kwargs):
+                if self.action(self, **kwargs) == MOVE:
                     # False return means agent is "unhappy" and
                     # so agent will move (if located).
                     max_move = DEF_MAX_MOVE
@@ -437,13 +434,15 @@ class Agent(object):
         Move this agent to a random pos within max_move
         of its current pos.
         """
-        if (self.is_located() and self.locator is not None
-                and not self.locator.is_full()):
+        from registry.agent_registry import get_env
+        env = get_env()
+        if (self.is_located() and env is not None
+                and not env.is_full()):
             new_xy = None
             if angle is not None:
-                new_xy = self.locator.point_from_vector(angle,
-                                                        max_move, self.pos)
-            self.locator.place_member(self, max_move=max_move, xy=new_xy)
+                new_xy = env.point_from_vector(angle,
+                                               max_move, self.pos)
+            env.place_member(self, max_move=max_move, xy=new_xy)
 
     def is_active(self):
         return self.active

@@ -4,7 +4,7 @@ This is the test suite for model.py.
 
 from unittest import TestCase, main, skip
 
-from lib.model import Model, def_action
+from lib.model import Model, def_action, BLUE_GRP, RED_GRP
 from lib.agent import Agent, DONT_MOVE
 from lib.env import Env
 from lib.user import User
@@ -20,6 +20,14 @@ class ModelTestCase(TestCase):
     def tearDown(self):
         self.agent = None
         self.model = None
+
+    def test_add_switch(self):
+        self.model.add_switch(self.agent.name, BLUE_GRP, RED_GRP)
+        self.assertIn((self.agent.name, BLUE_GRP, RED_GRP),
+                      self.model.switches)
+
+    def test_handle_switches(self):
+        pass
 
     def test_def_action(self):
         """
