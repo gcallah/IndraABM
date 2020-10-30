@@ -56,7 +56,6 @@ class SpaceTestCase(TestCase):
         self.test_agent4 = None
         self.env = None
 
-    # @skip("Waiting on registry to make this test work.")
     def test_get_closest_agent(self):
         closest = self.space.get_closest_agent(self.newton)
         self.assertTrue(distance(self.newton, closest) <=
@@ -115,7 +114,6 @@ class SpaceTestCase(TestCase):
                           self.test_agent.get_y())
                 self.assertEqual((x, y), (i, i))
 
-    @skip("Waiting on registry to make this test work.")
     def test_get_agent_at(self):
         """
         Test getting an agent from some locale.
