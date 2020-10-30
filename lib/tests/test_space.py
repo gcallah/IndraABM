@@ -179,7 +179,6 @@ class SpaceTestCase(TestCase):
         self.space += n
         self.assertTrue(self.space.get_agent_at(n.pos[X], n.pos[Y]) == n)
 
-    # @skip("Waiting on registry to make this test work.")
     def test_add_location(self):
         """
         Can we add an agent to a location?
@@ -210,7 +209,7 @@ class SpaceTestCase(TestCase):
             print("Now newton is at ", self.newton.get_x(), self.newton.get_y())
             self.assertTrue(self.space.locations[(x, y)] == self.newton)
 
-    @skip("Waiting on registry to make this test work.")
+    # @skip("Waiting on registry to make this test work.")
     def test_remove_location(self):
         """
         Test removing location from locations.
