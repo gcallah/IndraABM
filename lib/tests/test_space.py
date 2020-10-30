@@ -290,7 +290,6 @@ class SpaceTestCase(TestCase):
         self.assertTrue(test_reg.contains((2,2)))
         self.assertFalse(test_reg.contains((3,3)))
 
-    # @skip("Waiting on registry to make this test work.")
     def test_sub_reg(self):
         space = Space("test space")
         test_reg = Region(space=space, center=(3,3), size=5)
@@ -304,8 +303,8 @@ class SpaceTestCase(TestCase):
         for region in test_reg.my_sub_regs:
             self.assertTrue(len(region.my_agents)==2)
 
-    @skip("Waiting on registry to make this test work.")
-    def test_get_agent(self):
+    # @skip("Waiting on registry to make this test work.")
+    def test_get_agents(self):
         space = Space("test space")
         test_reg = Region(space=space, center=(3,3), size=3)
         space += self.test_agent
