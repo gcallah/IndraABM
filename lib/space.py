@@ -585,13 +585,14 @@ class Space(Group):
     def get_closest_agent(self, agent):
         """
         Get the agent' closest to agent on grid.
+        """
+        from registry.agent_registry import get_agent
         closest = None
         min_distance_seen = MAX_WIDTH * MAX_HEIGHT
         for key, other_nm in self.locations.items():
             if DEBUG:
                 print("Checking ", other_nm, "for closeness")
-            other = get_registration(other_nm,
-                                     execution_key=self.execution_key)
+            other = get_agent(other_nm)
             if other is agent or other is None:
                 continue
             d = distance(agent, other)
@@ -603,7 +604,6 @@ class Space(Group):
                 min_distance_seen = d
                 closest = other
         return closest
-        """
 
     def get_max_distance(self):
         return sqrt((self.height ** 2) + (self.width ** 2))
