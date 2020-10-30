@@ -99,7 +99,6 @@ class SpaceTestCase(TestCase):
         for agent in self.space:
             self.assertTrue(self.space[agent].is_located())
 
-    @skip("Waiting on registry to make this test work.")
     def test_place_member_xy(self):
         """
         Test placing an agent at a particular x, y spot.
