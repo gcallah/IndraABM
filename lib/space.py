@@ -217,6 +217,13 @@ class Space(Group):
             else:
                 self.consec_place_members(self.members)
 
+        '''
+            register this agent if an execution_key is passed.
+            Otherwise someone will need to use agent_reg.reg_agent
+        '''
+        if "execution_key" in kwargs:
+            self.exec_key = kwargs["execution_key"]
+
     def restore(self, serial_obj):
         self.from_json(serial_obj)
 
@@ -364,7 +371,7 @@ class Space(Group):
         if self.is_empty(x, y):
             return None
         agent_nm = self.locations[str((x, y))]
-        return get_agent(agent_nm)
+        return get_agent(agent_nm, execution_key=self.exec_key)
 
     def place_member(self, mbr, max_move=None, xy=None):
         """
@@ -579,7 +586,7 @@ class Space(Group):
         for key, other_nm in self.locations.items():
             if DEBUG:
                 print("Checking ", other_nm, "for closeness")
-            other = get_agent(other_nm)
+            other = get_agent(other_nm, execution_key=self.exec_key)
             if other is agent or other is None:
                 continue
             d = distance(agent, other)
