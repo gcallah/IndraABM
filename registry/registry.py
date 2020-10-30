@@ -1,3 +1,19 @@
+"""
+This module registers agent objects by name in a dictionary,
+where the value should be the actual agent object. Since groups
+and environments are agents, they should be registered here as
+well.
+While this is (right now) a simple dictionary, providing this
+interface means that in the future, we can have something fancier,
+if need be.
+For instance, we might turn the registry into an object, but so long
+as these functions still work, and no code goes straight at the dict,
+that should break nothing.
+We will add to the dict a check that what is being registered is an
+agent!
+IMPORTANT: Given our registry structure, *every agent name must be unique in a
+run of a model*!
+"""
 import numpy as np
 from numpy import random
 import os
@@ -5,13 +21,76 @@ from os import listdir
 from os.path import isfile, join
 import json
 import types
-from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
+# from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
 
 from lib.agent import Agent
+from lib.env import Env
 
 BILLION = 10 ** 9
 
-EXEC_KEY = "execution_key"
+EXEC_KEY = "exec_key"
+
+ENV_NM = 'env'
+
+registry = None
+
+
+def create_exec_env():
+    return registry.create_exec_env()
+
+
+def get_exec_key(**kwargs):
+    exec_key = kwargs[EXEC_KEY]
+    if exec_key is None:
+        raise ValueError("Cannot find exec key:", exec_key)
+    return exec_key
+
+
+def get_env(exec_key=None, kwargs=None):
+    """
+    :param execution_key: execution to fetch with
+    :return: Env object
+    """
+    if exec_key is None:
+        exec_key = get_exec_key(kwargs)
+    return get_agent(ENV_NM, exec_key)
+
+
+def reg_agent(name, agent, exec_key):
+    """
+    Register an agent in the registry.
+    Raises an exception if `agent` is not an `Agent`.
+    Return: None
+    """
+    if not isinstance(agent, Agent) or Agent is None:
+        raise ValueError("Object being registered is not an agent.")
+    if len(name) == 0:
+        raise ValueError("Cannot register agent with empty name")
+    if isinstance(agent, Env):
+        name = ENV_NM
+    registry[exec_key][name] = agent
+
+
+def get_agent(name, exec_key=None, kwargs=None):
+    """
+    Fetch an agent from the registry.
+    Return: The agent object.
+    """
+    if exec_key is None:
+        exec_key = get_exec_key(kwargs)
+    if len(name) == 0:
+        raise ValueError("Cannot fetch agent with empty name")
+    return registry[exec_key][name]
+
+
+def del_agent(name, exec_key=None, kwargs=None):
+    """
+    Delete an agent from the registry.
+    Return: None
+    """
+    if exec_key is None:
+        exec_key = get_exec_key(kwargs)
+    del registry[exec_key][name]
 
 
 def init_exec_key(props=None):
@@ -36,7 +115,6 @@ class AgentEncoder(json.JSONEncoder):
     The JSON encoder base class for all descendants
     of Agent.
     """
-
     def default(self, o):
         if hasattr(o, 'to_json'):
             return o.to_json()
@@ -49,7 +127,6 @@ class AgentEncoder(json.JSONEncoder):
 
 
 class Registry(object):
-
     def __init__(self):
         print("Creating new registry")
         self.registries = dict()
@@ -74,7 +151,7 @@ class Registry(object):
 
     '''
     Always fetch the items from the file for now.
-    There might be optimization's here later.
+    There might be optimizations here later.
     '''
     def __getitem__(self, key):
         if key not in self:
@@ -156,16 +233,16 @@ class Registry(object):
                 restored_obj[obj_name] = serial_obj[obj_name]
         return restored_obj
 
-    def create_new_execution_registry(self, save_on_register=True):
+    def create_exec_env(self, save_on_register=True):
         key = self.__get_unique_key()
-        print("Creating new execution_registry with key-{}".format(key))
+        print("Creating new registry with key-{}".format(key))
         self.registries[key] = {}
         self.registries[key] = {'save_on_register': save_on_register}
         return key
 
-    def clear_registry(self, key):
+    def del_exec_env(self, key):
         self.__does_key_exists(key)
-        print("Clearing key - {} from registry".format(key))
+        print("Clearing exec env {} from registry".format(key))
         del self[key]
 
 
