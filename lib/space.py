@@ -379,11 +379,11 @@ class Space(Group):
         If cell is empty return None.
         Always make location a str for serialization.
         """
+        from registry.agent_registry import get_agent
         if self.is_empty(x, y):
             return None
         agent_nm = self.locations[str((x, y))]
-        return agent_nm  # should be actual agent!
-        # return get_registration(agent_nm, execution_key=self.execution_key)
+        return get_agent(agent_nm)
 
     def place_member(self, mbr, max_move=None, xy=None):
         """
