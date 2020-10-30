@@ -166,7 +166,6 @@ class SpaceTestCase(TestCase):
             self.assertTrue(abs(old_x - new_x) <= max_move)
             self.assertTrue(abs(old_y - new_y) <= max_move)
 
-    @skip("Waiting on registry to make this test work.")
     def test_location(self):
         """
         Test that an added agent has a location.
