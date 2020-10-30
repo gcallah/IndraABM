@@ -104,57 +104,41 @@ def get_xy_from_str(coord_str):
 
 def exists_neighbor(agent, pred=None, exclude_self=True, size=1,
                     region_type=None, **kwargs):
-    pass
-    """
-    execution_key = get_exec_key(kwargs=kwargs)
-    return get_env(execution_key=execution_key) \
-        .exists_neighbor(agent,
-                         pred=pred,
-                         exclude_self=exclude_self,
-                         size=size,
-                         region_type=region_type)
-    """
+    from registry.agent_registry import get_env
+    return get_env().exists_neighbor(agent,
+                                     pred=pred,
+                                     exclude_self=exclude_self,
+                                     size=size,
+                                     region_type=region_type)
 
 
 def get_neighbor(agent, pred=None, exclude_self=True, size=1,
                  region_type=None, **kwargs):
-    pass
-    """
-    exec_key = get_exec_key(kwargs=kwargs)
-    return get_env(execution_key=exec_key) \
-        .get_neighbor(agent,
-                      pred=pred,
-                      exclude_self=exclude_self,
-                      size=size,
-                      region_type=region_type)
-    """
+    from registry.agent_registry import get_env
+    return get_env().get_neighbor(agent,
+                                  pred=pred,
+                                  exclude_self=exclude_self,
+                                  size=size,
+                                  region_type=region_type)
 
 
 def get_num_of_neighbors(agent, exclude_self=False, pred=None, size=1,
                          region_type=None, **kwargs):
-    pass
-    """
-    exec_key = get_exec_key(kwargs=kwargs)
-    return get_env(execution_key=exec_key) \
-        .get_num_of_neighbors(agent,
-                              exclude_self=True,
-                              pred=None,
-                              size=size,
-                              region_type=region_type)
-    """
+    from registry.agent_registry import get_env
+    return get_env().get_num_of_neighbors(agent,
+                                          exclude_self=True,
+                                          pred=None,
+                                          size=size,
+                                          region_type=region_type)
 
 
 def neighbor_ratio(agent, pred_one, pred_two=None, size=1, region_type=None,
                    **kwargs):
-    pass
-    """
-    execution_key = get_exec_key(kwargs=kwargs)
-    return get_env(execution_key=execution_key) \
-        .neighbor_ratio(agent, pred_one,
-                        pred_two=pred_two,
-                        size=size,
-                        region_type=region_type)
-    """
+    from registry.agent_registry import get_env
+    return get_env().neighbor_ratio(agent, pred_one,
+                                    pred_two=pred_two,
+                                    size=size,
+                                    region_type=region_type)
 
 
 def degrees_between(x_dif, y_dif):
@@ -232,9 +216,6 @@ class Space(Group):
                 self.rand_place_members(self.members)
             else:
                 self.consec_place_members(self.members)
-        if reg:
-            pass
-            # register(self.name, self, execution_key=self.execution_key)
 
     def restore(self, serial_obj):
         self.from_json(serial_obj)
@@ -493,7 +474,7 @@ class Space(Group):
         get_x_hood would return (-1, 0) and (1, 0).
         """
         if agent is not None:
-            x_hood = Group("x neighbors", execution_key=self.execution_key)
+            x_hood = Group("x neighbors")
             agent_x, agent_y, neighbor_x_coords \
                 = fill_neighbor_coords(agent,
                                        width,
@@ -516,7 +497,7 @@ class Space(Group):
         For example, if the agent is located at (0, 0),
         get_y_hood would return agents at (0, 2) and (0, 1).
         """
-        y_hood = Group("y neighbors", execution_key=self.execution_key)
+        y_hood = Group("y neighbors")
         agent_x, agent_y, neighbor_y_coords \
             = fill_neighbor_coords(agent,
                                    height,
@@ -551,8 +532,7 @@ class Space(Group):
                                 size=hood_size,
                                 agents_move=not save_neighbors)
         members = region.get_agents(exclude_self=not include_self, pred=pred)
-        return Group("Moore neighbors",
-                     members=members, execution_key=self.execution_key)
+        return Group("Moore neighbors", members=members)
 
     def get_square_hood(self, agent, pred=None, save_neighbors=False,
                         include_self=False, hood_size=1):
@@ -576,13 +556,14 @@ class Space(Group):
         We may get the groupX object itself, or we may get passed
         its name.
         """
+        from registry.agent_registry import get_agent
         hood = self.get_square_hood(agent, save_neighbors=save_neighbors,
                                     hood_size=hood_size)
         if isinstance(group, str):
             # lookup group by name
-            # group = get_group(group, self.execution_key)
-            # if group is None:
-            return None
+            group = get_agent(group)
+            if group is None:
+                return None
         for agent_name in hood:
             if group.ismember(agent_name):
                 return group[agent_name]
@@ -636,8 +617,7 @@ class Space(Group):
                                                     agent.get_y()),
                                 size=size,
                                 agents_move=not agent.get("save_neighbors",
-                                                          False),
-                                execution_key=self.execution_key)
+                                                          False))
         return region.exists_neighbor(exclude_self=exclude_self, pred=pred)
 
     def get_num_of_neighbors(self, agent, exclude_self=True, pred=None,
@@ -728,8 +708,6 @@ class Region():
         # alternate structure?
         # self.corners[NW] = nw
         self.name = gen_region_name(NW, NE, SW, SE, center, size)
-        # if (space is None):
-        #     space = get_env(self.execution_key)
         self.space = space
         if (center is not None and size is not None):
             self.NW = (center[X] - size, center[Y] + size)
@@ -900,8 +878,6 @@ class Region():
 class CircularRegion(Region):
     def __init__(self, space=None, center=None, radius=None, agents_move=True,
                  **kwargs):
-        # if (space is None):
-        #     space = get_env(execution_key=self.execution_key)
         self.space = space
         self.center = center
         self.radius = radius

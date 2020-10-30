@@ -217,16 +217,6 @@ class Agent(object):
         """
         return self.prim_group
 
-    @property
-    def env(self):
-        """
-        This is the env property.
-        We use `registry.get_env()` to return whatever
-        the registry has.
-        """
-        pass
-        # return get_env(execution_key=self.execution_key)
-
     def restore(self, serial_obj):
         self.from_json(serial_obj)
 
