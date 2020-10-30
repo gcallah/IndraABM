@@ -104,41 +104,45 @@ def get_xy_from_str(coord_str):
 
 def exists_neighbor(agent, pred=None, exclude_self=True, size=1,
                     region_type=None, **kwargs):
-    from registry.agent_registry import get_env
-    return get_env().exists_neighbor(agent,
-                                     pred=pred,
-                                     exclude_self=exclude_self,
-                                     size=size,
-                                     region_type=region_type)
+    from registry.registry import get_env, get_exec_env
+    env = get_env(get_exec_env(kwargs))
+    return env.exists_neighbor(agent,
+                               pred=pred,
+                               exclude_self=exclude_self,
+                               size=size,
+                               region_type=region_type)
 
 
 def get_neighbor(agent, pred=None, exclude_self=True, size=1,
                  region_type=None, **kwargs):
-    from registry.agent_registry import get_env
-    return get_env().get_neighbor(agent,
-                                  pred=pred,
-                                  exclude_self=exclude_self,
-                                  size=size,
-                                  region_type=region_type)
+    from registry.registry import get_env, get_exec_env
+    env = get_env(get_exec_env(kwargs))
+    return env.get_neighbor(agent,
+                            pred=pred,
+                            exclude_self=exclude_self,
+                            size=size,
+                            region_type=region_type)
 
 
 def get_num_of_neighbors(agent, exclude_self=False, pred=None, size=1,
                          region_type=None, **kwargs):
-    from registry.agent_registry import get_env
-    return get_env().get_num_of_neighbors(agent,
-                                          exclude_self=True,
-                                          pred=None,
-                                          size=size,
-                                          region_type=region_type)
+    from registry.registry import get_env, get_exec_env
+    env = get_env(get_exec_env(kwargs))
+    return env.get_num_of_neighbors(agent,
+                                    exclude_self=True,
+                                    pred=None,
+                                    size=size,
+                                    region_type=region_type)
 
 
 def neighbor_ratio(agent, pred_one, pred_two=None, size=1, region_type=None,
                    **kwargs):
-    from registry.agent_registry import get_env
-    return get_env().neighbor_ratio(agent, pred_one,
-                                    pred_two=pred_two,
-                                    size=size,
-                                    region_type=region_type)
+    from registry.registry import get_env, get_exec_env
+    env = get_env(get_exec_env(kwargs))
+    return env.neighbor_ratio(agent, pred_one,
+                              pred_two=pred_two,
+                              size=size,
+                              region_type=region_type)
 
 
 def degrees_between(x_dif, y_dif):
@@ -360,11 +364,11 @@ class Space(Group):
         If cell is empty return None.
         Always make location a str for serialization.
         """
-        from registry.agent_registry import get_agent
+        from registry.registry import get_agent
         if self.is_empty(x, y):
             return None
         agent_nm = self.locations[str((x, y))]
-        return get_agent(agent_nm)
+        return get_agent(agent_nm, self.exec_key)
 
     def place_member(self, mbr, max_move=None, xy=None):
         """
@@ -556,12 +560,12 @@ class Space(Group):
         We may get the groupX object itself, or we may get passed
         its name.
         """
-        from registry.agent_registry import get_agent
+        from registry.registry import get_agent
         hood = self.get_square_hood(agent, save_neighbors=save_neighbors,
                                     hood_size=hood_size)
         if isinstance(group, str):
             # lookup group by name
-            group = get_agent(group)
+            group = get_agent(group, self.exec_key)
             if group is None:
                 return None
         for agent_name in hood:
@@ -573,13 +577,13 @@ class Space(Group):
         """
         Get the agent' closest to agent on grid.
         """
-        from registry.agent_registry import get_agent
+        from registry.registry import get_agent
         closest = None
         min_distance_seen = MAX_WIDTH * MAX_HEIGHT
         for key, other_nm in self.locations.items():
             if DEBUG:
                 print("Checking ", other_nm, "for closeness")
-            other = get_agent(other_nm)
+            other = get_agent(other_nm, self.exec_key)
             if other is agent or other is None:
                 continue
             d = distance(agent, other)

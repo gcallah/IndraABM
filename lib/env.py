@@ -207,7 +207,7 @@ class Env(Space):
         """
         if CENSUS_FUNC in self.attrs:
             return self.attrs[CENSUS_FUNC](self,
-                                           execution_key=self.execution_key)
+                                           exec_key=self.exec_key)
         else:
             SEP_STR = "==================\n"
             census_str = ("\nTotal census for period "

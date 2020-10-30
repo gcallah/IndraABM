@@ -6,6 +6,7 @@ from unittest import TestCase, main, skip
 
 from lib.env import Env
 from lib.tests.test_agent import create_newton
+from lib.tests.test_agent import get_exec_key
 from lib.tests.test_env import GRP1, GRP2
 from lib.user import DEF_STEPS, get_menu_json
 from lib.user import TermUser
@@ -16,11 +17,13 @@ MSG = "Hello world"
 
 class UserTestCase(TestCase):
     def setUp(self):
-        self.env = Env("Test env")
-        self.user = TermUser("User")
-        self.test_user = TestUser("TestUser")
+        self.exec_key = get_exec_key()
+        self.env = Env("Test env", exec_key=self.exec_key)
+        self.user = TermUser("User", exec_key=self.exec_key)
+        self.test_user = TestUser("TestUser", exec_key=self.exec_key)
 
     def tearDown(self):
+        self.exec_key = None
         self.user = None
         self.test_user = None
 
@@ -35,16 +38,14 @@ class UserTestCase(TestCase):
     def test_run(self):
         # need special env for this one
         env = Env("Test env", members=[create_newton()])
-        user = TermUser("User")
-        acts = run(user, test_run=True)
+        acts = run(self.user, test_run=True)
         self.assertEqual(acts, DEF_STEPS)
 
     @skip("Models work but this test fails: problem is in the test!")
     def test_tcall(self):
         # need special env for this one
-        env = Env("Test env", members=[create_newton()])
-        user = TestUser("TestUser", env)
-        acts = run(user, test_run=True)
+        env = Env("Test env", members=[create_newton()], exec_key=self.exec_key)
+        acts = run(self.test_user, test_run=True)
         self.assertEqual(acts, DEF_STEPS)
 
     def test_task(self):

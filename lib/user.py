@@ -63,14 +63,13 @@ def leave(user, **kwargs):
 
 
 def scatter_plot(user, update=False):
-    from registry.agent_registry import get_env
+    from registry.registry import get_env
     exec_key = user.exec_key
     env = get_env(exec_key)
     if env is not None:
         return get_env(exec_key).scatter_graph()
     else:
         return None
-
 
 
 menu_functions = {

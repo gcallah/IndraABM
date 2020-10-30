@@ -21,6 +21,13 @@ STATE_TRANS = [
     [1.0, 0.0, 0.0, 0.0],
 ]
 
+exec_key = None
+
+def get_exec_key():
+    from registry.registry import create_exec_env
+    global exec_key
+    exec_key = create_exec_env()
+    return exec_key
 
 def newt_action(agent, **kwargs):
     print("I'm " + agent.name + " and I'm inventing modern mechanics!")
@@ -39,6 +46,7 @@ def create_leibniz():
     return Agent("Leibniz",
                  attrs={"place": 0.0, "time": LEIBBYEAR},
                  action=leib_action,
+                 exec_key=exec_key,
                  duration=20)
 
 
@@ -46,6 +54,7 @@ def create_other_leibniz():
     return Agent("Leibniz",
                  attrs={"place": 1.0, "time": LEIBBYEAR},
                  action=leib_action,
+                 exec_key=exec_key,
                  duration=20)
 
 
@@ -53,36 +62,48 @@ def create_newton():
     return Agent("Newton",
                  attrs={"place": 0.0, "time": 1658.0, "achieve": 43.9},
                  action=newt_action,
+                 exec_key=exec_key,
                  duration=30)
 
 
 def create_hardy():
     return Agent("Hardy",
                  attrs={ANM: AGE},
+                 exec_key=exec_key,
                  duration=10)
 
 
 def create_ramanujan():
-    return Agent("Ramanujan", duration=5, action=ram_action)
+    return Agent("Ramanujan",
+                 exec_key=exec_key,
+                 duration=5, action=ram_action)
 
 
 def create_littlewood():
     return Agent("Littlewood",
+                 exec_key=exec_key,
                  attrs={"friend": 141.0, "number": 1729.0})
 
 
 def create_ramsey():
     return Agent("Ramsey",
+                 exec_key=exec_key,
                  attrs={"friend": 282.9, "number": 3.14})
 
 
 class AgentTestCase(TestCase):
     def setUp(self):
+        """
+        All of the agent creators should ultimately take a passed
+        exec key.
+        """
+        self.exec_key = get_exec_key()
         self.leib = create_leibniz()
         self.newt = create_newton()
         self.hardy = create_hardy()
 
     def tearDown(self):
+        self.exec_key = None
         self.leib = None
         self.newt = None
         self.hardy = None

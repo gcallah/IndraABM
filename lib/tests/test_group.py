@@ -10,6 +10,7 @@ from lib.group import Group
 from lib.tests.test_agent import create_hardy, create_newton
 from lib.tests.test_agent import create_ramanujan, create_littlewood
 from lib.tests.test_agent import create_ramsey, create_leibniz
+from lib.tests.test_agent import exec_key, get_exec_key
 
 N = "Newton"
 R = "Ramanujan"
@@ -31,28 +32,26 @@ def max_duration(agent, duration):
     return agent.duration <= duration
 
 
-def create_calcguys(members=[create_newton(), create_leibniz()]):
-    return Group(CALC_GUYS, members=members)
+def create_calcguys(exec_key, members):
+    return Group(CALC_GUYS, members=members, exec_key=exec_key)
 
 
-def create_cambguys():
-    return Group("Cambridge guys", members=[create_hardy(),
-                                                create_ramanujan()])
+def create_cambguys(exec_key):
+    return Group("Cambridge guys",
+                 members=[create_hardy(), create_ramanujan()],
+                 exec_key=exec_key)
 
 
-def create_cambguys2():
+def create_cambguys2(exec_key):
     return Group("Other Cambridge guys",
-                     members=[create_littlewood(), create_ramsey()])
+                 members=[create_littlewood(), create_ramsey()],
+                 exec_key=exec_key)
 
 
-def create_mathgrp():
+def create_mathgrp(exec_key, members):
     return Group("Math groups",
-                     members=[create_calcguys(), create_cambguys()])
-
-
-def create_mathguys():
-    mathguys = create_calcguys() + create_cambguys()
-    return mathguys
+                 members=members,
+                 exec_key=exec_key)
 
 
 def create_mem_str(comp):
@@ -68,20 +67,21 @@ def print_mem_str(comp):
 
 class GroupTestCase(TestCase):
     def setUp(self):
+        self.exec_key = get_exec_key()
         self.hardy = create_hardy()
         self.newton = create_newton()
-        self.calc = create_calcguys(members=[self.newton, create_leibniz()])
-        self.camb = create_cambguys()
-        self.mathgrp = create_mathgrp()
-        self.mathguys = create_mathguys()
+        self.calc = create_calcguys(self.exec_key, members=[self.newton, create_leibniz()])
+        self.camb = create_cambguys(self.exec_key)
+        self.mathgrp = create_mathgrp(self.exec_key, members=[self.calc,
+                                                              self.camb])
 
     def tearDown(self):
+        self.exec_key = None
         self.hardy = None
         self.newton = None
         self.calc = None
         self.camb = None
         self.mathgrp = None
-        self.mathguys = None
 
     def test_ismember(self):
         self.assertTrue(self.calc.ismember(self.newton))
@@ -92,7 +92,7 @@ class GroupTestCase(TestCase):
 
     def test_str(self):
         name = "Ramanujan"
-        c = Group(name)
+        c = Group(name, exec_key=self.exec_key)
         self.assertEqual(name, str(c))
 
     def test_repr(self):
@@ -175,7 +175,7 @@ class GroupTestCase(TestCase):
     def test_rand_member(self):
         rand_guy = self.calc.rand_member()
         self.assertIsNotNone(rand_guy)
-        empty_set = Group("Empty")
+        empty_set = Group("Empty", exec_key=self.exec_key)
         rand_guy = empty_set.rand_member()
         self.assertIsNone(rand_guy)
 

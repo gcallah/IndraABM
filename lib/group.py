@@ -63,7 +63,8 @@ class Group(Agent):
                 for i in range(num_members):
                     join(self, mbr_creator(self.name, i,
                                            action=mbr_action,
-                                           **kwargs))
+                                           exec_key=self.exec_key))
+                    # skip passing kwargs for now: **kwargs))
 
     def restore(self, serial_obj):
         """
@@ -91,10 +92,10 @@ class Group(Agent):
             member = serial_obj["members"][nm]
             if member["type"] == "Agent":
                 self.members[nm] = Agent(name=nm, serial_obj=member,
-                                         execution_key=self.execution_key)
+                                         exec_key=self.exec_key)
             elif member["type"] == "Group":
                 self.members[nm] = Group(name=nm, serial_obj=member,
-                                         execution_key=self.execution_key)
+                                         exec_key=self.exec_key)
         mem_create_nm = serial_obj["mbr_creator"]
         """
         if mem_create_nm in mbr_creator_dict:

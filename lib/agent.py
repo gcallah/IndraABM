@@ -124,23 +124,23 @@ def split(agent1, agent2):
         return True
 
 
-def switch(agent_nm, grp1_nm, grp2_nm, exec_key=None):
+def switch(agent_nm, grp1_nm, grp2_nm, exec_key):
     """
     Move agent from grp1 to grp2.
     We first must recover agent objects from the registry.
     """
-    from registry.agent_registry import get_agent
-    agent = get_agent(agent_nm, exec_key=exec_key)
+    from registry.registry import get_agent
+    agent = get_agent(agent_nm, exec_key)
     if agent is None:
         if DEBUG:
             print("In switch; could not find agent: " + str(agent))
         return
-    grp1 = get_agent(grp1_nm, exec_key=exec_key)
+    grp1 = get_agent(grp1_nm, exec_key)
     if grp1 is None:
         if DEBUG:
             print("In switch; could not find from group: " + str(grp1))
         return
-    grp2 = get_agent(grp2_nm, exec_key=exec_key)
+    grp2 = get_agent(grp2_nm, exec_key)
     if grp2 is None:
         if DEBUG:
             print("In switch; could not find to group: " + str(grp2))
@@ -178,10 +178,9 @@ class Agent(object):
     and objects contained in an environment.
     """
     def __init__(self, name, attrs=None, action=None, duration=INF,
-                 prim_group=None, serial_obj=None, **kwargs):
-        from registry.agent_registry import reg_agent
-        if "execution_key" in kwargs:
-            self.exec_key = kwargs["execution_key"]
+                 prim_group=None, serial_obj=None, exec_key=None, **kwargs):
+        from registry.registry import reg_agent
+        self.exec_key = exec_key
         if serial_obj is not None:
             self.restore(serial_obj)
         else:  # or build it anew:
@@ -230,7 +229,7 @@ class Agent(object):
 
     def to_json(self):
         if self.action is not None:
-            indra_dir = os.getenv("INDRA_HOME", "/home/indrasnet/indras_net")
+            indra_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
             db_dir = os.path.join(indra_dir, 'registry', 'db')
             pickle_file = os.path.join(db_dir,
                                        '{}-{}.pkl'.format(self.exec_key,
@@ -245,7 +244,7 @@ class Agent(object):
                     "active": self.active,
                     "prim_group": self.prim_group,
                     "neighbors": None,
-                    "action": pickle_file
+                    "action": pickle_file,
                     }
         else:
             return {"name": self.name,
@@ -256,12 +255,14 @@ class Agent(object):
                     "active": self.active,
                     "prim_group": self.prim_group,
                     "neighbors": None,
+                    "action": None,
                     }
 
     def from_json(self, serial_agent):
-        pickle_file = serial_agent["action"]
-        with open(pickle_file, 'rb') as file:
-            action = pickle.load(file)
+        action = serial_agent["action"]
+        if action is not None:
+            with open(action, 'rb') as file:
+                action = action.load(file)
         self.action = action
         self.active = serial_agent["active"]
         self.attrs = serial_agent["attrs"]
@@ -280,7 +281,7 @@ class Agent(object):
 
     def primary_group(self):
         return self.prim_group
-        # return get_group(self.prim_group, execution_key=self.execution_key)
+        # return get_group(self.prim_group, exec_key=self.exec_key)
 
     def group_name(self):
         return self.prim_group
@@ -428,7 +429,7 @@ class Agent(object):
         Move this agent to a random pos within max_move
         of its current pos.
         """
-        from registry.agent_registry import get_env
+        from registry.registry import get_env
         env = get_env(self.exec_key)
         if (self.is_located() and env is not None
                 and not env.is_full()):

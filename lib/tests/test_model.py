@@ -15,11 +15,11 @@ MSG = "Hello world"
 
 class ModelTestCase(TestCase):
     def setUp(self):
-        self.agent = Agent("Test agent")
-        self.agent2 = Agent("Test agent 2")
-        self.blue_grp = Group(BLUE_GRP)
-        self.red_grp = Group(RED_GRP)
         self.model = Model(model_nm="Test model")
+        self.agent = Agent("Test agent", exec_key=self.model.exec_key)
+        self.agent2 = Agent("Test agent 2", exec_key=self.model.exec_key)
+        self.blue_grp = Group(BLUE_GRP, exec_key=self.model.exec_key)
+        self.red_grp = Group(RED_GRP, exec_key=self.model.exec_key)
 
     def tearDown(self):
         self.agent = None

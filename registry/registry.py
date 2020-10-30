@@ -46,13 +46,13 @@ def get_exec_key(**kwargs):
     return exec_key
 
 
-def get_env(exec_key=None, kwargs=None):
+def get_env(exec_key=None, **kwargs):
     """
     :param execution_key: execution to fetch with
     :return: Env object
     """
     if exec_key is None:
-        exec_key = get_exec_key(kwargs)
+        exec_key = get_exec_key(**kwargs)
     return get_agent(ENV_NM, exec_key)
 
 
@@ -71,25 +71,28 @@ def reg_agent(name, agent, exec_key):
     registry[exec_key][name] = agent
 
 
-def get_agent(name, exec_key=None, kwargs=None):
+def get_agent(name, exec_key=None, **kwargs):
     """
     Fetch an agent from the registry.
     Return: The agent object.
     """
     if exec_key is None:
-        exec_key = get_exec_key(kwargs)
+        exec_key = get_exec_key(**kwargs)
     if len(name) == 0:
         raise ValueError("Cannot fetch agent with empty name")
-    return registry[exec_key][name]
+    if name in registry[exec_key]:
+        return registry[exec_key][name]
+    else:
+        return None
 
 
-def del_agent(name, exec_key=None, kwargs=None):
+def del_agent(name, exec_key=None, **kwargs):
     """
     Delete an agent from the registry.
     Return: None
     """
     if exec_key is None:
-        exec_key = get_exec_key(kwargs)
+        exec_key = get_exec_key(**kwargs)
     del registry[exec_key][name]
 
 
@@ -235,7 +238,7 @@ class Registry(object):
 
     def create_exec_env(self, save_on_register=True):
         key = self.__get_unique_key()
-        print("Creating new registry with key-{}".format(key))
+        print("Creating new registry with key: {}".format(key))
         self.registries[key] = {}
         self.registries[key] = {'save_on_register': save_on_register}
         return key

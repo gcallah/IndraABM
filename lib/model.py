@@ -9,7 +9,7 @@ from lib.env import Env
 from lib.user import TestUser, TermUser, TERMINAL, TEST
 from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
-from registry import agent_registry
+from registry import registry
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
@@ -65,7 +65,7 @@ class Model():
     def __init__(self, model_nm="BaseModel", props=None,
                  grp_struct=DEF_GRP_STRUCT):
         self.name = model_nm
-        self.execution_key = agent_registry.create_new_registry()
+        self.exec_key = registry.create_exec_env()
         self.grp_struct = grp_struct
         self.props = init_props(self.name, props)
         self.user_type = os.getenv("user_type", TERMINAL)
@@ -76,26 +76,15 @@ class Model():
         self.switches = []  # for agents waiting to switch groups
         self.period = 0
 
-    """
-    This function abstracts registration of groups,
-    user, env and agents for a particular model.
-    Called after create_env(), create_user(), 
-    create_groups() has been completed.
-    Since we mostly register agents, this is empty.
-    """
-    def register(self):
-        pass
-
-
     def create_user(self):
         """
         This will create a user of the correct type.
         """
         if self.user_type == TERMINAL:
-            self.user = TermUser(model=self, execution_key=self.execution_key)
+            self.user = TermUser(model=self, exec_key=self.exec_key)
             self.user.tell("Welcome to Indra, " + str(self.user) + "!")
         elif self.user_type == TEST:
-            self.user = TestUser(model=self, execution_key=self.execution_key)
+            self.user = TestUser(model=self, exec_key=self.exec_key)
         return self.user
 
     def create_env(self):
@@ -104,8 +93,7 @@ class Model():
         but this one will already set the model name and add
         the groups.
         """
-        self.env = Env(self.name, members=self.groups,
-                       execution_key=self.execution_key)
+        self.env = Env(self.name, members=self.groups, exec_key=self.exec_key)
         return self.env
 
     def create_groups(self):
@@ -121,7 +109,7 @@ class Model():
                                      num_members=DEF_NUM_MEMBERS,
                                      mbr_creator=grp["mbr_creator"],
                                      mbr_action=grp["mbr_action"],
-                                     execution_key=self.execution_key))
+                                     exec_key=self.exec_key))
         return self.groups
 
     def run(self, periods=None):
@@ -215,7 +203,7 @@ class Model():
         """
         if self.switches is not None:
             for (agent_nm, from_grp_nm, to_grp_nm) in self.switches:
-                switch(agent_nm, from_grp_nm, to_grp_nm)
+                switch(agent_nm, from_grp_nm, to_grp_nm, self.exec_key)
                 self.num_switches += 1
             self.switches.clear()
         pass
