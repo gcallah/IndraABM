@@ -188,21 +188,21 @@ class SpaceTestCase(TestCase):
                                                         self.newton.pos[Y])
                                 == self.newton)
 
-    @skip("Test was failing randomly.")
+    # @skip("Test was failing randomly.")
     def test_move_location(self):
         """
         Can we move agent from one location to another?
         This test sometimes fails: we need to explore!
         """
-        for i in range(REP_RAND_TESTS):
-            # test with different random positions
-            print("Trying a new location: ", i, "th iteration")
-            print("Previous newton is at ", self.newton.get_x(), self.newton.get_y())
+        x, y = self.space.rand_x(), self.space.rand_y()
+        while self.space.is_occupied(x, y):
             x, y = self.space.rand_x(), self.space.rand_y()
-            print("new x, y = ", x, y)
-            self.space.move_location(x, y, self.newton.get_x(), self.newton.get_y())
-            print("Now newton is at ", self.newton.get_x(), self.newton.get_y())
-            self.assertTrue(self.space.locations[(x, y)] == self.newton)
+        self.space.move_location(x, y, self.newton.get_x(), self.newton.get_y())
+        print(self.space.locations)
+        new_loc = str((x, y))
+        print("Now at {} is {}".format(new_loc,
+                                       self.space.locations[new_loc]))
+        self.assertTrue(self.space.locations[new_loc] == self.newton.name)
 
     def test_remove_location(self):
         """

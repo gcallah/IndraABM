@@ -434,6 +434,12 @@ class Space(Group):
         """
         self.locations[str((x, y))] = member.name
 
+    def is_occupied(self, x, y):
+        """
+        See if (x, y) is occupied.
+        """
+        return str((x, y)) in self.locations
+
     def move_location(self, nx, ny, ox, oy, agent_name="NA"):
         """
         Move a member to a new position, if that position
