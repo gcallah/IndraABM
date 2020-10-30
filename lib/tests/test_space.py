@@ -316,7 +316,7 @@ class SpaceTestCase(TestCase):
         agent_ls.append(self.test_agent2)
         self.assertTrue(test_reg.get_agents() == agent_ls)
 
-    @skip("Waiting on registry to make this test work.")
+    # @skip("Waiting on registry to make this test work.")
     def test_get_num_of_agents(self):
         space = Space("test space")
         test_reg = Region(space=space, center=(3,3), size=3)
