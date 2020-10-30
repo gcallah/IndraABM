@@ -330,7 +330,6 @@ class SpaceTestCase(TestCase):
         self.assertIsNotNone(test_reg.space.get_agent_at(0,1))
         self.assertTrue(test_reg.exists_neighbor())
 
-    # @skip("Waiting on registry to make this test work.")
     def test_get_ratio(self):
         """
         Test ratio of agents passing certain predicates.
@@ -356,7 +355,7 @@ class SpaceTestCase(TestCase):
     Tests for composite region
     """
 
-    @skip("Waiting on registry to make this test work.")
+    # @skip("Waiting on registry to make this test work.")
     def test_composite_contains(self):
         space = Space("test space")
         test_reg1 = Region(space,(0,3),(3,3),(0,0),(3,0))
