@@ -445,10 +445,10 @@ class Space(Group):
         Move a member to a new position, if that position
         is not already occupied.
         """
-        old_loc = str((ox, oy))
-        new_loc = str((nx, ny))
-        if new_loc not in self.locations:
-            if old_loc not in self.locations:
+        if not self.is_occupied(nx, ny):
+            new_loc = str((nx, ny))
+            old_loc = str((ox, oy))
+            if not self.is_occupied(ox, oy):
                 # must replace with proper logging call:
                 print("Trying to move agent not in locations: "
                       + agent_name + " at " + old_loc)

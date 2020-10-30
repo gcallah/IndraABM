@@ -182,19 +182,17 @@ class SpaceTestCase(TestCase):
             # test with different random positions
             x, y = self.space.rand_x(), self.space.rand_y()
             if (x, y) not in self.space.locations:
-                # self.newton.set_pos(x, y)
                 self.space.add_location(x, y, self.newton)
                 self.assertTrue(self.space.get_agent_at(self.newton.pos[X],
                                                         self.newton.pos[Y])
                                 == self.newton)
 
-    # @skip("Test was failing randomly.")
     def test_move_location(self):
         """
         Can we move agent from one location to another?
-        This test sometimes fails: we need to explore!
         """
         x, y = self.space.rand_x(), self.space.rand_y()
+        # we must find unoccupied space!
         while self.space.is_occupied(x, y):
             x, y = self.space.rand_x(), self.space.rand_y()
         self.space.move_location(x, y, self.newton.get_x(), self.newton.get_y())
@@ -212,21 +210,24 @@ class SpaceTestCase(TestCase):
         self.space.remove_location((x, y))
         self.assertTrue((x, y) not in self.space.locations)
 
-    # @skip("Waiting on registry to make this test work.")
+    @skip("This should be in an integration test module, not here.")
     def test_move(self):
         """
         Test whether moving an agent stays within its max move.
+        This has to be moved, since it involves agent, space,
+        and env.
         """
         for i in range(REP_RAND_TESTS):
             # test with different max moves:
             max_move = (i // 2) + 1
             (old_x, old_y) = (self.newton.get_x(), self.newton.get_y())
             self.newton.move(max_move)
+            print(self.space.locations)
             (new_x, new_y) = (self.newton.get_x(), self.newton.get_y())
             self.assertTrue(abs(new_x - old_x) <= max_move)
             self.assertTrue(abs(new_y - old_y) <= max_move)
 
-    @skip("Waiting on registry to make this test work.")
+    # @skip("Waiting on registry to make this test work.")
     def test_is_empty(self):
         """
         Is cell empty?
