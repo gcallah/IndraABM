@@ -41,7 +41,6 @@ class SpaceTestCase(TestCase):
     def setUp(self):
         self.env = Env("test_env")
         (self.space, self.newton) = create_space()
-        self.teeny_space = create_teeny_space()
         self.test_agent = Agent("test agent")
         self.test_agent2 = Agent("test agent 2")
         self.test_agent3 = Agent("test agent 3")
@@ -88,10 +87,10 @@ class SpaceTestCase(TestCase):
         """
         See if the grid is full.
         """
+        teeny_space = create_teeny_space()
         self.assertFalse(self.space.is_full())
-        self.assertTrue(self.teeny_space.is_full())
+        self.assertTrue(teeny_space.is_full())
 
-    @skip("Waiting on registry to make this test work.")
     def test_rand_place_members(self):
         """
         Test rand_place_members() by making sure all agents have a pos
@@ -209,7 +208,6 @@ class SpaceTestCase(TestCase):
             print("Now newton is at ", self.newton.get_x(), self.newton.get_y())
             self.assertTrue(self.space.locations[(x, y)] == self.newton)
 
-    # @skip("Waiting on registry to make this test work.")
     def test_remove_location(self):
         """
         Test removing location from locations.
@@ -218,7 +216,7 @@ class SpaceTestCase(TestCase):
         self.space.remove_location((x, y))
         self.assertTrue((x, y) not in self.space.locations)
 
-    @skip("Waiting on registry to make this test work.")
+    # @skip("Waiting on registry to make this test work.")
     def test_move(self):
         """
         Test whether moving an agent stays within its max move.
