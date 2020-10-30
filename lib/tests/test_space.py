@@ -108,8 +108,6 @@ class SpaceTestCase(TestCase):
         for i in range(DEF_HEIGHT):
             spot = space.place_member(mbr=self.test_agent, xy=(i, i))
             if spot is not None:
-                # the print output will usually be captured by nose,
-                # but that can be turned off with --nocapture.
                 (x, y) = (self.test_agent.get_x(),
                           self.test_agent.get_y())
                 self.assertEqual((x, y), (i, i))
@@ -196,10 +194,7 @@ class SpaceTestCase(TestCase):
         while self.space.is_occupied(x, y):
             x, y = self.space.rand_x(), self.space.rand_y()
         self.space.move_location(x, y, self.newton.get_x(), self.newton.get_y())
-        print(self.space.locations)
         new_loc = str((x, y))
-        print("Now at {} is {}".format(new_loc,
-                                       self.space.locations[new_loc]))
         self.assertTrue(self.space.locations[new_loc] == self.newton.name)
 
     def test_remove_location(self):
@@ -303,7 +298,6 @@ class SpaceTestCase(TestCase):
         for region in test_reg.my_sub_regs:
             self.assertTrue(len(region.my_agents)==2)
 
-    # @skip("Waiting on registry to make this test work.")
     def test_get_agents(self):
         space = Space("test space")
         test_reg = Region(space=space, center=(3,3), size=3)
@@ -316,7 +310,6 @@ class SpaceTestCase(TestCase):
         agent_ls.append(self.test_agent2)
         self.assertTrue(test_reg.get_agents() == agent_ls)
 
-    # @skip("Waiting on registry to make this test work.")
     def test_get_num_of_agents(self):
         space = Space("test space")
         test_reg = Region(space=space, center=(3,3), size=3)
@@ -326,7 +319,7 @@ class SpaceTestCase(TestCase):
         space.place_member(mbr=self.test_agent2, xy=(9,9))
         self.assertTrue(test_reg.get_num_of_agents() == 1)
 
-    @skip("Waiting on registry to make this test work.")
+    # @skip("Waiting on registry to make this test work.")
     def test_exists_neighbor(self):
         space = Space("test space")
         test_reg = Region(space,(0,3),(3,3),(0,0),(3,0))
