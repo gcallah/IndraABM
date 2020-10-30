@@ -355,7 +355,6 @@ class SpaceTestCase(TestCase):
     Tests for composite region
     """
 
-    # @skip("Waiting on registry to make this test work.")
     def test_composite_contains(self):
         space = Space("test space")
         test_reg1 = Region(space,(0,3),(3,3),(0,0),(3,0))
@@ -366,8 +365,11 @@ class SpaceTestCase(TestCase):
         self.assertTrue(test_comp.contains((5,5)))
         self.assertFalse(test_comp.contains((9,13)))
 
-    @skip("Waiting on registry to make this test work.")
+    # @skip("Waiting on registry to make this test work.")
     def test_composite_get_agent(self):
+        """
+        Does this composite region contains this agent?
+        """
         space1 = Space("test space1")
         test_reg1 = Region(space=space1, center=(3,3), size=3)
         space1 += self.test_agent
@@ -384,7 +386,7 @@ class SpaceTestCase(TestCase):
         test_comp = CompositeRegion(test_set)
         self.assertTrue(len(test_comp.get_agents()) == 4)
 
-    @skip("Waiting on registry to make this test work.")
+    # @skip("Waiting on registry to make this test work.")
     def test_composite_exists_neighbor(self):
         space1 = Space("test space1")
         test_reg1 = Region(space=space1, center=(3,3), size=3)
