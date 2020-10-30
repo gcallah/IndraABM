@@ -16,43 +16,57 @@ run of a model*!
 """
 from lib.agent import Agent
 from lib.env import Env
+from registry.registry import registry
 
-env = None
 agent_reg = {}
 
 
-def get_env(exec_key=None):
-    """
-    Returns the unique agent that is of type `Env`.
-    """
-    return env
+def create_new_registry():
+    return registry.create_new_execution_registry()
 
 
-def reg_agent(name, agent, exec_key=None):
+def get_env(execution_key):
+    """
+    :param execution_key: execution to fetch with
+    :return: Env object
+    """
+    return get_agent('env', execution_key)
+
+
+def reg_agent(name, agent, execution_key):
     """
     Register an agent in the registry.
     Raises an exception if `agent` is not an `Agent`.
     Return: None
     """
-    global env
-    if not isinstance(agent, Agent):
+    if not isinstance(agent, Agent) or Agent is None:
         raise ValueError("Object being registered is not an agent.")
-    agent_reg[name] = agent
+    if execution_key is None:
+        raise ValueError("Cannot register agent without execution key")
+    if len(name) == 0:
+        raise ValueError("Cannot register agent with empty name")
     if isinstance(agent, Env):
-        env = agent
+        name = 'env'
+    registry[execution_key][name] = agent
 
 
-def get_agent(name, exec_key=None):
+def get_agent(name, execution_key):
     """
     Fetch an agent from the registry.
     Return: The agent object.
     """
-    return agent_reg[name]
+    if execution_key is None:
+        raise ValueError("Cannot fetch agent without execution key")
+    if len(name) == 0:
+        raise ValueError("Cannot fetch agent with empty name")
+    return registry[execution_key][name]
 
 
-def del_agent(name, exec_key=None):
+def del_agent(name, exec_key):
     """
     Delete an agent from the registry.
     Return: None
     """
-    del agent_reg[name]
+    if exec_key is None:
+        raise ValueError("Cannot delete agent without execution key")
+    del registry[exec_key][name]

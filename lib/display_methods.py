@@ -22,6 +22,10 @@ if user_type != API:
         import numpy as np
         import pandas as pd
         import seaborn as sns
+        import matplotlib
+        import sys
+        if sys.platform == "linux":
+            matplotlib.use('TKAgg')
         sns.set(style="darkgrid")
         plt.ion()
     except ImportError as e:

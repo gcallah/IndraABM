@@ -57,7 +57,10 @@ precache-manifest.*
 **/*.coverage
 
 registry/db/*.json
+*.pkl
 
 APIServer/APIServer.ini
 APIServer/APIServer.service
 APIServer/wsgi.py
+v2registry
+
