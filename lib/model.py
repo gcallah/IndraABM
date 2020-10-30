@@ -79,13 +79,13 @@ class Model():
     """
     This function abstracts registration of groups,
     user, env and agents for a particular model.
-    Called after create_env(), create_user(), 
+    Called after create_env(), create_user(),
     create_groups() has been completed.
     Since we mostly register agents, this is empty.
     """
+
     def register(self):
         pass
-
 
     def create_user(self):
         """

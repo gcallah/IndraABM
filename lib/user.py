@@ -72,7 +72,6 @@ def scatter_plot(user, update=False):
         return None
 
 
-
 menu_functions = {
     "run": run,
     "leave": leave,

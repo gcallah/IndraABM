@@ -5,7 +5,6 @@ from os import listdir
 from os.path import isfile, join
 import json
 import types
-from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
 
 from lib.agent import Agent
 
@@ -67,6 +66,7 @@ class Registry(object):
     contents of registry wont be written to disk until someone
     calls save_reg with this key.
     '''
+
     def __setitem__(self, key, value):
         self.registries[key] = value
         if self.registries[key]['save_on_register']:
@@ -76,6 +76,7 @@ class Registry(object):
     Always fetch the items from the file for now.
     There might be optimization's here later.
     '''
+
     def __getitem__(self, key):
         if key not in self:
             '''
@@ -94,6 +95,7 @@ class Registry(object):
     NOTE: This might be a potential use for generators to lazy load
     the dictionary from file.
     '''
+
     def __contains__(self, key):
         if key in self.registries.keys():
             return True
@@ -141,6 +143,7 @@ class Registry(object):
     '''
     restores the json object to python object
     '''
+
     def __json_to_object(self, serial_obj):
         restored_obj = dict()
         for obj_name in serial_obj:
@@ -167,6 +170,7 @@ class Registry(object):
     Need to delete the file as well.
     Need to check if the file wont be in use by any other thread.
     """
+
     def clear_registry(self, key):
         self.__does_key_exists(key)
         print("Clearing key - {} from registry".format(key))

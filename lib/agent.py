@@ -177,6 +177,7 @@ class Agent(object):
     This is the base class of all agents, environments,
     and objects contained in an environment.
     """
+
     def __init__(self, name, attrs=None, action=None, duration=INF,
                  prim_group=None, serial_obj=None, **kwargs):
         from registry.agent_registry import reg_agent
@@ -192,7 +193,6 @@ class Agent(object):
         if "execution_key" in kwargs:
             self.exec_key = kwargs["execution_key"]
             reg_agent(self.name, self, self.exec_key)
-
 
     def _construct_anew(self, name, attrs=None, action=None,
                         duration=INF, prim_group=None):
@@ -297,6 +297,7 @@ class Agent(object):
         """
         Should be used to decorate any function that uses pos[X] or pos[Y]
         """
+
         @wraps(fn)
         def wrapper(*args, **kwargs):
             # args[0] is self!
@@ -306,6 +307,7 @@ class Agent(object):
                       + fn.__name__)
                 return 0
             return fn(*args, **kwargs)
+
         return wrapper
 
     def set_pos(self, x, y):
