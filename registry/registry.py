@@ -53,7 +53,7 @@ class Registry(object):
     def __init__(self):
         print("Creating new registry")
         self.registries = dict()
-        indra_dir = os.getenv("INDRA_HOME", "/home/indrasnet/indras_net")
+        indra_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
         self.db_dir = os.path.join(indra_dir, 'registry', 'db')
         if not os.path.exists(self.db_dir):
             os.mkdir(self.db_dir)
