@@ -2,6 +2,7 @@ from lib.display_methods import RED, BLUE
 from lib.agent import DONT_MOVE
 from lib.model import Model, create_agent
 from lib.group import Group
+from lib.space import get_num_of_neighbors
 
 MODEL_NAME = "game_of_life"
 
@@ -44,6 +45,19 @@ def create_groups(self):
                            mbr_creator=grp["mbr_creator"],
                            mbr_action=grp["mbr_action"]))
     return self.groups
+
+
+def live_or_die(agent):
+    """
+    Apply the rules for live agents.
+    The agent passed in should be alive, meaning its color should be black.
+    """
+    num_live_neighbors = get_num_of_neighbors(exclude_self=True, pred=None,
+                                              size=1, region_type=None)
+    if (num_live_neighbors != 2 and num_live_neighbors != 3):
+        return BLUE
+    else:
+        return RED
 
 
 class GameOfLife(Model):
