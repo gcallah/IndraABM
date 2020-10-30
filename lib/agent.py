@@ -180,14 +180,19 @@ class Agent(object):
     def __init__(self, name, attrs=None, action=None, duration=INF,
                  prim_group=None, serial_obj=None, **kwargs):
         from registry.agent_registry import reg_agent
-        if "execution_key" in kwargs:
-            self.exec_key = kwargs["execution_key"]
         if serial_obj is not None:
             self.restore(serial_obj)
         else:  # or build it anew:
             self._construct_anew(name, attrs=attrs, action=action,
                                  duration=duration, prim_group=prim_group)
-        reg_agent(self.name, self, self.exec_key)
+        '''
+        register this agent if an execution_key is passed.
+        Otherwise someone will need to use agent_reg.reg_agent
+        '''
+        if "execution_key" in kwargs:
+            self.exec_key = kwargs["execution_key"]
+            reg_agent(self.name, self, self.exec_key)
+
 
     def _construct_anew(self, name, attrs=None, action=None,
                         duration=INF, prim_group=None):

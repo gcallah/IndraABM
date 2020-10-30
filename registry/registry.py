@@ -163,6 +163,10 @@ class Registry(object):
         self.registries[key] = {'save_on_register': save_on_register}
         return key
 
+    """
+    Need to delete the file as well.
+    Need to check if the file wont be in use by any other thread.
+    """
     def clear_registry(self, key):
         self.__does_key_exists(key)
         print("Clearing key - {} from registry".format(key))
