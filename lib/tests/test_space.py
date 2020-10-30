@@ -227,7 +227,6 @@ class SpaceTestCase(TestCase):
             self.assertTrue(abs(new_x - old_x) <= max_move)
             self.assertTrue(abs(new_y - old_y) <= max_move)
 
-    # @skip("Waiting on registry to make this test work.")
     def test_is_empty(self):
         """
         Is cell empty?
@@ -291,7 +290,7 @@ class SpaceTestCase(TestCase):
         self.assertTrue(test_reg.contains((2,2)))
         self.assertFalse(test_reg.contains((3,3)))
 
-    @skip("Waiting on registry to make this test work.")
+    # @skip("Waiting on registry to make this test work.")
     def test_sub_reg(self):
         space = Space("test space")
         test_reg = Region(space=space, center=(3,3), size=5)
