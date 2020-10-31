@@ -41,7 +41,6 @@ class ModelTestCase(TestCase):
         self.assertIn((self.agent.name, BLUE_GRP, RED_GRP),
                       self.model.switches)
 
-    @skip("Switching not working; but want to release current progress.")
     def test_handle_switches(self):
         """
         Does executing the pending switches work?
