@@ -29,16 +29,16 @@ class Group(Agent):
         members: a list of members, that will be turned
             into a dictionary
         mbr_creator: a function to create members
-        num_members: how many to create
+        num_mbrs: how many members to create
     """
 
     def __init__(self, name, attrs=None, members=None,
                  duration=INF, action=None, mbr_creator=None,
                  mbr_action=None,
-                 num_members=None, serial_obj=None,
+                 num_mbrs=None, serial_obj=None,
                  **kwargs):
 
-        self.num_members_ever = 0
+        self.num_mbrs_ever = 0
         self.members = OrderedDict()
 
         super().__init__(name, attrs=attrs, duration=duration,
@@ -52,15 +52,15 @@ class Group(Agent):
             if members is not None:
                 for member in members:
                     join(self, member)
-            if num_members is None:
-                num_members = 1  # A default if they forgot to pass this.
-            self.num_members_ever = num_members
+            if num_mbrs is None:
+                num_mbrs = 1  # A default if they forgot to pass this.
+            self.num_mbrs_ever = num_mbrs
             self.mbr_creator = mbr_creator
             self.mbr_action = mbr_action
             if mbr_creator is not None:
                 # If we have a member creator function, call it
-                # `num_members` times to create group members.
-                for i in range(num_members):
+                # `num_mbrs` times to create group members.
+                for i in range(num_mbrs):
                     join(self, mbr_creator(self.name, i,
                                            action=mbr_action,
                                            exec_key=self.exec_key))
@@ -77,7 +77,7 @@ class Group(Agent):
         Here we turn a group into a serialized object.
         """
         rep = super().to_json()
-        rep["num_members_ever"] = self.num_members_ever
+        rep["num_mbrs_ever"] = self.num_mbrs_ever
         rep["type"] = self.type
         rep["members"] = self.members
         rep["mbr_creator"] = get_func_name(self.mbr_creator)
@@ -86,7 +86,7 @@ class Group(Agent):
     def from_json(self, serial_obj):
         # from registry.run_dict import mbr_creator_dict
         super().from_json(serial_obj)
-        self.num_members_ever = serial_obj["num_members_ever"]
+        self.num_mbrs_ever = serial_obj["num_mbrs_ever"]
         # we loop through the members of this group
         for nm in serial_obj["members"]:
             member = serial_obj["members"][nm]

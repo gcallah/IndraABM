@@ -23,17 +23,19 @@ def basic_action(agent, **kwargs):
     return MOVE
 
 
-BASIC_GRP_STRUCT = {
-    "blue_group": {
+basic_grps = {
+    "blue_grp": {
         "mbr_creator": create_agent,
+        "grp_action": None,
         "mbr_action": basic_action,
-        "num_members": DEF_BLUE_MBRS,
+        "num_mbrs": DEF_BLUE_MBRS,
         "color": BLUE
     },
-    "red_group": {
+    "red_grp": {
         "mbr_creator": create_agent,
+        "grp_action": None,
         "mbr_action": basic_action,
-        "num_members": DEF_RED_MBRS,
+        "num_mbrs": DEF_RED_MBRS,
         "color": RED
     },
 }
@@ -45,16 +47,20 @@ class Basic(Model):
     some agents that move around, and allows us to test if
     the system as a whole is working.
     """
-    def __init__(self, name=MODEL_NAME):
-        super().__init__(name, grp_struct=BASIC_GRP_STRUCT)
-
-    def run(self):
-        print("My groups are:", self.groups)
-        return super().run()
+    def create_groups(self):
+        """
+        Must modify group struct from props.
+        """
+        self.grp_struct["blue_grp"]["num_mbrs"] = self.props.get("num_blue",
+                                                                 DEF_BLUE_MBRS)
+        print("num_blue = ", self.grp_struct["blue_grp"]["num_mbrs"])
+        self.grp_struct["red_grp"]["num_mbrs"] = self.props.get("num_red",
+                                                                DEF_BLUE_MBRS)
+        return super().create_groups()
 
 
 def main():
-    model = Basic()
+    model = Basic(MODEL_NAME, grp_struct=basic_grps)
     model.run()
     return 0
 

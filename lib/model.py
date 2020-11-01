@@ -37,14 +37,16 @@ def create_agent(name, i, action=None, **kwargs):
 DEF_GRP_STRUCT = {
     BLUE_GRP: {
         "mbr_creator": create_agent,
+        "grp_action": None,
         "mbr_action": def_action,
-        "num_members": DEF_NUM_MEMBERS,
+        "num_mbrs": DEF_NUM_MEMBERS,
         "color": BLUE
     },
     RED_GRP: {
         "mbr_creator": create_agent,
+        "grp_action": None,
         "mbr_action": def_action,
-        "num_members": DEF_NUM_MEMBERS,
+        "num_mbrs": DEF_NUM_MEMBERS,
         "color": RED
     },
 }
@@ -63,9 +65,19 @@ class Model():
     """
 
     def __init__(self, model_nm="BaseModel", props=None,
-                 grp_struct=DEF_GRP_STRUCT):
+                 grp_struct=DEF_GRP_STRUCT,
+                 serial_obj=None, exec_key=None):
+        if serial_obj is None:
+            self.create_anew(model_nm, props, grp_struct, exec_key)
+        else:
+            self.create_from_serial_obj(serial_obj)
+
+    def create_anew(self, model_nm, props, grp_struct, exec_key):
         self.name = model_nm
-        self.exec_key = registry.create_exec_env()
+        if exec_key is None:
+            self.exec_key = registry.create_exec_env()
+        else:
+            self.exec_key = exec_key
         self.grp_struct = grp_struct
         self.props = init_props(self.name, props)
         self.user_type = os.getenv("user_type", TERMINAL)
@@ -75,6 +87,30 @@ class Model():
         self.num_switches = 0
         self.switches = []  # for agents waiting to switch groups
         self.period = 0
+
+    def create_from_serial_obj(self, serial_obj):
+        """
+        Restore the model from its serialized version.
+        """
+        self.from_json(serial_obj)
+
+    def from_json(self, serial_obj):
+        """
+        This method restores a model from its JSON rep.
+        """
+        self.name = serial_obj["name"]
+        self.exec_key = serial_obj["exec_key"]
+        self.switches = serial_obj["switches"]
+
+    def to_json(self):
+        """
+        This method generates the JSON representation for this model.
+        """
+        rep = {}
+        rep["name"] = self.name
+        rep["exec_key"] = self.exec_key
+        rep["switches"] = self.switches
+        return rep
 
     def create_user(self):
         """
@@ -102,14 +138,15 @@ class Model():
         """
         self.groups = []
         grps = self.grp_struct
-        for grp_nm in self.grp_struct:
+        for grp_nm in grps:
             grp = grps[grp_nm]
             self.groups.append(Group(grp_nm,
                                      {"color": grp["color"]},
-                                     num_members=DEF_NUM_MEMBERS,
+                                     num_mbrs=grp["num_mbrs"],
                                      mbr_creator=grp["mbr_creator"],
                                      mbr_action=grp["mbr_action"],
                                      exec_key=self.exec_key))
+        print("In model, grps = ", self.groups)
         return self.groups
 
     def run(self, periods=None):
@@ -160,22 +197,6 @@ class Model():
         """
         return "In period {} there were {} actions".format(self.period,
                                                            acts)
-
-    def from_json(self, serial_obj):
-        """
-        This method restores a model from its JSON rep.
-        """
-        self.name = serial_obj["name"]
-        self.switches = serial_obj["switches"]
-
-    def to_json(self):
-        """
-        This method generates the JSON representation for this model.
-        """
-        rep = {}
-        rep["name"] = self.name
-        rep["switches"] = self.switches
-        return rep
 
     def pending_switches(self):
         """
