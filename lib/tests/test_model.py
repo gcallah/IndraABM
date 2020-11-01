@@ -4,22 +4,25 @@ This is the test suite for model.py.
 
 from unittest import TestCase, main, skip
 
-from lib.model import Model, def_action, BLUE_GRP, RED_GRP
+from lib.model import Model, def_action, DEF_GRP, BLUE_GRP, RED_GRP, DEF_GRP_STRUCT
+
 from lib.agent import Agent, DONT_MOVE
 from lib.env import Env
 from lib.group import Group
 from lib.user import User
+from registry.registry import get_agent
 
 MSG = "Hello world"
 
 
 class ModelTestCase(TestCase):
     def setUp(self):
-        self.model = Model(model_nm="Test model")
+        self.model = Model(model_nm="Test model", grp_struct=DEF_GRP_STRUCT)
+        self.exec_key = self.model.exec_key
         self.agent = Agent("Test agent", exec_key=self.model.exec_key)
         self.agent2 = Agent("Test agent 2", exec_key=self.model.exec_key)
-        self.blue_grp = Group(BLUE_GRP, exec_key=self.model.exec_key)
-        self.red_grp = Group(RED_GRP, exec_key=self.model.exec_key)
+        self.blue_grp = get_agent(BLUE_GRP, self.exec_key)
+        self.red_grp = get_agent(RED_GRP, self.exec_key)
 
     def tearDown(self):
         self.agent = None

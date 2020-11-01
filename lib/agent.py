@@ -234,7 +234,7 @@ class Agent(object):
             pickle_file = os.path.join(db_dir,
                                        '{}-{}.pkl'.format(self.exec_key,
                                                           self.name))
-            print("Picking to - {}".format(pickle_file))
+            print("Pickling to: {}".format(pickle_file))
             self.__pickle_func(pickle_file, self.action)
             return {"name": self.name,
                     "type": self.type,

@@ -34,7 +34,7 @@ class Group(Agent):
 
     def __init__(self, name, attrs=None, members=None,
                  duration=INF, action=None, mbr_creator=None,
-                 mbr_action=None,
+                 mbr_action=None, color=None,
                  num_mbrs=None, serial_obj=None,
                  **kwargs):
 
@@ -57,6 +57,7 @@ class Group(Agent):
             self.num_mbrs_ever = num_mbrs
             self.mbr_creator = mbr_creator
             self.mbr_action = mbr_action
+            self.color = color
             if mbr_creator is not None:
                 # If we have a member creator function, call it
                 # `num_mbrs` times to create group members.
@@ -79,6 +80,7 @@ class Group(Agent):
         rep = super().to_json()
         rep["num_mbrs_ever"] = self.num_mbrs_ever
         rep["type"] = self.type
+        rep["color"] = self.color
         rep["members"] = self.members
         rep["mbr_creator"] = get_func_name(self.mbr_creator)
         return rep
@@ -86,6 +88,7 @@ class Group(Agent):
     def from_json(self, serial_obj):
         # from registry.run_dict import mbr_creator_dict
         super().from_json(serial_obj)
+        self.color = serial_obj["color"]
         self.num_mbrs_ever = serial_obj["num_mbrs_ever"]
         # we loop through the members of this group
         for nm in serial_obj["members"]:
@@ -97,13 +100,6 @@ class Group(Agent):
                 self.members[nm] = Group(name=nm, serial_obj=member,
                                          exec_key=self.exec_key)
         mem_create_nm = serial_obj["mbr_creator"]
-        """
-        if mem_create_nm in mbr_creator_dict:
-            self.mbr_creator = mbr_creator_dict[mem_create_nm]
-        else:
-            # if it's not in the above dict, we don't need the func,
-            # we can just store its name:
-        """
         self.mbr_creator = mem_create_nm
 
     def __repr__(self):

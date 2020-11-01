@@ -16,12 +16,16 @@ PROPS_PATH = "./props"
 DEF_TIME = 10
 DEF_NUM_MEMBERS = 1
 
-BLUE_GRP = "blue_group"
-RED_GRP = "red_group"
-
 # the following are the standard names to use in props for grid dims:
 GRID_HEIGHT = "grid_height"
 GRID_WIDTH = "grid_width"
+
+NUM_MBRS = "num_mbrs"
+MBR_CREATOR = "mbr_creator"
+MBR_ACTION = "mbr_action"
+GRP_ACTION = "grp_action"
+NUM_MBRS_PROP = "num_mbrs_prop"
+COLOR = "color"
 
 
 def def_action(agent, **kwargs):
@@ -41,24 +45,37 @@ def create_agent(name, i, action=None, **kwargs):
 
 # The following is the template for how to specify a model's groups...
 # We may want to make this a class one day.
-DEF_GRP_STRUCT = {
-    BLUE_GRP: {
-        "mbr_creator": create_agent,
-        "grp_action": None,
-        "mbr_action": def_action,
-        "num_mbrs": DEF_NUM_MEMBERS,
-        "num_mbrs_prop": None,
-        "color": BLUE
-    },
-    RED_GRP: {
-        "mbr_creator": create_agent,
-        "grp_action": None,
-        "mbr_action": def_action,
-        "num_mbrs": DEF_NUM_MEMBERS,
-        "num_mbrs_prop": None,
-        "color": RED
-    },
+DEF_GRP = {
+    MBR_CREATOR: create_agent,
+    GRP_ACTION: None,
+    MBR_ACTION: def_action,
+    NUM_MBRS: DEF_NUM_MEMBERS,
+    NUM_MBRS_PROP: None,
+    COLOR: BLUE,
 }
+
+BLUE_GRP = DEF_GRP
+
+RED_GRP = {
+    MBR_CREATOR: create_agent,
+    GRP_ACTION: None,
+    MBR_ACTION: def_action,
+    NUM_MBRS: DEF_NUM_MEMBERS,
+    NUM_MBRS_PROP: None,
+    COLOR: RED,
+}
+
+DEF_GRP_STRUCT = {
+    "def_grp": DEF_GRP,
+    "red_grp": RED_GRP,
+}
+
+"""
+Let's have a function that fill in defaults if a model
+fails to specify any of the above group properties.
+"""
+def grp_val(grp, key):
+    return grp.get(key, DEF_GRP[key])
 
 
 class Model():
@@ -150,17 +167,20 @@ class Model():
     def create_groups(self):
         """
         Override this method in your model to create all of your groups.
+        In general, you shouldn't need to: fill in the grp_struct instead.
         """
         self.groups = []
         grps = self.grp_struct
         for grp_nm in grps:
             grp = grps[grp_nm]
-            num_mbrs = self.props.get(grp["num_mbrs_prop"], grp["num_mbrs"])
+            num_mbrs = self.props.get(grp[NUM_MBRS_PROP],
+                                      grp_val(grp, NUM_MBRS))
             self.groups.append(Group(grp_nm,
-                                     {"color": grp["color"]},
+                                     action=grp_val(grp, GRP_ACTION),
+                                     color=grp_val(grp, COLOR),
                                      num_mbrs=num_mbrs,
-                                     mbr_creator=grp["mbr_creator"],
-                                     mbr_action=grp["mbr_action"],
+                                     mbr_creator=grp_val(grp, MBR_CREATOR),
+                                     mbr_action=grp_val(grp, MBR_ACTION),
                                      exec_key=self.exec_key))
         print("In model, grps = ", self.groups)
         return self.groups

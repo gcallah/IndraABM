@@ -40,7 +40,7 @@ def create_exec_env():
 
 
 def get_exec_key(**kwargs):
-    exec_key = kwargs[EXEC_KEY]
+    exec_key = kwargs.get(EXEC_KEY, None)
     if exec_key is None:
         raise ValueError("Cannot find exec key:", exec_key)
     return exec_key
@@ -62,12 +62,16 @@ def reg_agent(name, agent, exec_key):
     Raises an exception if `agent` is not an `Agent`.
     Return: None
     """
-    if not isinstance(agent, Agent) or Agent is None:
+    if not isinstance(name, str):
+        raise ValueError("Key being registered is not a string.")
+    if not isinstance(agent, Agent):
         raise ValueError("Object being registered is not an agent.")
     if len(name) == 0:
         raise ValueError("Cannot register agent with empty name")
     if isinstance(agent, Env):
         name = ENV_NM
+    print("exec_key =", exec_key)
+    print("name =", name)
     registry[exec_key][name] = agent
 
 
