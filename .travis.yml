@@ -12,8 +12,10 @@ install:
     - pip install -r requirements/requirements-dev.txt
 
 env:
-    - INDRA_HOME=/home/travis/build/gcallah/IndraABM
-    - PYTHONPATH=$INDRA_HOME:$(pwd) props_dir=/home/travis/build/gcallah/IndraABM/APIServer/data/
+    global:
+        - INDRA_HOME=/home/travis/build/gcallah/IndraABM
+        - PYTHONPATH=$INDRA_HOME:$(pwd)
+        - props_dir=$INDRA_HOME/APIServer/data/
 
 script:
     - make tests
