@@ -4,7 +4,7 @@ This is the test suite for model.py.
 
 from unittest import TestCase, main, skip
 
-from lib.model import Model, def_action, DEF_GRP, BLUE_GRP, RED_GRP, DEF_GRP_STRUCT
+from lib.model import Model, def_action, DEF_GRP, BLUE_GRP_NM, RED_GRP_NM, DEF_GRP_STRUCT
 
 from lib.agent import Agent, DONT_MOVE
 from lib.env import Env
@@ -21,8 +21,8 @@ class ModelTestCase(TestCase):
         self.exec_key = self.model.exec_key
         self.agent = Agent("Test agent", exec_key=self.model.exec_key)
         self.agent2 = Agent("Test agent 2", exec_key=self.model.exec_key)
-        self.blue_grp = get_agent(BLUE_GRP, self.exec_key)
-        self.red_grp = get_agent(RED_GRP, self.exec_key)
+        self.blue_grp = get_agent(BLUE_GRP_NM, self.exec_key)
+        self.red_grp = get_agent(RED_GRP_NM, self.exec_key)
 
     def tearDown(self):
         self.agent = None
@@ -32,16 +32,16 @@ class ModelTestCase(TestCase):
         """
         Test getting count of pending switches.
         """
-        self.model.add_switch(self.agent.name, BLUE_GRP, RED_GRP)
-        self.model.add_switch(self.agent2.name, BLUE_GRP, RED_GRP)
+        self.model.add_switch(self.agent.name, BLUE_GRP_NM, RED_GRP_NM)
+        self.model.add_switch(self.agent2.name, BLUE_GRP_NM, RED_GRP_NM)
         self.assertEqual(self.model.pending_switches(), 2)
 
     def test_add_switch(self):
         """
         Test adding a group switch.
         """
-        self.model.add_switch(self.agent.name, BLUE_GRP, RED_GRP)
-        self.assertIn((self.agent.name, BLUE_GRP, RED_GRP),
+        self.model.add_switch(self.agent.name, BLUE_GRP_NM, RED_GRP_NM)
+        self.assertIn((self.agent.name, BLUE_GRP_NM, RED_GRP_NM),
                       self.model.switches)
 
     def test_handle_switches(self):
@@ -50,7 +50,7 @@ class ModelTestCase(TestCase):
         """
         self.red_grp += self.agent
         self.assertIn(self.agent.name, self.red_grp)
-        self.model.add_switch(self.agent.name, RED_GRP, BLUE_GRP)
+        self.model.add_switch(self.agent.name, RED_GRP_NM, BLUE_GRP_NM)
         self.model.handle_switches()
         self.assertNotIn(self.agent.name, self.red_grp)
         self.assertIn(self.agent.name, self.blue_grp)

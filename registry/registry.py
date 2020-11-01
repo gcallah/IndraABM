@@ -70,8 +70,6 @@ def reg_agent(name, agent, exec_key):
         raise ValueError("Cannot register agent with empty name")
     if isinstance(agent, Env):
         name = ENV_NM
-    print("exec_key =", exec_key)
-    print("name =", name)
     registry[exec_key][name] = agent
 
 
@@ -241,6 +239,9 @@ class Registry(object):
         return restored_obj
 
     def create_exec_env(self, save_on_register=True):
+        """
+        Create a new execution environment and return its key.
+        """
         key = self.__get_unique_key()
         print("Creating new registry with key: {}".format(key))
         self.registries[key] = {}
@@ -248,6 +249,9 @@ class Registry(object):
         return key
 
     def del_exec_env(self, key):
+        """
+        Remove an execution environment from the registry.
+        """
         self.__does_key_exists(key)
         print("Clearing exec env {} from registry".format(key))
         del self[key]

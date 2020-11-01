@@ -43,6 +43,10 @@ def create_agent(name, i, action=None, **kwargs):
     return Agent(name + str(i), action=action, **kwargs)
 
 
+DEF_GRP_NM = "def_grp"
+BLUE_GRP_NM = DEF_GRP_NM
+RED_GRP_NM = "red_grp"
+
 # The following is the template for how to specify a model's groups...
 # We may want to make this a class one day.
 DEF_GRP = {
@@ -66,15 +70,16 @@ RED_GRP = {
 }
 
 DEF_GRP_STRUCT = {
-    "def_grp": DEF_GRP,
-    "red_grp": RED_GRP,
+    DEF_GRP_NM: DEF_GRP,
+    RED_GRP_NM: RED_GRP,
 }
 
-"""
-Let's have a function that fill in defaults if a model
-fails to specify any of the above group properties.
-"""
+
 def grp_val(grp, key):
+    """
+    Let's have a function that fill in defaults if a model
+    fails to specify any of the above group properties.
+    """
     return grp.get(key, DEF_GRP[key])
 
 
