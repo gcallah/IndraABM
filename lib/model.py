@@ -6,6 +6,7 @@ from lib.utils import init_props
 from lib.agent import Agent, DONT_MOVE, switch
 from lib.group import Group
 from lib.env import Env
+from lib.space import DEF_WIDTH, DEF_HEIGHT
 from lib.user import TestUser, TermUser, TERMINAL, TEST
 from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
@@ -18,6 +19,10 @@ DEF_NUM_MEMBERS = 1
 BLUE_GRP = "blue_group"
 RED_GRP = "red_group"
 
+# the following are the standard names to use in props for grid dims:
+GRID_HEIGHT = "grid_height"
+GRID_WIDTH = "grid_width"
+
 
 def def_action(agent, **kwargs):
     """
@@ -29,17 +34,20 @@ def def_action(agent, **kwargs):
 
 def create_agent(name, i, action=None, **kwargs):
     """
-    Create an agent.
+    Create an agent that does almost nothing.
     """
     return Agent(name + str(i), action=action, **kwargs)
 
 
+# The following is the template for how to specify a model's groups...
+# We may want to make this a class one day.
 DEF_GRP_STRUCT = {
     BLUE_GRP: {
         "mbr_creator": create_agent,
         "grp_action": None,
         "mbr_action": def_action,
         "num_mbrs": DEF_NUM_MEMBERS,
+        "num_mbrs_prop": None,
         "color": BLUE
     },
     RED_GRP: {
@@ -47,6 +55,7 @@ DEF_GRP_STRUCT = {
         "grp_action": None,
         "mbr_action": def_action,
         "num_mbrs": DEF_NUM_MEMBERS,
+        "num_mbrs_prop": None,
         "color": RED
     },
 }
@@ -73,6 +82,9 @@ class Model():
             self.create_from_serial_obj(serial_obj)
 
     def create_anew(self, model_nm, props, grp_struct, exec_key):
+        """
+        Create the model for the first time.
+        """
         self.name = model_nm
         if exec_key is None:
             self.exec_key = registry.create_exec_env()
@@ -129,7 +141,10 @@ class Model():
         but this one will already set the model name and add
         the groups.
         """
-        self.env = Env(self.name, members=self.groups, exec_key=self.exec_key)
+        height = self.props.get(GRID_HEIGHT, DEF_HEIGHT)
+        width = self.props.get(GRID_WIDTH, DEF_WIDTH)
+        self.env = Env(self.name, members=self.groups, exec_key=self.exec_key,
+                       width=width, height=height)
         return self.env
 
     def create_groups(self):
@@ -140,9 +155,10 @@ class Model():
         grps = self.grp_struct
         for grp_nm in grps:
             grp = grps[grp_nm]
+            num_mbrs = self.props.get(grp["num_mbrs_prop"], grp["num_mbrs"])
             self.groups.append(Group(grp_nm,
                                      {"color": grp["color"]},
-                                     num_mbrs=grp["num_mbrs"],
+                                     num_mbrs=num_mbrs,
                                      mbr_creator=grp["mbr_creator"],
                                      mbr_action=grp["mbr_action"],
                                      exec_key=self.exec_key))

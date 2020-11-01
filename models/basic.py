@@ -29,6 +29,7 @@ basic_grps = {
         "grp_action": None,
         "mbr_action": basic_action,
         "num_mbrs": DEF_BLUE_MBRS,
+        "num_mbrs_prop": "num_blue",
         "color": BLUE
     },
     "red_grp": {
@@ -36,6 +37,7 @@ basic_grps = {
         "grp_action": None,
         "mbr_action": basic_action,
         "num_mbrs": DEF_RED_MBRS,
+        "num_mbrs_prop": "num_red",
         "color": RED
     },
 }
@@ -46,17 +48,8 @@ class Basic(Model):
     This class should just create a basic model that runs, has
     some agents that move around, and allows us to test if
     the system as a whole is working.
+    It turns out that so far, we don't really need to subclass anything!
     """
-    def create_groups(self):
-        """
-        Must modify group struct from props.
-        """
-        self.grp_struct["blue_grp"]["num_mbrs"] = self.props.get("num_blue",
-                                                                 DEF_BLUE_MBRS)
-        print("num_blue = ", self.grp_struct["blue_grp"]["num_mbrs"])
-        self.grp_struct["red_grp"]["num_mbrs"] = self.props.get("num_red",
-                                                                DEF_BLUE_MBRS)
-        return super().create_groups()
 
 
 def main():
