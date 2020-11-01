@@ -10,10 +10,10 @@ before_install:
 
 install:
     - pip install -r requirements/requirements-dev.txt
-    - cd webapp; npm install;
 
 env:
-    - PYTHONPATH=/home/travis/build/gcallah/indraABM:$(pwd) props_dir=/home/travis/build/gcallah/indraABM/APIServer/data/
+    - INDRA_HOME=/home/travis/build/gcallah/IndraABM
+    - PYTHONPATH=$INDRA_HOME:$(pwd) props_dir=/home/travis/build/gcallah/IndraABM/APIServer/data/
 
 script:
     - make tests
