@@ -183,9 +183,12 @@ class Registry(object):
             registry_files = [file for file in listdir(self.db_dir) if
                               isfile(join(self.db_dir, file))]
             for file in registry_files:
-                if int(file.split("-")[0]) == key:
-                    return True
-
+                try:
+                    if int(file.split("-")[0]) == key:
+                        return True
+                except ValueError:
+                    # ignore files that don't start with an int!
+                    pass
             return False
 
     def __delitem__(self, key):
