@@ -2,11 +2,24 @@ from lib.display_methods import RED, BLUE
 from lib.agent import DONT_MOVE
 from lib.model import Model, MBR_ACTION
 from lib.space import get_num_of_neighbors
+from registry.registry import get_agent
 
 MODEL_NAME = "game_of_life"
 
 DEF_NUM_ALIVE = 4
 DEF_NUM_DEAD = 4
+
+DEAD = "dead"
+ALIVE = "alive"
+
+
+def is_dead(agent):
+    return agent.prim_group == DEAD
+
+
+def game_of_life_action(biosphere, **kwargs):
+    dead_grp = get_agent(DEAD, biosphere.exec_key)
+    print("Dead grp is:", repr(dead_grp))
 
 
 def game_agent_action(agent, **kwargs):
@@ -18,21 +31,18 @@ def game_agent_action(agent, **kwargs):
 
 
 game_group_struct = {
-    "dead": {
+    DEAD: {
         "num_mbrs": DEF_NUM_DEAD,
         "num_mbrs_prop": "num_blue",
         "color": BLUE
     },
-    "alive": {
+    ALIVE: {
         MBR_ACTION: game_agent_action,
         "num_mbrs": DEF_NUM_ALIVE,
         "num_mbrs_prop": "num_red",
         "color": RED
     },
 }
-
-
-# def gameoflife_action(biosphere, **kwargs):
 
 
 def live_or_die(agent):
@@ -54,7 +64,8 @@ class GameOfLife(Model):
 
 
 def main():
-    model = GameOfLife(MODEL_NAME, grp_struct=game_group_struct)
+    model = GameOfLife(MODEL_NAME, grp_struct=game_group_struct,
+                       env_action=game_of_life_action)
     model.run()
     return 0
 
