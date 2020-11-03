@@ -21,17 +21,24 @@ def game_agent_action(agent, **kwargs):
 GAME_GROUP_STRUCT = {
     "dead": {
         "mbr_creator": create_agent,
+        "grp_action": None,
         "mbr_action": game_agent_action,
-        "num_members": DEF_NUM_DEAD,
+        "num_mbrs": DEF_NUM_DEAD,
+        "num_mbrs_prop": "num_blue",
         "color": BLUE
     },
     "alive": {
         "mbr_creator": create_agent,
+        "grp_action": None,
         "mbr_action": game_agent_action,
-        "num_members": DEF_NUM_ALIVE,
+        "num_mbrs": DEF_NUM_ALIVE,
+        "num_mbrs_prop": "num_red",
         "color": RED
     },
 }
+
+
+# def gameoflife_action(biosphere, **kwargs):
 
 
 def create_groups(self):
@@ -61,16 +68,13 @@ def live_or_die(agent):
 
 
 class GameOfLife(Model):
-    def __init__(self, name=MODEL_NAME):
-        super().__init__(name, grp_struct=GAME_GROUP_STRUCT)
-
     def run(self):
         print("My groups are:", self.groups)
         return super().run()
 
 
 def main():
-    model = GameOfLife()
+    model = GameOfLife(MODEL_NAME, grp_struct=GAME_GROUP_STRUCT)
     model.run()
     return 0
 
