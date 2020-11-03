@@ -1,7 +1,6 @@
 from lib.display_methods import RED, BLUE
 from lib.agent import DONT_MOVE
-from lib.model import Model, create_agent
-from lib.group import Group
+from lib.model import Model, MBR_ACTION
 from lib.space import get_num_of_neighbors
 
 MODEL_NAME = "game_of_life"
@@ -14,23 +13,18 @@ def game_agent_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    print("Agent {} is acting".format(agent.name))
+    print("GofL agent {} is acting".format(agent.name))
     return DONT_MOVE
 
 
-GAME_GROUP_STRUCT = {
+game_group_struct = {
     "dead": {
-        "mbr_creator": create_agent,
-        "grp_action": None,
-        "mbr_action": game_agent_action,
         "num_mbrs": DEF_NUM_DEAD,
         "num_mbrs_prop": "num_blue",
         "color": BLUE
     },
     "alive": {
-        "mbr_creator": create_agent,
-        "grp_action": None,
-        "mbr_action": game_agent_action,
+        MBR_ACTION: game_agent_action,
         "num_mbrs": DEF_NUM_ALIVE,
         "num_mbrs_prop": "num_red",
         "color": RED
@@ -39,19 +33,6 @@ GAME_GROUP_STRUCT = {
 
 
 # def gameoflife_action(biosphere, **kwargs):
-
-
-def create_groups(self):
-    self.groups = []
-    grps = self.grp_struct
-    for grp_nm in self.grp_struct:
-        grp = grps[grp_nm]
-        self.groups.append(Group(grp_nm,
-                           {"color": grp["color"]},
-                           num_members=DEF_NUM_ALIVE,
-                           mbr_creator=grp["mbr_creator"],
-                           mbr_action=grp["mbr_action"]))
-    return self.groups
 
 
 def live_or_die(agent):
@@ -69,12 +50,11 @@ def live_or_die(agent):
 
 class GameOfLife(Model):
     def run(self):
-        print("My groups are:", self.groups)
         return super().run()
 
 
 def main():
-    model = GameOfLife(MODEL_NAME, grp_struct=GAME_GROUP_STRUCT)
+    model = GameOfLife(MODEL_NAME, grp_struct=game_group_struct)
     model.run()
     return 0
 

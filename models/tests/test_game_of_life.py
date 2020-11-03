@@ -2,25 +2,24 @@
 This is the test suite for basic.py.
 """
 
-from unittest import TestCase, skip  # , main
+from unittest import TestCase, skip
 
-from models.basic import Basic, main, MODEL_NAME, basic_grps
+from models.game_of_life import GameOfLife, main, MODEL_NAME, game_group_struct
 
 
 class BasicTestCase(TestCase):
     def setUp(self):
-        self.basic = Basic(MODEL_NAME, grp_struct=basic_grps)
+        self.g_of_l = GameOfLife(MODEL_NAME, grp_struct=game_group_struct)
 
     def tearDown(self):
-        self.basic = None
+        self.g_of_l = None
 
     def test_run(self):
         """
         Does running the model work? (return of 0)
         """
-        self.assertEqual(0, self.basic.run())
+        self.assertEqual(0, self.g_of_l.run())
 
-    # @skip("Test mysteriously failing.")
     def test_main(self):
         """
         Does the main func of the model work? (return of 0)
