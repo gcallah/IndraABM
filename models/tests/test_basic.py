@@ -20,7 +20,6 @@ class BasicTestCase(TestCase):
         """
         self.assertEqual(0, self.basic.run())
 
-    # @skip("Test mysteriously failing.")
     def test_main(self):
         """
         Does the main func of the model work? (return of 0)

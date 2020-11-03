@@ -179,8 +179,9 @@ class Model():
         grps = self.grp_struct
         for grp_nm in grps:
             grp = grps[grp_nm]
-            num_mbrs = self.props.get(grp[NUM_MBRS_PROP],
-                                      grp_val(grp, NUM_MBRS))
+            num_mbrs = grp_val(grp, NUM_MBRS)
+            if NUM_MBRS_PROP in grp:
+                num_mbrs = self.props.get(grp[NUM_MBRS_PROP], num_mbrs)
             self.groups.append(Group(grp_nm,
                                      action=grp_val(grp, GRP_ACTION),
                                      color=grp_val(grp, COLOR),
