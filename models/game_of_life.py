@@ -39,14 +39,6 @@ GAME_GROUP_STRUCT = {
 }
 
 
-def gameoflife_action(biosphere, **kwargs):
-    #do we need get_group and get_env_attr
-    pass
-
-
-def game_agent_action(agent, **kwargs):
-
-
 def populate_board(patterns, pattern_num):
     agent_locs = patterns[pattern_num]
     grp = GAME_GROUP_STRUCT["dead"]

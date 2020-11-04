@@ -6,15 +6,22 @@ do nothing except move around randomly.
 """
 
 from lib.agent import MOVE
-from lib.display_methods import RED, BLUE
+from lib.display_methods import TOMATO, GREEN
+# from lib.display_methods import SPRINGGREEN, TOMATO, TREE, BLACK
 from lib.model import Model
 
-MODEL_NAME = "basic"
-DEF_RED_MBRS = 2
-DEF_BLUE_MBRS = 2
+MODEL_NAME = "forestfire"
+DEF_NUM_TREES = 10
+
+# tree group names
+HEALTHY = "Healthy"
+NEW_FIRE = "New Fire"
+ON_FIRE = "On Fire"
+BURNED_OUT = "Burned Out"
+NEW_GROWTH = "New Growth"
 
 
-def basic_action(agent, **kwargs):
+def tree_action(agent, **kwargs):
     """
     A simple default agent action.
     """
@@ -23,23 +30,21 @@ def basic_action(agent, **kwargs):
     return MOVE
 
 
-basic_grps = {
-    "blue_grp": {
-        "mbr_action": basic_action,
-        "num_mbrs": DEF_BLUE_MBRS,
-        "num_mbrs_prop": "num_blue",
-        "color": BLUE
+forest_grps = {
+    HEALTHY: {
+        "mbr_action": tree_action,
+        "num_mbrs": DEF_NUM_TREES,
+        "color": GREEN
     },
-    "red_grp": {
-        "mbr_action": basic_action,
-        "num_mbrs": DEF_RED_MBRS,
-        "num_mbrs_prop": "num_red",
-        "color": RED
+    NEW_FIRE: {
+        "mbr_action": tree_action,
+        "num_mbrs": 2,
+        "color": TOMATO
     },
 }
 
 
-class Basic(Model):
+class ForestFire(Model):
     """
     This class should just create a basic model that runs, has
     some agents that move around, and allows us to test if
@@ -49,7 +54,7 @@ class Basic(Model):
 
 
 def main():
-    model = Basic(MODEL_NAME, grp_struct=basic_grps)
+    model = ForestFire(MODEL_NAME, grp_struct=forest_grps)
     model.run()
     return 0
 

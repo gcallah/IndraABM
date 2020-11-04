@@ -97,13 +97,14 @@ class Model():
 
     def __init__(self, model_nm="BaseModel", props=None,
                  grp_struct=DEF_GRP_STRUCT,
+                 env_action=None,
                  serial_obj=None, exec_key=None):
         if serial_obj is None:
-            self.create_anew(model_nm, props, grp_struct, exec_key)
+            self.create_anew(model_nm, props, grp_struct, exec_key, env_action)
         else:
             self.create_from_serial_obj(serial_obj)
 
-    def create_anew(self, model_nm, props, grp_struct, exec_key):
+    def create_anew(self, model_nm, props, grp_struct, exec_key, env_action):
         """
         Create the model for the first time.
         """
@@ -117,7 +118,7 @@ class Model():
         self.user_type = os.getenv("user_type", TERMINAL)
         self.create_user()
         self.groups = self.create_groups()
-        self.env = self.create_env()
+        self.env = self.create_env(env_action=env_action)
         self.num_switches = 0
         self.switches = []  # for agents waiting to switch groups
         self.period = 0
@@ -157,7 +158,7 @@ class Model():
             self.user = TestUser(model=self, exec_key=self.exec_key)
         return self.user
 
-    def create_env(self):
+    def create_env(self, env_action=None):
         """
         Override this method to create a unique env...
         but this one will already set the model name and add
@@ -166,7 +167,7 @@ class Model():
         height = self.props.get(GRID_HEIGHT, DEF_HEIGHT)
         width = self.props.get(GRID_WIDTH, DEF_WIDTH)
         self.env = Env(self.name, members=self.groups, exec_key=self.exec_key,
-                       width=width, height=height)
+                       width=width, height=height, action=env_action)
         return self.env
 
     def create_groups(self):
@@ -178,8 +179,9 @@ class Model():
         grps = self.grp_struct
         for grp_nm in grps:
             grp = grps[grp_nm]
-            num_mbrs = self.props.get(grp[NUM_MBRS_PROP],
-                                      grp_val(grp, NUM_MBRS))
+            num_mbrs = grp_val(grp, NUM_MBRS)
+            if NUM_MBRS_PROP in grp:
+                num_mbrs = self.props.get(grp[NUM_MBRS_PROP], num_mbrs)
             self.groups.append(Group(grp_nm,
                                      action=grp_val(grp, GRP_ACTION),
                                      color=grp_val(grp, COLOR),
