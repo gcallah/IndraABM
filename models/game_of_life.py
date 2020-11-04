@@ -3,6 +3,7 @@ from lib.agent import DONT_MOVE
 from lib.model import Model, create_agent
 from lib.group import Group
 from lib.space import get_num_of_neighbors
+from registry.registry import get_env
 
 MODEL_NAME = "game_of_life"
 
@@ -38,7 +39,21 @@ GAME_GROUP_STRUCT = {
 }
 
 
-# def gameoflife_action(biosphere, **kwargs):
+def gameoflife_action(biosphere, **kwargs):
+    #do we need get_group and get_env_attr
+    pass
+
+
+def game_agent_action(agent, **kwargs):
+
+
+def populate_board(patterns, pattern_num):
+    agent_locs = patterns[pattern_num]
+    grp = GAME_GROUP_STRUCT["dead"]
+    for loc in agent_locs:
+        agent = create_agent(loc[x],loc[y],game_agent_action)
+        grp += agents_to_create
+        get_env().place_member(agent, xy=loc)
 
 
 def create_groups(self):
