@@ -124,7 +124,7 @@ def expects_plt(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         if not plt_present:
-            print("Matplotlib not detected.")
+            print("Graphics packages not found.")
             return
         return fn(*args, **kwargs)
     return wrapper
