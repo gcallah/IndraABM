@@ -124,7 +124,8 @@ def expects_plt(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         if not plt_present:
-            print("Matplotlib not detected.")
+            print("Graphics packages not found: install seaborn, pandas and "
+                  + "matplotlib to do graphics.")
             return
         return fn(*args, **kwargs)
     return wrapper
