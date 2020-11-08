@@ -1,37 +1,44 @@
 from lib.display_methods import RED, BLUE
 from lib.agent import DONT_MOVE
-from lib.model import Model, create_agent
-from lib.group import Group
+from lib.model import Model, create_agent, MBR_ACTION
 from lib.space import get_num_of_neighbors
-from registry.registry import get_env
+from registry.registry import get_agent
+from lib.agent import X, Y
 
 MODEL_NAME = "game_of_life"
 
 DEF_NUM_ALIVE = 4
 DEF_NUM_DEAD = 4
 
+DEAD = "dead"
+ALIVE = "alive"
+
+
+def is_dead(agent):
+    return agent.prim_group == DEAD
+
+
+def game_of_life_action(biosphere, **kwargs):
+    dead_grp = get_agent(DEAD, biosphere.exec_key)
+    print("Dead grp is:", repr(dead_grp))
+
 
 def game_agent_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    print("Agent {} is acting".format(agent.name))
+    print("GofL agent {} is acting".format(agent.name))
     return DONT_MOVE
 
 
-GAME_GROUP_STRUCT = {
+game_group_struct = {
     "dead": {
-        "mbr_creator": create_agent,
-        "grp_action": None,
-        "mbr_action": game_agent_action,
         "num_mbrs": DEF_NUM_DEAD,
         "num_mbrs_prop": "num_blue",
         "color": BLUE
     },
     "alive": {
-        "mbr_creator": create_agent,
-        "grp_action": None,
-        "mbr_action": game_agent_action,
+        MBR_ACTION: game_agent_action,
         "num_mbrs": DEF_NUM_ALIVE,
         "num_mbrs_prop": "num_red",
         "color": RED
@@ -41,24 +48,11 @@ GAME_GROUP_STRUCT = {
 
 def populate_board(patterns, pattern_num):
     agent_locs = patterns[pattern_num]
-    grp = GAME_GROUP_STRUCT["dead"]
+    grp = game_group_struct["dead"]
     for loc in agent_locs:
-        agent = create_agent(loc[x],loc[y],game_agent_action)
-        grp += agents_to_create
-        get_env().place_member(agent, xy=loc)
-
-
-def create_groups(self):
-    self.groups = []
-    grps = self.grp_struct
-    for grp_nm in self.grp_struct:
-        grp = grps[grp_nm]
-        self.groups.append(Group(grp_nm,
-                           {"color": grp["color"]},
-                           num_members=DEF_NUM_ALIVE,
-                           mbr_creator=grp["mbr_creator"],
-                           mbr_action=grp["mbr_action"]))
-    return self.groups
+        agent = create_agent(loc[X], loc[Y], game_agent_action)
+        grp += create_agent
+        get_agent().place_member(agent, xy=loc)
 
 
 def live_or_die(agent):
@@ -81,7 +75,7 @@ class GameOfLife(Model):
 
 
 def main():
-    model = GameOfLife(MODEL_NAME, grp_struct=GAME_GROUP_STRUCT)
+    model = GameOfLife(MODEL_NAME, grp_struct=game_group_struct)
     model.run()
     return 0
 
