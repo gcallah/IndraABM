@@ -1,8 +1,9 @@
 from lib.display_methods import RED, BLUE
 from lib.agent import DONT_MOVE
-from lib.model import Model, MBR_ACTION
+from lib.model import Model, create_agent, MBR_ACTION
 from lib.space import get_num_of_neighbors
 from registry.registry import get_agent
+from lib.agent import X, Y
 
 MODEL_NAME = "game_of_life"
 
@@ -31,18 +32,27 @@ def game_agent_action(agent, **kwargs):
 
 
 game_group_struct = {
-    DEAD: {
+    "dead": {
         "num_mbrs": DEF_NUM_DEAD,
         "num_mbrs_prop": "num_blue",
         "color": BLUE
     },
-    ALIVE: {
+    "alive": {
         MBR_ACTION: game_agent_action,
         "num_mbrs": DEF_NUM_ALIVE,
         "num_mbrs_prop": "num_red",
         "color": RED
     },
 }
+
+
+def populate_board(patterns, pattern_num):
+    agent_locs = patterns[pattern_num]
+    grp = game_group_struct["dead"]
+    for loc in agent_locs:
+        agent = create_agent(loc[X], loc[Y], game_agent_action)
+        grp += create_agent
+        get_agent().place_member(agent, xy=loc)
 
 
 def live_or_die(agent):
@@ -60,12 +70,12 @@ def live_or_die(agent):
 
 class GameOfLife(Model):
     def run(self):
+        print("My groups are:", self.groups)
         return super().run()
 
 
 def main():
-    model = GameOfLife(MODEL_NAME, grp_struct=game_group_struct,
-                       env_action=game_of_life_action)
+    model = GameOfLife(MODEL_NAME, grp_struct=game_group_struct)
     model.run()
     return 0
 
