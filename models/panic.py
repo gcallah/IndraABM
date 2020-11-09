@@ -4,7 +4,7 @@ A model to simulate the spread of fire in a forest.
 
 from lib.agent import DONT_MOVE
 from lib.group import Group
-# from lib.space import neighbor_ratio
+from lib.space import neighbor_ratio
 from lib.display_methods import RED, GREEN
 # from lib.env import Env
 from lib.model import Model, create_agent
@@ -23,8 +23,6 @@ DEF_NUM_CALM = int(.7 * DEF_NUM_PEOPLE)
 AGENT_PREFIX = "Agent"
 THRESHHOLD = 2
 
-# tree condition strings
-STATE = "state"
 CALM = "Clam"
 PANIC = "Panic"
 
@@ -38,27 +36,29 @@ def is_calm(agent, *args):
     """
     Checking whether the state is healthy or not
     """
-    return agent["state"] == CM
+    return agent.prim_group_nm == CALM
 
 
 def is_panicking(agent, *args):
     """
     Checking whether the state is on fire or not
     """
-    return agent["state"] == PN
+    return agent.prim_group_nm == PANIC
 
 
+# in order to use add_switch, we need to move this method inside model class,
+# but then we are not
+# going to be able to specify it in panic group structure
 def agent_action(agent, **kwargs):
     """
     This is what agents do each turn of the model.
     """
     # we need ration of panic neighbours to calm to be 1/2 in order for the
     # agent to start panicking
-    # ratio = neighbor_ratio(agent, pred_one=is_calm,
-    # pred_two=is_panicking)
+    ratio = neighbor_ratio(agent, pred_one=is_calm, pred_two=is_panicking)
     # hardcoding ratio value for now, until we manage to fix
     # neighbor_ratio method above
-    ratio = 3
+    # ratio = 3
     # print("The ratio is ", ratio)
     if ratio > THRESHHOLD:
         if DEBUG2:
@@ -66,7 +66,9 @@ def agent_action(agent, **kwargs):
         # print("Agent's state is being changed to Panic")
         agent["state"] = PN
         agent.has_acted = True
-        # model.add_switch(agent, CALM, PANIC) ?
+        # agent.switch(agent, CM, PN, agent.exec_key):
+        # making some other changes before this one
+        # add_switch(agent, CALM, PANIC) ? model switch
         # how do we access add_switch in model
     return DONT_MOVE
 
