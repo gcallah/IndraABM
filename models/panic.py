@@ -2,12 +2,12 @@
 A model to simulate the spread of fire in a forest.
 """
 
-from lib.agent import DONT_MOVE
+from lib.agent import DONT_MOVE, Agent
 from lib.group import Group
 from lib.space import neighbor_ratio
 from lib.display_methods import RED, GREEN
 # from lib.env import Env
-from lib.model import Model, create_agent
+from lib.model import Model
 from lib.utils import init_props
 # import random
 
@@ -34,16 +34,16 @@ PN = "1"
 
 def is_calm(agent, *args):
     """
-    Checking whether the state is healthy or not
+    Checking whether the agent is calm.
     """
-    return agent.prim_group_nm == CALM
+    return agent["state"] == CM
 
 
 def is_panicking(agent, *args):
     """
-    Checking whether the state is on fire or not
+    Checking whether the agent is panicking.
     """
-    return agent.prim_group_nm == PANIC
+    return agent["state"] == PN
 
 
 # in order to use add_switch, we need to move this method inside model class,
@@ -73,16 +73,21 @@ def agent_action(agent, **kwargs):
     return DONT_MOVE
 
 
+def create_pagent(name, i, action=None, state=CM, exec_key=None):
+    return Agent(name + str(i), attrs={"state": state},
+                 exec_key=exec_key, action=action)
+
+
 panic_grps = {
     "calm_group": {
-        "mbr_creator": create_agent,
+        "mbr_creator": create_pagent,
         "grp_action": None,
         "mbr_action": agent_action,
         "num_mbrs": DEF_NUM_CALM,
         "color": GREEN
     },
     "panic_group": {
-        "mbr_creator": create_agent,
+        "mbr_creator": create_pagent,
         "grp_action": None,
         "mbr_action": agent_action,
         "num_members": DEF_NUM_PANIC,
@@ -108,14 +113,14 @@ class Panic(Model):
                                  action=None,
                                  color=GREEN,
                                  num_mbrs=num_calm_agents,
-                                 mbr_creator=create_agent,
+                                 mbr_creator=create_pagent,
                                  mbr_action=agent_action,
                                  exec_key=self.exec_key))
         self.groups.append(Group("panic_group",
                                  action=None,
                                  color=RED,
                                  num_mbrs=num_panic_agents,
-                                 mbr_creator=create_agent,
+                                 mbr_creator=create_pagent,
                                  mbr_action=agent_action,
                                  exec_key=self.exec_key))
         return self.groups
