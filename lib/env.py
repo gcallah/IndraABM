@@ -146,18 +146,12 @@ class Env(Space):
     def from_json(self, serial_obj):
         super().from_json(serial_obj)
         self.pop_hist = PopHist(serial_pops=serial_obj["pop_hist"])
-        self.plot_title = serial_obj["plot_title"]
         self.name = serial_obj["name"]
-        self.womb = serial_obj["womb"]
-        self.num_members_ever = serial_obj["num_members_ever"]
 
     def to_json(self):
         rep = super().to_json()
         rep["type"] = self.type
-        rep["plot_title"] = self.plot_title
         rep["pop_hist"] = self.pop_hist.to_json()
-        rep["womb"] = self.womb
-        rep["num_members_ever"] = self.num_members_ever
         return rep
 
     def __repr__(self):

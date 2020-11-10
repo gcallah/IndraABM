@@ -136,6 +136,7 @@ class Model():
         self.name = serial_obj["name"]
         self.exec_key = serial_obj["exec_key"]
         self.switches = serial_obj["switches"]
+        self.env = Env(serial_obj=serial_obj["env"])
 
     def to_json(self):
         """
@@ -145,6 +146,7 @@ class Model():
         rep["name"] = self.name
         rep["exec_key"] = self.exec_key
         rep["switches"] = self.switches
+        rep["env"] = self.env.to_json()
         return rep
 
     def create_user(self):
