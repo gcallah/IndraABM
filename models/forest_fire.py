@@ -1,16 +1,13 @@
 
 """
-This is a minimal model that inherits from model.py
-and just sets up a couple of agents in two groups that
-do nothing except move around randomly.
+A model for how fires spread through a forest.
 """
 
-from lib.agent import MOVE
-from lib.display_methods import TOMATO, GREEN
-# from lib.display_methods import SPRINGGREEN, TOMATO, TREE, BLACK
+from lib.agent import DONT_MOVE
+from lib.display_methods import TOMATO, GREEN, RED, SPRINGGREEN, BLACK
 from lib.model import Model
 
-MODEL_NAME = "forestfire"
+MODEL_NAME = "forest_fire"
 DEF_NUM_TREES = 10
 
 # tree group names
@@ -25,33 +22,47 @@ def tree_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    print("Agent {} is located at {}".format(agent.name,
-                                             agent.get_pos()))
-    return MOVE
+    print("Agent {} is in the forest.".format(agent.name))
+    return DONT_MOVE
 
 
-forest_grps = {
+ff_grps = {
     HEALTHY: {
         "mbr_action": tree_action,
         "num_mbrs": DEF_NUM_TREES,
-        "color": GREEN
+        "color": GREEN,
     },
     NEW_FIRE: {
         "mbr_action": tree_action,
-        "num_mbrs": 2,
-        "color": TOMATO
+        "num_mbrs": 0,
+        "color": TOMATO,
+    },
+    ON_FIRE: {
+        "mbr_action": tree_action,
+        "num_mbrs": 0,
+        "color": RED,
+    },
+    BURNED_OUT: {
+        "mbr_action": tree_action,
+        "num_mbrs": 0,
+        "color": BLACK,
+    },
+    NEW_GROWTH: {
+        "mbr_action": tree_action,
+        "num_mbrs": 0,
+        "color": SPRINGGREEN,
     },
 }
 
 
 class ForestFire(Model):
     """
-    The class that embodies the forest fire model.
+    The forest fire model.
     """
 
 
 def main():
-    model = ForestFire(MODEL_NAME, grp_struct=forest_grps)
+    model = ForestFire(MODEL_NAME, grp_struct=ff_grps)
     model.run()
     return 0
 
