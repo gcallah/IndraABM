@@ -59,6 +59,13 @@ class ForestFire(Model):
     """
     The forest fire model.
     """
+    def handle_props(self, props):
+        super().handle_props(props)
+        height = self.props.get("grid_height")
+        width = self.props.get("grid_width")
+        density = self.props.get("density")
+        num_agents = int(height * width * density)
+        self.grp_struct[HEALTHY]["num_mbrs"] = num_agents
 
 
 def main():

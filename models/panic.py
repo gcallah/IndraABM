@@ -88,7 +88,7 @@ panic_grps = {
         "mbr_creator": create_pagent,
         "grp_action": None,
         "mbr_action": agent_action,
-        "num_members": DEF_NUM_PANIC,
+        "num_mbrs": DEF_NUM_PANIC,
         "color": RED
     },
 }
@@ -102,8 +102,8 @@ class Panic(Model):
         num_agents = grid_height * grid_width
         pct_panic = self.props.get("pct_panic") / 100
         pct_calm = 1 - pct_panic
-        self.grp_struct[CALM]["num_members"] = int(pct_calm * num_agents)
-        self.grp_struct[CALM]["num_members"] = int(pct_panic * num_agents)
+        self.grp_struct[CALM]["num_mbrs"] = int(pct_calm * num_agents)
+        self.grp_struct[CALM]["num_mbrs"] = int(pct_panic * num_agents)
 
 
 def main():
