@@ -46,10 +46,7 @@ forest_grps = {
 
 class ForestFire(Model):
     """
-    This class should just create a basic model that runs, has
-    some agents that move around, and allows us to test if
-    the system as a whole is working.
-    It turns out that so far, we don't really need to subclass anything!
+    The class that embodies the forest fire model.
     """
 
 
