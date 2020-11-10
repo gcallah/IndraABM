@@ -3,12 +3,10 @@ A model to simulate the spread of fire in a forest.
 """
 
 from lib.agent import DONT_MOVE, Agent
-from lib.group import Group
 from lib.space import neighbor_ratio
 from lib.display_methods import RED, GREEN
 # from lib.env import Env
 from lib.model import Model
-from lib.utils import init_props
 # import random
 
 MODEL_NAME = "panic"
@@ -23,7 +21,7 @@ DEF_NUM_CALM = int(.7 * DEF_NUM_PEOPLE)
 AGENT_PREFIX = "Agent"
 THRESHHOLD = 2
 
-CALM = "Clam"
+CALM = "Calm"
 PANIC = "Panic"
 
 # state numbers: create as strings for JSON,
@@ -79,14 +77,14 @@ def create_pagent(name, i, action=None, state=CM, exec_key=None):
 
 
 panic_grps = {
-    "calm_group": {
+    CALM: {
         "mbr_creator": create_pagent,
         "grp_action": None,
         "mbr_action": agent_action,
         "num_mbrs": DEF_NUM_CALM,
         "color": GREEN
     },
-    "panic_group": {
+    PANIC: {
         "mbr_creator": create_pagent,
         "grp_action": None,
         "mbr_action": agent_action,
@@ -97,33 +95,15 @@ panic_grps = {
 
 
 class Panic(Model):
-    # overriding create groups method of the Model class using number of groups
-    # calculated in the model.
-    def create_groups(self, props=None):
-        init_props(MODEL_NAME, props)
-        self.groups = []
+    def handle_props(self, props):
+        super().handle_props(props)
         grid_height = self.props.get("grid_height")
         grid_width = self.props.get("grid_width")
         num_agents = grid_height * grid_width
-        per_panic = self.props.get("per_panic")/100
-        perc_calm = 1 - per_panic
-        num_calm_agents = int(perc_calm * num_agents)
-        num_panic_agents = int(per_panic * num_agents)
-        self.groups.append(Group("calm_group",
-                                 action=None,
-                                 color=GREEN,
-                                 num_mbrs=num_calm_agents,
-                                 mbr_creator=create_pagent,
-                                 mbr_action=agent_action,
-                                 exec_key=self.exec_key))
-        self.groups.append(Group("panic_group",
-                                 action=None,
-                                 color=RED,
-                                 num_mbrs=num_panic_agents,
-                                 mbr_creator=create_pagent,
-                                 mbr_action=agent_action,
-                                 exec_key=self.exec_key))
-        return self.groups
+        pct_panic = self.props.get("pct_panic") / 100
+        pct_calm = 1 - pct_panic
+        self.grp_struct[CALM]["num_members"] = int(pct_calm * num_agents)
+        self.grp_struct[CALM]["num_members"] = int(pct_panic * num_agents)
 
 
 def main():

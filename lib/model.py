@@ -114,14 +114,18 @@ class Model():
         else:
             self.exec_key = exec_key
         self.grp_struct = grp_struct
-        self.props = init_props(self.name, props)
-        self.user_type = os.getenv("user_type", TERMINAL)
+        self.handle_props(props)
         self.create_user()
         self.groups = self.create_groups()
         self.env = self.create_env(env_action=env_action)
         self.num_switches = 0
         self.switches = []  # for agents waiting to switch groups
         self.period = 0
+
+    def handle_props(self, props):
+        self.props = init_props(self.name, props)
+        self.height = self.props.get(GRID_HEIGHT, DEF_HEIGHT)
+        self.width = self.props.get(GRID_WIDTH, DEF_WIDTH)
 
     def create_from_serial_obj(self, serial_obj):
         """
@@ -153,6 +157,7 @@ class Model():
         """
         This will create a user of the correct type.
         """
+        self.user_type = os.getenv("user_type", TERMINAL)
         if self.user_type == TERMINAL:
             self.user = TermUser(model=self, exec_key=self.exec_key)
             self.user.tell("Welcome to Indra, " + str(self.user) + "!")
@@ -166,10 +171,8 @@ class Model():
         but this one will already set the model name and add
         the groups.
         """
-        height = self.props.get(GRID_HEIGHT, DEF_HEIGHT)
-        width = self.props.get(GRID_WIDTH, DEF_WIDTH)
         self.env = Env(self.name, members=self.groups, exec_key=self.exec_key,
-                       width=width, height=height, action=env_action)
+                       width=self.width, height=self.height, action=env_action)
         return self.env
 
     def create_groups(self):
