@@ -3,7 +3,7 @@
 A model for how fires spread through a forest.
 """
 
-from lib.agent import DONT_MOVE
+from lib.agent import DONT_MOVE, Agent
 from lib.display_methods import TOMATO, GREEN, RED, SPRINGGREEN, BLACK
 from lib.model import Model
 
@@ -17,6 +17,28 @@ ON_FIRE = "On Fire"
 BURNED_OUT = "Burned Out"
 NEW_GROWTH = "New Growth"
 
+# state numbers: create as strings for JSON,
+# convert to int when we need 'em that way
+HE = "0"
+NF = "1"
+OF = "2"
+BO = "3"
+NG = "4"
+
+
+def is_healthy(agent, *args):
+    """
+    Checking whether the agent is healthy or not
+    """
+    return agent["state"] == HE
+
+
+def is_on_fire(agent, *args):
+    """
+    Checking whether the agent is on fire or not
+    """
+    return agent["state"] == OF
+
 
 def tree_action(agent, **kwargs):
     """
@@ -26,8 +48,14 @@ def tree_action(agent, **kwargs):
     return DONT_MOVE
 
 
+def plant_tree(name, i, action=tree_action, state=HE, exec_key=None):
+    return Agent(name + str(i), attrs={"state": state},
+                 exec_key=exec_key, action=action)
+
+
 ff_grps = {
     HEALTHY: {
+        "mbr_creator": plant_tree,
         "mbr_action": tree_action,
         "num_mbrs": DEF_NUM_TREES,
         "color": GREEN,
