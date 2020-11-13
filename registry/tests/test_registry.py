@@ -6,8 +6,9 @@ from unittest import TestCase, skip
 import os
 from lib.agent import Agent
 from lib.env import Env
+from lib.model import Model
 from registry.registry import registry, get_agent, reg_agent
-from registry.registry import get_env, del_agent
+from registry.registry import get_env, del_agent, reg_model, get_model
 
 TEST_VAL_STR = "test_val"
 TEST_VAL = 1
@@ -20,10 +21,18 @@ class RegisteryTestCase(TestCase):
         self.exec_key = registry.create_exec_env(save_on_register=True)
         self.already_cleared = False
         self.test_agent = Agent(TEST_AGENT_NM, exec_key=self.exec_key)
+        self.model = Model(exec_key=self.exec_key)
 
     def tearDown(self):
         if not self.already_cleared:
             registry.del_exec_env(self.exec_key)
+
+    def test_get_model(self):
+        """
+        Register a model and fetch it back.
+        """
+        reg_model(self.model, self.exec_key)
+        self.assertEquals(self.model, get_model(self.exec_key))
 
     def test_get_agent(self):
         """
