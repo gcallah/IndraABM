@@ -4,7 +4,9 @@ This is the test suite for panic.py.
 
 from unittest import TestCase, skip  # , main
 
-from models.panic import Panic, main, MODEL_NAME, panic_grps
+from lib.agent import DONT_MOVE
+
+from models.panic import Panic, main, MODEL_NAME, panic_grps, agent_action
 from models.panic import create_pagent, CM, PN, is_calm, is_panicking
 
 
@@ -29,6 +31,9 @@ class PanicTestCase(TestCase):
     def test_is_panicking(self):
         self.assertTrue(is_panicking(self.panic_agent))
         self.assertFalse(is_panicking(self.calm_agent))
+
+    def test_agent_action(self):
+        self.assertEqual(DONT_MOVE, agent_action(self.calm_agent))
 
     def test_run(self):
         """
