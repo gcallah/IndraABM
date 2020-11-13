@@ -113,6 +113,7 @@ class Model():
             self.exec_key = registry.create_exec_env()
         else:
             self.exec_key = exec_key
+        registry.reg_model(self, self.exec_key)
         self.grp_struct = grp_struct
         self.handle_props(props)
         self.create_user()

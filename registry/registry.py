@@ -21,7 +21,6 @@ from os import listdir
 from os.path import isfile, join
 import json
 import types
-# from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
 
 from lib.agent import Agent
 from lib.env import Env
@@ -31,6 +30,7 @@ BILLION = 10 ** 9
 EXEC_KEY = "exec_key"
 
 ENV_NM = 'env'
+MODEL_NM = 'model'
 
 registry = None
 
@@ -46,6 +46,10 @@ def get_exec_key(**kwargs):
     return exec_key
 
 
+def get_model(exec_key):
+    return get_agent(MODEL_NM, exec_key)
+
+
 def get_env(exec_key=None, **kwargs):
     """
     :param execution_key: execution to fetch with
@@ -54,6 +58,10 @@ def get_env(exec_key=None, **kwargs):
     if exec_key is None:
         exec_key = get_exec_key(**kwargs)
     return get_agent(ENV_NM, exec_key)
+
+
+def reg_model(model, exec_key):
+    registry[exec_key][MODEL_NM] = model
 
 
 def reg_agent(name, agent, exec_key):
