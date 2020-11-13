@@ -64,19 +64,19 @@ def leave(user, **kwargs):
 
 def scatter_plot(user, update=False):
     from registry.registry import get_env
-    exec_key = user.exec_key
-    env = get_env(exec_key)
-    if env is not None:
-        return get_env(exec_key).scatter_graph()
-    else:
-        return None
+    return get_env(user.exec_key).scatter_graph()
+
+
+def line_graph(user, update=False):
+    from registry.registry import get_env
+    return get_env(user.exec_key).line_graph()
 
 
 menu_functions = {
     "run": run,
     "leave": leave,
     "scatter_plot": scatter_plot,
-    # "line_graph": line_graph,
+    "line_graph": line_graph,
     # "bar_graph": bar_graph,
     # "debug": debug,
     # "logs": not_impl,
@@ -213,11 +213,9 @@ class TermUser(User):
         for item in self.menu:
             print(str(item["id"]) + ". ", item["question"])
         if self.show_line_graph:
-            pass
-            # line_graph(self, update=True)
+            line_graph(self, update=True)
         if self.show_scatter_plot:
-            pass
-            # scatter_plot(self, update=True)
+            scatter_plot(self, update=True)
         if self.show_bar_graph:
             pass
             # bar_graph(self, update=True)

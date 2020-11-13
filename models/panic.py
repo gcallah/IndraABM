@@ -1,13 +1,12 @@
 """
-A model to simulate the spread of fire in a forest.
+A model to simulate the spread of panic in a crowd.
 """
 
 from lib.agent import DONT_MOVE, Agent
 from lib.space import neighbor_ratio
 from lib.display_methods import RED, GREEN
-# from lib.env import Env
 from lib.model import Model
-# import random
+from registry.registry import get_model
 
 MODEL_NAME = "panic"
 DEBUG = False  # turns debugging code on or off
@@ -64,10 +63,7 @@ def agent_action(agent, **kwargs):
         # print("Agent's state is being changed to Panic")
         agent["state"] = PN
         agent.has_acted = True
-        # agent.switch(agent, CM, PN, agent.exec_key):
-        # making some other changes before this one
-        # add_switch(agent, CALM, PANIC) ? model switch
-        # how do we access add_switch in model
+        get_model(agent.exec_key).add_switch(agent, CALM, PANIC)
     return DONT_MOVE
 
 
