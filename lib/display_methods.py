@@ -55,27 +55,27 @@ WHITE = 'white'
 GRAY = 'gray'
 BLACK = 'black'
 
-colors = [PURPLE,
-          NAVY,
+colors = [RED,
           BLUE,
-          CYAN,
           GREEN,
+          NAVY,
           SPRINGGREEN,
+          ORANGE,
           LIMEGREEN,
           YELLOW,
+          CYAN,
           TAN,
-          ORANGE,
           ORANGERED,
           TOMATO,
-          RED,
           DARKRED,
           MAGENTA,
           BLACK,
           GRAY,
+          PURPLE,
           WHITE
           ]
 
-# the following strnage mapping is for matplotlib:
+# the following strange mapping is for seaborn:
 colors_dict = {"purple": PURPLE,
                "navy": NAVY,
                "blue": BLUE,

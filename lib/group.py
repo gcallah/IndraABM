@@ -311,9 +311,15 @@ class Group(Agent):
         return self.color is not None
 
     def get_color(self):
+        """
+        Return this group's display color.
+        """
         return self.color
 
     def get_marker(self):
+        """
+        Return this group's display marker.
+        """
         return self.attrs.get("marker", None)
 
     def get_members(self):

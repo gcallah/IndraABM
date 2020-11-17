@@ -283,11 +283,11 @@ class Env(Space):
         """
         if self.has_disp():
             try:
-                data = self.plot_data()
                 scatter_plot = disp.ScatterPlot(
-                    self.plot_title, data,
+                    self.plot_title,
+                    self.get_plot_data(),
                     int(self.width), int(self.height),
-                    anim=True, data_func=self.plot_data,
+                    anim=True, data_func=self.get_plot_data,
                     is_headless=self.headless(),
                     attrs=self.attrs)
                 scatter_plot.show()
@@ -354,9 +354,10 @@ class Env(Space):
                     period = len(data[var]["data"])
         return period, data
 
-    def plot_data(self):
+    def get_plot_data(self):
         """
         This is the data for our scatter plot.
+        We have to draw it out of groups into a format for our graphs.
         This code assumes the env holds groups, and the groups
         hold agents with positions.
         This assumption is dangerous, and we should address it.
@@ -367,24 +368,24 @@ class Env(Space):
             return
 
         data = {}
-        for variety in self.members:
-            data[variety] = {}
+        for group in self.members:
+            data[group] = {}
             # matplotlib wants a list of x coordinates, and a list of y
             # coordinates:
-            data[variety][X] = []
-            data[variety][Y] = []
-            data[variety]["color"] = self.members[variety].get_color()
-            data[variety]["marker"] = self.members[variety].get_marker()
-            current_variety = self.members[variety]
-            for agent_nm in current_variety:
+            data[group][X] = []
+            data[group][Y] = []
+            data[group]["color"] = self.members[group].get_color()
+            data[group]["marker"] = self.members[group].get_marker()
+            current_group = self.members[group]
+            for agent_nm in current_group:
                 # temp fix for one of the dangers mentioned above:
                 # we might not be at the level of agents!
-                if isinstance(current_variety[agent_nm], Agent):
-                    current_agent_pos = current_variety[agent_nm].pos
+                if isinstance(current_group[agent_nm], Agent):
+                    current_agent_pos = current_group[agent_nm].pos
                     if current_agent_pos is not None:
                         (x, y) = current_agent_pos
-                        data[variety][X].append(x)
-                        data[variety][Y].append(y)
+                        data[group][X].append(x)
+                        data[group][Y].append(y)
         return data
 
     def headless(self):
