@@ -308,10 +308,10 @@ class Group(Agent):
         pass
 
     def has_color(self):
-        return "color" in self.attrs
+        return self.color is not None
 
     def get_color(self):
-        return self.attrs.get("color", None)
+        return self.color
 
     def get_marker(self):
         return self.attrs.get("marker", None)

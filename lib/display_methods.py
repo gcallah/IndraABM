@@ -187,6 +187,7 @@ def draw_graph(graph, title, hierarchy=False, root=None):
 def get_color(var, i):
     if "color" in var:
         # Make sure it's a valid color
+        print("Checking to see if {} is in {}".format(var["color"], colors))
         if var["color"] in colors:
             return var["color"]
     return colors[i % NUM_COLORS]
@@ -393,9 +394,8 @@ class ScatterPlot():
                  anim=True, data_func=None, is_headless=False):
         """
         Setup a scatter plot.
-        varieties contains the different types of
-        entities to show in the plot, which
-        will get assigned different colors
+        `varieties` contains the different types of entities to show in the
+        plot, which will get assigned different colors and perhaps markers.
         """
         global anim_func
         DEF_SIZE = 40
@@ -417,7 +417,7 @@ class ScatterPlot():
         if attrs is not None and "size" in attrs:
             size = attrs["size"]
 
-        g = sns.scatterplot("x", "y", data=self.scats,
+        g = sns.scatterplot(x="x", y="y", data=self.scats,
                             hue="color", palette=colors_dict,
                             style="marker", markers=seaborn_markers,
                             s=size)
@@ -461,14 +461,6 @@ class ScatterPlot():
                 g.legend_.remove()
         ax.set_title(title)
 
-        # Why is this here commented out?
-        # if anim and not self.headless:
-        #     anim_func = animation.FuncAnimation(fig,
-        #                                         self.update_plot,
-        #                                         frames=1000,
-        #                                         interval=500,
-        #                                         blit=False)
-
     def get_arrays(self, varieties, var):
         x_array = np.array(varieties[var][X])
         y_array = np.array(varieties[var][Y])
@@ -478,6 +470,7 @@ class ScatterPlot():
     def create_scats(self, varieties):
         self.scats = pd.DataFrame(columns=["x", "y", "color", "marker", "var"])
         for i, var in enumerate(varieties):
+            print("Appending {} to legend".format(var))
             self.legend.append(var)
             (x_array, y_array) = self.get_arrays(varieties, var)
             if len(x_array) <= 0:  # no data to graph!
@@ -491,13 +484,12 @@ class ScatterPlot():
             elif len(x_array) != len(y_array):
                 logging.debug("Array length mismatch in scatter plot")
                 return
-            color = get_color(varieties[var], i)
             # marker = get_marker(varieties[var], i)
             # print("After call to get_marker(), marker =", marker)
             scat = pd.DataFrame({"x": pd.Series(x_array),
                                  "y": pd.Series(y_array),
-                                 "color": color,
-                                 # "marker": '^',
+                                 "color": get_color(varieties[var], i),
+                                 # "marker": marker,
                                  "var": var})
             self.scats = self.scats.append(scat, ignore_index=True,
                                            sort=False)
