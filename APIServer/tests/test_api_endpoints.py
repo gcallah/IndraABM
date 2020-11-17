@@ -41,7 +41,7 @@ class Test(TestCase):
         self.model_menu = ModelMenu(Resource)
         self.run = RunModel(Resource)
         self.models = load_models(indra_dir)
-        self.execution_key = self.props.get(13).get("execution_key").get("val")
+        # self.execution_key = self.props.get(13).get("execution_key").get("val")
 
     def test_load_models(self):
         """
@@ -102,16 +102,18 @@ class Test(TestCase):
             rv = self.props.put(model_id)
         self.assertEqual(type(rv), dict)
 
+    '''
     def test_get_ModelMenu(self):
         """
         Testing whether we are getting the menu.
         """
-        rv = self.model_menu.get(execution_id=self.execution_key)
-        test_menu_file = indra_dir + "/indra/menu.json"
+        rv = self.model_menu.get()
+        test_menu_file = indra_dir + "/lib/menu.json"
         with open(test_menu_file) as file:
             test_menu = json.loads(file.read())["menu_database"]
         self.assertEqual(rv, test_menu)
-
+    '''
+    
     def test_err_return(self):
         """
         Testing whether we are able to get the right error message

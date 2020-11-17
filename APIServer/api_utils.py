@@ -1,7 +1,9 @@
 import json
 
 from lib.agent import AgentEncoder
-from v2registry.execution_registry import CLI_EXEC_KEY
+
+# temporarily setting execution key to an arbitrary value 1
+CLI_EXEC_KEY = 1
 
 ERROR = "Error:"
 

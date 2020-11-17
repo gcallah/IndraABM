@@ -6,15 +6,14 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
 
-from APIServer.api_utils import err_return
+# from APIServer.api_utils import err_return
 from APIServer.model_creator_api import get_model_creator
 from APIServer.model_creator_api import put_model_creator
 from APIServer.models_api import get_models
 from APIServer.props_api import get_props_for_current_execution, put_props
-from APIServer.run_model_api import run_model_put
-from lib.user import APIUser
-from registry.execution_registry import execution_registry, \
-    EXEC_KEY, CLI_EXEC_KEY
+# from APIServer.run_model_api import run_model_put
+# from lib.user import APIUser
+from registry.registry import get_agent
 
 app = Flask(__name__)
 CORS(app)
@@ -28,7 +27,7 @@ indra_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
 We can remove this after all models have been ported to new execution
 registry system
 '''
-APIUser("Dennis", execution_key=CLI_EXEC_KEY)
+# APIUser("Dennis")
 
 
 @api.route('/test', endpoint="test",
@@ -76,6 +75,15 @@ create_model_spec = api.model("model_specification", {
 })
 
 
+@api.route('/model_class')
+class ModelClass(Resource):
+    def get(self):
+        """
+        Returns a Model from the Model class
+        """
+        return {'model': 'testModel'}
+
+
 @api.route('/model_creator')
 class ModelCreator(Resource):
     def get(self):
@@ -117,7 +125,7 @@ class Props(Resource):
 
         props = \
             get_props_for_current_execution(model_id, indra_dir)
-        APIUser("Dennis", execution_key=props[EXEC_KEY].get("val"))
+        # APIUser("Dennis")
         return props
 
     @api.expect(props)
@@ -136,8 +144,7 @@ class ModelMenu(Resource):
         """
         This returns the menu with which a model interacts with a user.
         """
-        user = execution_registry \
-            .get_registered_agent("Dennis", key=execution_id)
+        user = get_agent(execution_id)
         return user()
 
 
@@ -148,26 +155,31 @@ env = api.model("env", {
 
 @api.route('/models/run/<int:run_time>')
 class RunModel(Resource):
+    '''
     @api.expect(env)
     def put(self, run_time):
         """
         Put a model env to the server and run it `run_time` periods.
         """
-        return run_model_put(api.payload, run_time)
+        return  run_model_put(api.payload, run_time)
+    '''
 
 
 @api.route('/registry/clear/<int:execution_key>')
 class ClearRegistry(Resource):
 
+    '''
     def get(self, execution_key):
         print("Clearing registry for key - {}".format(execution_key))
         try:
-            execution_registry \
+            registry \
                 .clear_data_for_execution_key(execution_key)
         except KeyError:
             return err_return(
                 "Key - {} does not exist in registry".format(execution_key))
         return {'success': True}
+
+    '''
 
 
 if __name__ == "__main__":

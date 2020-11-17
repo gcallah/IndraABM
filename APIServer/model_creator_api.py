@@ -3,10 +3,10 @@
 from flask_restplus import fields
 
 from APIServer.api_utils import json_converter, ENDPOINT_DESCR
-from indra.agent import Agent
-from indra.composite import Composite
-from indra.env import Env
-from indra.space import in_hood
+from lib.agent import Agent
+# from lib.group import Group
+from lib.env import Env
+from lib.space import in_hood
 
 groups_arr = []
 agents_arr = []
@@ -40,8 +40,8 @@ class CreateGroups(fields.Raw):
                 agents_arr = self.addAgents(group["group_name"],
                                             group["num_of_agents"])
             # create the group
-            groups_arr.append(Composite(group["group_name"],
-                                        members=agents_arr, ))
+            # groups_arr.append(Composite(group["group_name"],
+            #                           members=agents_arr, ))
         return groups_arr
 
 

@@ -4,8 +4,8 @@ This module restores an env from json and runs it.
 from APIServer.api_utils import json_converter
 from registry.run_dict import env_attrs
 from registry.registry import log_err_and_tell_user
-from indra.env import Env
-from indra.user import user_log_notif
+from lib.env import Env
+from lib.user import user_log_notif
 from registry.execution_registry import EXEC_KEY
 
 
