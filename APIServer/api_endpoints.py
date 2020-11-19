@@ -7,8 +7,6 @@ from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
 
 # from APIServer.api_utils import err_return
-from APIServer.model_creator_api import get_model_creator
-from APIServer.model_creator_api import put_model_creator
 from APIServer.models_api import get_models
 from APIServer.props_api import get_props_for_current_execution, put_props
 # from APIServer.run_model_api import run_model_put
@@ -82,22 +80,6 @@ class ModelClass(Resource):
         Returns a Model from the Model class
         """
         return {'model': 'testModel'}
-
-
-@api.route('/model_creator')
-class ModelCreator(Resource):
-    def get(self):
-        """
-        Returns a description of the model creator interface.
-        """
-        return get_model_creator()
-
-    @api.expect(create_model_spec)
-    def put(self):
-        """
-        Put a model creation description to create a new model.
-        """
-        return put_model_creator(api.payload)
 
 
 @api.route('/models')
