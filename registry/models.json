@@ -11,7 +11,7 @@
             "source": "https://github.com/gcallah/indras_net/blob/master/models/basic.py"
         },
         {
-            "active": true,
+            "active": false,
             "doc": "A model of bacteria with toxin and nutrient levels. The bacteria avoid\nthe toxins and seek nutrients.",
             "graph": "scatter",
             "model ID": 1,
@@ -31,7 +31,7 @@
             "source": "https://github.com/gcallah/indras_net/blob/master/models/fmarket.py"
         },
         {
-            "active": true,
+            "active": false,
             "doc": "The interaction of trend setters and trend followers causes fashion cycling.",
             "graph": "line",
             "model ID": 3,
@@ -41,7 +41,7 @@
             "source": "https://github.com/gcallah/indras_net/blob/master/models/fashion.py"
         },
         {
-            "active": true,
+            "active": false,
             "doc": "Wolves eat sheep in a meadow and their populations' cycle.",
             "graph": "line",
             "model ID": 4,
@@ -51,7 +51,7 @@
             "source": "https://github.com/gcallah/indras_net/blob/master/models/wolfsheep.py"
         },
         {
-            "active": true,
+            "active": false,
             "doc": "Examine how fires spread in a forest.",
             "graph": "scatter",
             "model ID": 5,
@@ -61,6 +61,7 @@
             "source": "https://github.com/gcallah/indras_net/blob/master/models/forestfire.py"
         },
         {
+            "active": false,
             "doc": "Thomas Schelling's famous model of neighborhood segregation.",
             "graph": "scatter",
             "model ID": 6,
