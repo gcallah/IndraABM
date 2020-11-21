@@ -1,11 +1,11 @@
-
 """
 This is a minimal model that inherits from model.py
 and just sets up a couple of agents in two groups that
 do nothing except move around randomly.
 """
 
-from lib.agent import MOVE
+import random
+from lib.agent import MOVE, Agent
 from lib.display_methods import RED, BLUE
 from lib.model import Model
 
@@ -15,17 +15,35 @@ AT_BAR = "At bar"
 MODEL_NAME = "el_farol"
 DEF_AT_HOME = 2
 DEF_AT_BAR = 2
+DEF_MOTIV = 0.06
+MOTIV = "motivation"
+
+
+
+def get_decision(agent):
+    """
+    Decide whether to get wasted today or not
+    """
+    return random.random() <=agent[MOTIV]
 
 
 def drinker_action(agent, **kwargs):
     """
-    A simple default agent action.
+    To go or not to go, that is the question -Not Callahan
     """
     print("Alcoholic {} is located at {}".format(agent.name,
                                                  agent.get_pos()))
     return MOVE
 
+def create_drinker(name,i, exec_key):
+    """
+    create a possible alcoholic
+    """
+    #how do I get the exc key, do i need it?
 
+    return Agent(name + str(i), action =
+    drinker_action,attrsi = {MOTIVE:DEF_MOTIV},exec_key = exec_key)
+    
 el_farol_grps = {
     AT_HOME: {
         "mbr_action": drinker_action,
