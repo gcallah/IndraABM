@@ -73,15 +73,6 @@ create_model_spec = api.model("model_specification", {
 })
 
 
-@api.route('/model_class')
-class ModelClass(Resource):
-    def get(self):
-        """
-        Returns a Model from the Model class
-        """
-        return {'model': 'testModel'}
-
-
 @api.route('/models')
 class Models(Resource):
     def get(self):
