@@ -19,12 +19,11 @@ DEF_MOTIV = 0.06
 MOTIV = "motivation"
 
 
-
 def get_decision(agent):
     """
     Decide whether to get wasted today or not
     """
-    return random.random() <=agent[MOTIV]
+    return random.random() <= agent[MOTIV]
 
 
 def drinker_action(agent, **kwargs):
@@ -35,15 +34,22 @@ def drinker_action(agent, **kwargs):
                                                  agent.get_pos()))
     return MOVE
 
-def create_drinker(name,i, exec_key):
+
+def create_drinker(name, i, exec_key):
     """
     create a possible alcoholic
     """
-    #how do I get the exc key, do i need it?
+    # how do I get the exc key, do i need it?
+    # Once the model is being created, it gets a new execution key.
+    # For example, in test_el_farol we create in instance of a model, then
+    # we pass its exec_key once we use this function to create an agent.
+    # Also, I'm not sure if you need a separate function to create drinker,
+    # Model class handles group creation and it's not even being used now.
 
-    return Agent(name + str(i), action =
-    drinker_action,attrsi = {MOTIVE:DEF_MOTIV},exec_key = exec_key)
-    
+    return Agent(name + str(i), action=drinker_action,
+                 attrsi={MOTIV: DEF_MOTIV}, exec_key=exec_key)
+
+
 el_farol_grps = {
     AT_HOME: {
         "mbr_action": drinker_action,

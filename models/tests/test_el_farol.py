@@ -6,7 +6,8 @@ from unittest import TestCase, main,skip
 
 
 import models.el_farol as el_farol
-from models.el_farol import set_up, DRINKERS, NON_DRINKERS, MOTIV
+from models.el_farol import AT_BAR, AT_HOME, MOTIV, MODEL_NAME
+from models.el_farol import ElFarol, el_farol_grps, create_drinker
 
 def header(s):
     print("\n==================")
@@ -18,8 +19,9 @@ class ElFarolTestCase(TestCase):
     def setUp(self):
         header("Setting up")
         groups = []
+        self.ef = ElFarol(MODEL_NAME, grp_struct=el_farol_grps)
         #create an evirement for testing and get exect key
-        self.bob = el_farol.create_drinker("Bob", 0,self.exec_key)
+        self.bob = create_drinker("Bob", 0, exec_key = self.ef.exec_key)
 
     def tearDown(self):
         """
