@@ -1,17 +1,14 @@
 # Indra API server
 import logging
 import os
-
 from flask import Flask
 from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
-
-# from APIServer.api_utils import err_return
+from APIServer.api_utils import err_return
 from APIServer.models_api import get_models
 from APIServer.props_api import get_props_for_current_execution, put_props
-# from APIServer.run_model_api import run_model_put
-# from lib.user import APIUser
-from registry.registry import get_agent
+# from registry.registry import get_agent, del_exec_env
+from registry.registry import registry
 
 app = Flask(__name__)
 CORS(app)
@@ -141,18 +138,15 @@ class RunModel(Resource):
 @api.route('/registry/clear/<int:execution_key>')
 class ClearRegistry(Resource):
 
-    '''
+    
     def get(self, execution_key):
         print("Clearing registry for key - {}".format(execution_key))
         try:
-            registry \
-                .clear_data_for_execution_key(execution_key)
+            registry.del_exec_env(execution_key)
         except KeyError:
             return err_return(
                 "Key - {} does not exist in registry".format(execution_key))
         return {'success': True}
-
-    '''
 
 
 if __name__ == "__main__":
