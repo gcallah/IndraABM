@@ -5,7 +5,7 @@ do nothing except move around randomly.
 """
 
 import random
-from lib.agent import MOVE, Agent
+from lib.agent import MOVE  # , Agent 'not needed for now'
 from lib.display_methods import RED, BLUE
 from lib.model import Model
 
