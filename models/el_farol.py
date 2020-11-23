@@ -32,7 +32,6 @@ def drinker_action(agent, **kwargs):
     """
     print("Alcoholic {} is located at {}".format(agent.name,
                                                  agent.get_pos()))
-    
     return MOVE
 
 
@@ -55,7 +54,7 @@ class ElFarol(Model):
     The El Farol bar: a great place to be, unless everyone else goes there
     also!
     """
-    def handle_props(self,props):
+    def handle_props(self, props):
         super().handle_props(props)
         num_mbrs = self.props.get("population")
         # get total population and set  people at home and bar 50/50-ish
@@ -63,8 +62,6 @@ class ElFarol(Model):
         at_home = num_mbrs - at_bar
         self.grp_struct[AT_BAR]["num_mbrs"] = at_home
         self.grp_struct[AT_HOME]["num_mbrs"] = at_home
-        
-
 
 
 def main():
