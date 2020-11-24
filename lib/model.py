@@ -158,8 +158,7 @@ class Model():
 
     def create_user(self):
         """
-        This will create a user of the correct type. // elif + else exception value error  add api // make a factory object 
-        bad user type message hhandle not set comment + print 
+        This will create a user of the correct type.
         """
         self.user_type = os.getenv("user_type", TERMINAL)
         try:
@@ -169,7 +168,8 @@ class Model():
             elif self.user_type == TEST:
                 self.user = TestUser(model=self, exec_key=self.exec_key)
             elif self.user_type == API:
-                self.user = APIUser(model=self, name="API", exec_key=self.exec_key)
+                self.user = APIUser(model=self, name="API",
+                                    exec_key=self.exec_key)
             return self.user
         except ValueError:
             raise ValueError("User type was not specified.")
