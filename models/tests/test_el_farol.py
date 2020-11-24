@@ -8,6 +8,7 @@ from lib.agent import Agent,MOVE,DONT_MOVE
 import models.el_farol as el_farol
 from models.el_farol import AT_BAR, AT_HOME, MOTIV, MODEL_NAME
 from models.el_farol import ElFarol, el_farol_grps, drinker_action
+from models.el_farol import create_drinker
 
 def header(s):
     print("\n==================")
@@ -20,7 +21,7 @@ class ElFarolTestCase(TestCase):
         header("Setting up")
         #create an evirement for testing and get exect key
         self.ef = ElFarol(MODEL_NAME, grp_struct=el_farol_grps)
-        self.drinker = Agent(name = "drinker", exec_key = self.ef.exec_key)
+        self.drinker = create_drinker("drinker", 0, exec_key = self.ef.exec_key)
         
     def tearDown(self):
         """

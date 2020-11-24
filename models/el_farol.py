@@ -5,10 +5,10 @@ do nothing except move around randomly.
 """
 
 import random
-from lib.agent import MOVE  # , Agent not needed for now
+from lib.agent import MOVE, Agent
 from lib.display_methods import RED, BLUE
 from lib.model import Model
-
+from registry.registry import get_model
 AT_HOME = "At home"
 AT_BAR = "At bar"
 
@@ -29,19 +29,39 @@ def get_decision(agent):
 def drinker_action(agent, **kwargs):
     """
     To go or not to go, that is the question -Not Callahan
+    for the now the decision is made at random
     """
     print("Alcoholic {} is located at {}".format(agent.name,
                                                  agent.get_pos()))
+    curr_model = get_model(agent.exec_key)
+    if agent.group_name() == AT_HOME:
+        # decid to go to bar or not
+        if get_decision(agent):
+            # drinker has motivation to go to bar today, consider him gone
+            curr_model.add_switch(str(agent), AT_HOME, AT_BAR)
+    else:
+        # decide to leave bar or not
+        if not get_decision(agent):
+            # drinker has motivation to go toleave bar today, consider him gone
+            curr_model.add_switch(str(agent), AT_BAR, AT_HOME)
+
     return MOVE
+
+
+def create_drinker(name, i, exec_key=None, action=drinker_action):
+    return Agent(name + str(i), attrs={"motivation": DEF_MOTIV},
+                 action=action, exec_key=exec_key)
 
 
 el_farol_grps = {
     AT_HOME: {
+        "mbr_creator": create_drinker,
         "mbr_action": drinker_action,
         "num_mbrs": DEF_AT_HOME,
         "color": BLUE
     },
     AT_BAR: {
+        "mbr_creator": create_drinker,
         "mbr_action": drinker_action,
         "num_mbrs": DEF_AT_BAR,
         "color": RED
@@ -56,8 +76,8 @@ class ElFarol(Model):
     """
     def handle_props(self, props):
         super().handle_props(props)
-        num_mbrs = self.props.get("population")
         # get total population and set  people at home and bar 50/50-ish
+        num_mbrs = self.props.get("population")
         at_bar = num_mbrs//2
         at_home = num_mbrs - at_bar
         self.grp_struct[AT_BAR]["num_mbrs"] = at_home
