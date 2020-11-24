@@ -7,10 +7,12 @@ from lib.agent import Agent, DONT_MOVE, switch
 from lib.group import Group
 from lib.env import Env
 from lib.space import DEF_WIDTH, DEF_HEIGHT
-from lib.user import TestUser, TermUser, TERMINAL, TEST
+from lib.user import TestUser, TermUser, API, APIUser, TERMINAL, TEST
 from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
 from registry import registry
+
+DEBUG = False  # turns debugging code on or off
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
@@ -156,15 +158,21 @@ class Model():
 
     def create_user(self):
         """
-        This will create a user of the correct type.
+        This will create a user of the correct type. // elif + else exception value error  add api // make a factory object 
+        bad user type message hhandle not set comment + print 
         """
         self.user_type = os.getenv("user_type", TERMINAL)
-        if self.user_type == TERMINAL:
-            self.user = TermUser(model=self, exec_key=self.exec_key)
-            self.user.tell("Welcome to Indra, " + str(self.user) + "!")
-        elif self.user_type == TEST:
-            self.user = TestUser(model=self, exec_key=self.exec_key)
-        return self.user
+        try:
+            if self.user_type == TERMINAL:
+                self.user = TermUser(model=self, exec_key=self.exec_key)
+                self.user.tell("Welcome to Indra, " + str(self.user) + "!")
+            elif self.user_type == TEST:
+                self.user = TestUser(model=self, exec_key=self.exec_key)
+            elif self.user_type == API:
+                self.user = APIUser(model=self, name="API", exec_key=self.exec_key)
+            return self.user
+        except ValueError:
+            raise ValueError("User type was not specified.")
 
     def create_env(self, env_action=None):
         """
@@ -195,7 +203,8 @@ class Model():
                                      mbr_creator=grp_val(grp, MBR_CREATOR),
                                      mbr_action=grp_val(grp, MBR_ACTION),
                                      exec_key=self.exec_key))
-        print("In model, grps = ", self.groups)
+        if DEBUG:
+            print("In model, grps = ", self.groups)
         return self.groups
 
     def run(self, periods=None):
@@ -228,10 +237,12 @@ class Model():
             self.period += 1
 
             # now we call upon the env to act:
-            print("From model, calling env to act.")
+            if DEBUG:
+                print("From model, calling env to act.")
             (num_acts, num_moves) = self.env()
             census_rpt = self.rpt_census(num_acts, num_moves)
-            print(census_rpt)
+            if DEBUG:
+                print(census_rpt)
             self.user.tell(census_rpt)
             # these things need to be done before action loop:
             self.handle_switches()

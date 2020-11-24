@@ -14,7 +14,7 @@ import numpy as np
 
 from lib.utils import get_func_name
 
-DEBUG = True  # turns debugging code on or off
+DEBUG = False  # turns debugging code on or off
 DEBUG2 = False  # turns deeper debugging code on or off
 
 # x and y indices
