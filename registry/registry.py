@@ -78,6 +78,8 @@ def reg_agent(name, agent, exec_key):
         raise ValueError("Cannot register agent with empty name")
     if isinstance(agent, Env):
         name = ENV_NM
+    if exec_key is None:
+        raise ValueError("Cannot register agent against a None Key")
     registry[exec_key][name] = agent
 
 
@@ -128,6 +130,7 @@ class AgentEncoder(json.JSONEncoder):
     The JSON encoder base class for all descendants
     of Agent.
     """
+
     def default(self, o):
         if hasattr(o, 'to_json'):
             return o.to_json()
@@ -157,6 +160,7 @@ class Registry(object):
     contents of registry wont be written to disk until someone
     calls save_reg with this key.
     '''
+
     def __setitem__(self, key, value):
         self.registries[key] = value
         if self.registries[key]['save_on_register']:
@@ -166,6 +170,7 @@ class Registry(object):
     Always fetch the items from the file for now.
     There might be optimizations here later.
     '''
+
     def __getitem__(self, key):
         if key not in self:
             '''
@@ -184,6 +189,7 @@ class Registry(object):
     NOTE: This might be a potential use for generators to lazy load
     the dictionary from file.
     '''
+
     def __contains__(self, key):
         if key in self.registries.keys():
             return True
@@ -229,12 +235,13 @@ class Registry(object):
         with open(file_path, 'r') as file:
             registry_as_str = file.read()
 
-        return self.__json_to_object(json.loads(registry_as_str))
+        return self.__json_to_object(json.loads(registry_as_str), key)
 
     '''
     restores the json object to python object
     '''
-    def __json_to_object(self, serial_obj):
+
+    def __json_to_object(self, serial_obj, exec_key):
         restored_obj = dict()
         for obj_name in serial_obj:
             should_restore_object = isinstance(serial_obj[obj_name],
@@ -244,7 +251,8 @@ class Registry(object):
                 if serial_obj[obj_name]["type"] == "Agent":
                     restored_obj[obj_name] = Agent(name=obj_name,
                                                    serial_obj=serial_obj[
-                                                       obj_name])
+                                                       obj_name],
+                                                   exec_key=exec_key)
             else:
                 restored_obj[obj_name] = serial_obj[obj_name]
         return restored_obj
@@ -257,6 +265,8 @@ class Registry(object):
         print("Creating new registry with key: {}".format(key))
         self.registries[key] = {}
         self.registries[key] = {'save_on_register': save_on_register}
+        # stores the file paths of pickled functions
+        self.registries[key]['functions']: {str: str} = {}
         return key
 
     def del_exec_env(self, key):

@@ -11,6 +11,7 @@ import os
 import pickle
 
 import numpy as np
+from typing import Callable
 
 from lib.utils import get_func_name
 
@@ -177,6 +178,7 @@ class Agent(object):
     This is the base class of all agents, environments,
     and objects contained in an environment.
     """
+
     def __init__(self, name, attrs=None, action=None, duration=INF,
                  prim_group=None, serial_obj=None, exec_key=None, **kwargs):
         from registry.registry import reg_agent
@@ -223,18 +225,23 @@ class Agent(object):
     def restore(self, serial_obj):
         self.from_json(serial_obj)
 
-    def __pickle_func(self, pickle_file, func):
+    def __pickle_func(self, pickle_file: str, func):
+        print("Pickling to: {}".format(pickle_file))
         with open(pickle_file, 'wb') as file:
             pickle.dump(func, file)
+        from registry.registry import registry
+        registry[self.exec_key]['functions'][func.__name__] = pickle_file
 
     def to_json(self):
-        if self.action is not None:
+        from registry.registry import registry
+        # only pickle if action is not none and it hasnt been pickled already
+        if self.action is not None and self.action.__name__ not in \
+                registry[self.exec_key]['functions']:
             indra_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
             db_dir = os.path.join(indra_dir, 'registry', 'db')
-            pickle_file = os.path.join(db_dir,
-                                       '{}-{}.pkl'.format(self.exec_key,
-                                                          self.name))
-            print("Pickling to: {}".format(pickle_file))
+            pickle_file = os.path.join(db_dir, '{}-{}-{}.pkl'
+                                       .format(self.exec_key, self.name,
+                                               self.action.__name__))
             self.__pickle_func(pickle_file, self.action)
             return {"name": self.name,
                     "type": self.type,
@@ -262,8 +269,8 @@ class Agent(object):
         action = serial_agent["action"]
         if action is not None:
             with open(action, 'rb') as file:
-                action = action.load(file)
-        self.action = action
+                self.action = pickle.load(file)
+        # self.action = action
         self.active = serial_agent["active"]
         self.attrs = serial_agent["attrs"]
         if not serial_agent["pos"]:
@@ -293,6 +300,7 @@ class Agent(object):
         """
         Should be used to decorate any function that uses pos[X] or pos[Y]
         """
+
         @wraps(fn)
         def wrapper(*args, **kwargs):
             # args[0] is self!
@@ -302,6 +310,7 @@ class Agent(object):
                       + fn.__name__)
                 return 0
             return fn(*args, **kwargs)
+
         return wrapper
 
     def set_pos(self, x, y):
