@@ -6,7 +6,7 @@ from unittest import TestCase, skip
 
 from lib.agent import DONT_MOVE
 from models.forest_fire import ForestFire, main, MODEL_NAME, ff_grps, OF
-from models.forest_fire import tree_action, plant_tree, is_healthy, is_on_fire
+from models.forest_fire import tree_action, plant_tree
 
 
 class ForestFireTestCase(TestCase):
@@ -22,26 +22,12 @@ class ForestFireTestCase(TestCase):
         self.htree = None
         self.oftree = None
 
+    @skip
     def test_tree_action(self):
         """
         Does the tree action return DONT_MOVE?
         """
         self.assertEqual(tree_action(self.htree), DONT_MOVE)
-
-    def test_is_healthy(self):
-        """
-        Checking whether the state is healthy or not
-        """
-        self.assertTrue(is_healthy(self.htree))
-        self.assertFalse(is_healthy(self.oftree))
-
-
-    def test_is_on_fire(self):
-        """
-        Checking whether the state is on fire or not
-        """
-        self.assertTrue(is_on_fire(self.oftree))
-        self.assertFalse(is_on_fire(self.htree))
 
     def test_run(self):
         """
