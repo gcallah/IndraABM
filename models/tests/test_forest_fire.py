@@ -6,17 +6,21 @@ from unittest import TestCase, skip
 
 from lib.agent import DONT_MOVE
 from models.forest_fire import ForestFire, main, MODEL_NAME, ff_grps, OF
-from models.forest_fire import tree_action, plant_tree
+from lib.agent import Agent
+from models.forest_fire import tree_action
 
 
 class ForestFireTestCase(TestCase):
     def setUp(self):
         self.ff = ForestFire(MODEL_NAME, grp_struct=ff_grps)
+        '''
         self.htree = plant_tree("htree", 1,
                                 exec_key=self.ff.exec_key)
         self.oftree = plant_tree("oftree", 1, state=OF,
                                  exec_key=self.ff.exec_key)
-
+        '''
+        self.htree = Agent(name="htree", exec_key=self.ff.exec_key)
+        self.oftree = Agent(name="oftree", exec_key=self.ff.exec_key)
     def tearDown(self):
         self.ff = None
         self.htree = None

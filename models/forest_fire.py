@@ -3,7 +3,7 @@
 A model for how fires spread through a forest.
 """
 
-from lib.agent import DONT_MOVE, Agent
+from lib.agent import DONT_MOVE
 from lib.display_methods import TOMATO, GREEN, RED, SPRINGGREEN, BLACK
 from lib.model import Model
 from lib.agent import prob_state_trans
@@ -50,32 +50,13 @@ STATE_MAP = {HEALTHY: HE,
              BURNED_OUT: BO,
              NEW_GROWTH: NG}
 
-# we need a list of states to do the probabilistic state transition
-# GROUP_MAP = [HEALTHY, NEW_FIRE, ON_FIRE, BURNED_OUT, NEW_GROWTH]
 GROUP_MAP = {HE: HEALTHY,
              NF: NEW_FIRE,
              OF: ON_FIRE,
              BO: BURNED_OUT,
              NG: NEW_GROWTH}
 
-# we aren't going to need the function defined below
-'''
-def is_healthy(agent, *args):
-    """
-    Checking whether the agent is healthy or not
-    """
-    return agent["state"] == HE
 
-
-def is_on_fire(agent, *args):
-    """
-    Checking whether the agent is on fire or not
-    """
-    return agent["state"] == OF
-'''
-
-
-# Eliminate states rely only on groups?
 def tree_action(agent, **kwargs):
     """
     A simple default agent action.
@@ -86,7 +67,6 @@ def tree_action(agent, **kwargs):
         if exists_neighbor(agent, lambda agent: agent.group_name() == ON_FIRE):
             if DEBUG2:
                 print("Setting nearby tree on fire!")
-            # agent["state"] = NF
             model.add_switch(str(agent), HEALTHY, ON_FIRE)
     # if we didn't catch on fire above, do probabilistic transition:
     if old_group == agent.group_name():
@@ -108,35 +88,25 @@ def tree_action(agent, **kwargs):
     return DONT_MOVE
 
 
-def plant_tree(name, i, action=tree_action, state=HE, exec_key=None):
-    return Agent(name + str(i), attrs={"state": state},
-                 exec_key=exec_key, action=action)
-
-
 ff_grps = {
     HEALTHY: {
-        "mbr_creator": plant_tree,
         "mbr_action": tree_action,
         "num_mbrs": DEF_NUM_TREES,
         "color": GREEN,
     },
     NEW_FIRE: {
-        "mbr_action": tree_action,
         "num_mbrs": 0,
         "color": TOMATO,
     },
     ON_FIRE: {
-        "mbr_action": tree_action,
         "num_mbrs": 0,
         "color": RED,
     },
     BURNED_OUT: {
-        "mbr_action": tree_action,
         "num_mbrs": 0,
         "color": BLACK,
     },
     NEW_GROWTH: {
-        "mbr_action": tree_action,
         "num_mbrs": 0,
         "color": SPRINGGREEN,
     },
