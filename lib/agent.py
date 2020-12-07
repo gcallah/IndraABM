@@ -11,7 +11,7 @@ import os
 import pickle
 
 import numpy as np
-from typing import Callable
+# from typing import Callable
 
 from lib.utils import get_func_name
 
