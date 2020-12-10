@@ -11,7 +11,7 @@ from APIServer.props_api import get_props_for_current_execution, put_props
 from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
 # from registry.registry import get_agent, del_exec_env
 from registry.registry import registry
-# from APIServer.run_model_api import run_model_put
+from APIServer.run_model_api import run_model_put
 
 app = Flask(__name__)
 CORS(app)
@@ -99,6 +99,7 @@ class Props(Resource):
             HIVAL: None,
             LOWVAL: None
         }
+        print("The execution key in get prop is", exec_key)
         return props
 
     @api.expect(props)
@@ -130,14 +131,13 @@ env = api.model("env", {
 
 @api.route('/models/run/<int:run_time>')
 class RunModel(Resource):
-    '''
+
     @api.expect(env)
     def put(self, run_time):
         """
         Put a model env to the server and run it `run_time` periods.
         """
-        return  run_model_put(api.payload, run_time)
-    '''
+        return run_model_put(api.payload, run_time)
 
 
 @api.route('/registry/clear/<int:execution_key>')
