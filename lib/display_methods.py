@@ -11,6 +11,8 @@ from functools import wraps
 
 from lib.user import TERMINAL, API
 
+DEBUG = False  # turns debugging code on or off
+
 plt_present = True
 plt_present_error_message = ""
 
@@ -187,7 +189,9 @@ def draw_graph(graph, title, hierarchy=False, root=None):
 def get_color(var, i):
     if "color" in var:
         # Make sure it's a valid color
-        print("Checking to see if {} is in {}".format(var["color"], colors))
+        if DEBUG:
+            print("Checking to see if {} is in {}".format(var["color"],
+                                                          colors))
         if var["color"] in colors:
             return var["color"]
     return colors[i % NUM_COLORS]
@@ -470,7 +474,8 @@ class ScatterPlot():
     def create_scats(self, varieties):
         self.scats = pd.DataFrame(columns=["x", "y", "color", "marker", "var"])
         for i, var in enumerate(varieties):
-            print("Appending {} to legend".format(var))
+            if DEBUG:
+                print("Appending {} to legend".format(var))
             self.legend.append(var)
             (x_array, y_array) = self.get_arrays(varieties, var)
             if len(x_array) <= 0:  # no data to graph!
