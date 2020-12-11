@@ -94,8 +94,6 @@ class EnvTestCase(TestCase):
     def test_line_data(self):
         """
         Test the construction of line graph data.
-        This test must be changed to handle new color param!
-        Commented out for the moment.
         """
         global travis
         travis = os.getenv("TRAVIS")
@@ -104,13 +102,12 @@ class EnvTestCase(TestCase):
             ret = self.env.line_data()
             self.assertIn(GRP1, ret[1])
             self.assertIn(GRP2, ret[1])
+            # we should test that the color vals are in our list of colors
             self.assertIn("color", ret[1][GRP1])
             self.assertIn("color", ret[1][GRP2])
+            # we should test that the data is a list of ints
             self.assertIn("data", ret[1][GRP1])
             self.assertIn("data", ret[1][GRP2])
-#            self.assertEqual(ret, (2,
-#                                   {GRP1: {"color": "navy", "data": [10, 20]},
-#                                    GRP2: {"color": "blue", "data": [10, 20]}}))
 
     @skip("Some problem with returned plot data: also test is too coupled to code.")
     def test_plot_data(self):

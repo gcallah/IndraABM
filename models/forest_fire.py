@@ -67,7 +67,7 @@ def tree_action(agent, **kwargs):
         if exists_neighbor(agent, lambda agent: agent.group_name() == ON_FIRE):
             if DEBUG2:
                 print("Setting nearby tree on fire!")
-            model.add_switch(str(agent), HEALTHY, ON_FIRE)
+            model.add_switch(str(agent), HEALTHY, NEW_FIRE)
     # if we didn't catch on fire above, do probabilistic transition:
     if old_group == agent.group_name():
         curr_state = STATE_MAP[old_group]
