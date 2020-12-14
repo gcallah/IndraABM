@@ -50,8 +50,18 @@ class Basic(Model):
     """
 
 
+def create_model(serial_obj=None):
+    """
+    This is for the sake of the API server:
+    """
+    if serial_obj is not None:
+        return Basic(serial_obj=serial_obj)
+    else:
+        return Basic(MODEL_NAME, grp_struct=basic_grps)
+
+
 def main():
-    model = Basic(MODEL_NAME, grp_struct=basic_grps)
+    model = create_model()
     model.run()
     return 0
 
