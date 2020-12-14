@@ -182,10 +182,10 @@ class Agent(object):
     def __init__(self, name, attrs=None, action=None, duration=INF,
                  prim_group=None, serial_obj=None, exec_key=None, **kwargs):
         from registry.registry import reg_agent
-        self.exec_key = exec_key
         if serial_obj is not None:
             self.restore(serial_obj)
         else:  # or build it anew:
+            self.exec_key = exec_key
             self._construct_anew(name, attrs=attrs, action=action,
                                  duration=duration, prim_group=prim_group)
         reg_agent(self.name, self, self.exec_key)
@@ -243,34 +243,28 @@ class Agent(object):
                                        .format(self.exec_key, self.name,
                                                self.action.__name__))
             self.__pickle_func(pickle_file, self.action)
-            return {"name": self.name,
-                    "type": self.type,
-                    "duration": self.duration,
-                    "pos": self.pos,
-                    "attrs": self.attrs,
-                    "active": self.active,
-                    "prim_group": self.prim_group,
-                    "neighbors": None,
-                    "action": pickle_file,
-                    }
+            action_val = pickle_file
         else:
-            return {"name": self.name,
-                    "type": self.type,
-                    "duration": self.duration,
-                    "pos": self.pos,
-                    "attrs": self.attrs,
-                    "active": self.active,
-                    "prim_group": self.prim_group,
-                    "neighbors": None,
-                    "action": None,
-                    }
+            action_val = None
+        return {"name": self.name,
+                "type": self.type,
+                "duration": self.duration,
+                "pos": self.pos,
+                "attrs": self.attrs,
+                "active": self.active,
+                "prim_group": self.prim_group,
+                "neighbors": None,
+                "action": action_val,
+                "exec_key": self.exec_key,
+                }
 
     def from_json(self, serial_agent):
         action = serial_agent["action"]
         if action is not None:
             with open(action, 'rb') as file:
                 self.action = pickle.load(file)
-        # self.action = action
+        else:
+            self.action = None
         self.active = serial_agent["active"]
         self.attrs = serial_agent["attrs"]
         if not serial_agent["pos"]:
@@ -282,6 +276,7 @@ class Agent(object):
         self.neighbors = None  # these must be re-created every run
         self.prim_group = serial_agent["prim_group"]
         self.type = serial_agent["type"]
+        self.exec_key = serial_agent["exec_key"]
 
     def __repr__(self):
         return json.dumps(self.to_json(), cls=AgentEncoder, indent=4)

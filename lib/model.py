@@ -111,13 +111,16 @@ class Model():
         Create the model for the first time.
         """
         self.name = model_nm
-        if exec_key is None:
-            self.exec_key = registry.create_exec_env()
-        else:
-            self.exec_key = exec_key
-        registry.reg_model(self, self.exec_key)
         self.grp_struct = grp_struct
         self.handle_props(props)
+        if exec_key is not None:
+            self.exec_key = exec_key
+        elif self.props.get("exec_key", None) is not None:
+            self.exec_key = self.props.get("exec_key")
+            print(f"exec_key = {self.exec_key}")
+        else:
+            self.exec_key = registry.create_exec_env()
+        registry.reg_model(self, self.exec_key)
         self.create_user()
         self.groups = self.create_groups()
         self.env = self.create_env(env_action=env_action)
@@ -136,25 +139,38 @@ class Model():
         """
         self.from_json(serial_obj)
 
-    def from_json(self, serial_obj):
+    def from_json(self, jrep):
         """
         This method restores a model from its JSON rep.
         """
-        self.name = serial_obj["name"]
-        self.exec_key = serial_obj["exec_key"]
-        self.switches = serial_obj["switches"]
-        self.env = Env(serial_obj=serial_obj["env"])
+        self.name = jrep["name"]
+        self.exec_key = jrep["exec_key"]
+        self.period = jrep["period"]
+        self.switches = jrep["switches"]
+        # We should restore user from json:
+        # self.user = jrep["user"]
+        # But for the moment we will hard code this:
+        self.user = APIUser(model=self, name="API",
+                            exec_key=self.exec_key)
+        self.user_type = jrep["user_type"]
+        self.props = jrep["props"]
+        self.env = Env(self.name, serial_obj=jrep["env"],
+                       exec_key=self.exec_key)
 
     def to_json(self):
         """
         This method generates the JSON representation for this model.
         """
-        rep = {}
-        rep["name"] = self.name
-        rep["exec_key"] = self.exec_key
-        rep["switches"] = self.switches
-        rep["env"] = self.env.to_json()
-        return rep
+        jrep = {}
+        jrep["name"] = self.name
+        jrep["exec_key"] = self.exec_key
+        jrep["period"] = self.period
+        jrep["switches"] = self.switches
+        jrep["user"] = self.user.to_json()
+        jrep["user_type"] = self.user_type
+        jrep["props"] = self.props
+        jrep["env"] = self.env.to_json()
+        return jrep
 
     def create_user(self):
         """
@@ -214,7 +230,8 @@ class Model():
         a terminal, it will display the menu.
         Return: 0 if run was fine.
         """
-        if (self.user is None) or (self.user_type == TEST):
+        if (self.user is None) or (self.user_type == TEST) or (self.user_type
+                                                               == API):
             self.runN()
         else:
             self.user.tell("Running model " + self.name)

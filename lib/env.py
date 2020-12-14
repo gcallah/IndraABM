@@ -85,7 +85,7 @@ class Env(Space):
         - line_data_func
         - pop_hist_func
 
-    These will all be cutover to be attributes of the env:
+    These will all be cutover to be attributes of the model:
     the handy new way to support serialization.
     """
 

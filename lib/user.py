@@ -264,8 +264,8 @@ class APIUser(User):
     """
     This is our web user, who is expected to communicate with a web page
     frontend.
+    This class needs from_json() and to_json() methods.
     """
-
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
 

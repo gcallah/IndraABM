@@ -7,7 +7,7 @@ from registry.registry import get_env
 ENV_INSTANCE = 0
 
 
-def get_props_for_current_execution(model_id, indra_dir):
+def get_props_for_curr_exec(model_id, indra_dir):
     try:
         # execution_key = Registry.create_exec_env()
         model = get_model(model_id, indra_dir=indra_dir)
@@ -24,9 +24,9 @@ def get_props_for_current_execution(model_id, indra_dir):
 # correct but the call to get_env returns none
 def put_props(model_id, payload, indra_dir):
     print(payload)
-    execution_key = payload["execution_key"].get("val")
-    print("The execution key in put props is", execution_key)
+    exec_key = payload["execution_key"].get("val")
+    print("The execution key in put props is", exec_key)
     # the exec env is currently none
-    print("The execution environment is", get_env(exec_key=execution_key))
+    print("The execution environment is", get_env(exec_key=exec_key))
     return json_converter(
-        get_env(exec_key=execution_key), execution_key=execution_key)
+        get_env(exec_key=exec_key), execution_key=exec_key)

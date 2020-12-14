@@ -6,12 +6,12 @@ from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
 from APIServer.api_utils import err_return
 # from lib.user import APIUser
+from APIServer.api_utils import json_converter
 from APIServer.models_api import get_models
-from APIServer.props_api import get_props_for_current_execution, put_props
+from APIServer.props_api import get_props_for_curr_exec
 from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
-# from registry.registry import get_agent, del_exec_env
 from registry.registry import registry
-from APIServer.run_model_api import run_model_put
+from APIServer.model_api import run_model, create_model
 
 app = Flask(__name__)
 CORS(app)
@@ -91,9 +91,9 @@ class Props(Resource):
         """
 
         props = \
-            get_props_for_current_execution(model_id, indra_dir)
+            get_props_for_curr_exec(model_id, indra_dir)
         exec_key = registry.create_exec_env(save_on_register=True)
-        props["execution_key"] = {
+        props["exec_key"] = {
             VALUE: exec_key,
             ATYPE: INT,
             HIVAL: None,
@@ -109,7 +109,7 @@ class Props(Resource):
         back to the server.
         """
         print(api.payload.get("exec_key"))
-        return put_props(model_id, api.payload, indra_dir)
+        return json_converter(create_model(model_id, api.payload, indra_dir))
 
 
 @api.route('/models/menu/<int:execution_id>')
@@ -131,25 +131,26 @@ env = api.model("env", {
 
 @api.route('/models/run/<int:run_time>')
 class RunModel(Resource):
-
+    """
+    This endpoint runs the model.
+    """
     @api.expect(env)
     def put(self, run_time):
         """
         Put a model env to the server and run it `run_time` periods.
         """
-        return run_model_put(api.payload, run_time)
+        return json_converter(run_model(api.payload, run_time))
 
 
-@api.route('/registry/clear/<int:execution_key>')
+@api.route('/registry/clear/<int:exec_key>')
 class ClearRegistry(Resource):
-
-    def get(self, execution_key):
-        print("Clearing registry for key - {}".format(execution_key))
+    def get(self, exec_key):
+        print("Clearing registry for key - {}".format(exec_key))
         try:
-            registry.del_exec_env(execution_key)
+            registry.del_exec_env(exec_key)
         except KeyError:
             return err_return(
-                "Key - {} does not exist in registry".format(execution_key))
+                "Key - {} does not exist in registry".format(exec_key))
         return {'success': True}
 
 
