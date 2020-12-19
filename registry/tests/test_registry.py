@@ -6,10 +6,11 @@ from unittest import TestCase, skip
 import os
 from lib.agent import Agent
 from lib.env import Env
-from lib.model import Model
+from lib.model import Model, DEF_GRP, GRP_ACTION, COLOR, MBR_CREATOR
 from registry.registry import registry, get_agent, reg_agent
 from registry.registry import get_env, del_agent, reg_model, get_model
 from unittest.mock import patch
+from lib.display_methods import RED, BLUE
 
 TEST_VAL_STR = "test_val"
 TEST_VAL = 1
@@ -130,9 +131,57 @@ class RegisteryTestCase(TestCase):
         registry.save_reg(self.exec_key)
         self.assertTrue(registry[self.exec_key]['functions'] is not None)
 
-        pickle_files = list(filter(lambda file: 'agent_action.pkl' in file,
-                                   [value for value in registry[self.exec_key]
-                                   ['functions'].values()]))
+        pickle_files = list(
+            filter(lambda file: 'agent-agent_action.pkl' in file,
+                   [value for value in registry[self.exec_key]
+                   ['functions'].values()]))
 
         self.assertTrue(len(pickle_files) != 0)
         self.assertTrue(len(pickle_files) == 1)
+
+    def complex_agent_action(self, agent, **kwargs):
+        print("Complex Agent action")
+        if agent.color == BLUE:
+            for member in agent.members:
+                agent[member].set_attr("value",
+                                       agent[member].get_attr("value") * 2)
+
+    def complex_agent_create(self, name, i, action=None, **kwargs):
+        agent = Agent(name + str(i), action=action, **kwargs)
+        agent.set_attr("value", 5)
+        return agent
+
+    @patch('pickle.dump')
+    @patch('pickle.load')
+    def test_model_save_load_run_from_disk(self, dump, load):
+        DEF_GRP[GRP_ACTION] = self.complex_agent_action
+        DEF_GRP[MBR_CREATOR] = self.complex_agent_create
+        SECOND_GRP = DEF_GRP.copy()
+        SECOND_GRP[COLOR] = RED
+        GRP_STRUCT = {
+            "COMPLEX_RED_GRP": SECOND_GRP,
+            "COMPLEX_BLUE_GRP": DEF_GRP
+        }
+        complexModel = Model(grp_struct=GRP_STRUCT, model_nm="Basic")
+        complexModel.run(5)
+        registry.save_reg(key=complexModel.exec_key)
+        loaded_object = registry.load_reg(complexModel.exec_key)
+        self.assertTrue("model" in loaded_object)
+        self.assertTrue("Basic" == loaded_object['model'].name)
+        all_red_members_have_attribute_5 = True
+        all_blue_memebrs_have_attribute_10 = True
+        deserialized_model = loaded_object['model']
+        deserialized_model.run(5)
+        for grp in deserialized_model.groups:
+            for member in grp.members:
+                if grp.color == BLUE:
+                    all_blue_memebrs_have_attribute_10 = \
+                        all_blue_memebrs_have_attribute_10 and (
+                                grp[member].get_attr("value") != 5)
+                else:
+                    all_red_members_have_attribute_5 = \
+                        all_red_members_have_attribute_5 and (
+                                grp[member].get_attr("value") == 5)
+
+        self.assertTrue(all_red_members_have_attribute_5)
+        self.assertTrue(all_blue_memebrs_have_attribute_10)

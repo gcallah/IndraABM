@@ -95,10 +95,10 @@ class Group(Agent):
             member = serial_obj["members"][nm]
             if member["type"] == "Agent":
                 self.members[nm] = Agent(name=nm, serial_obj=member,
-                                         exec_key=self.exec_key)
+                                         exec_key=member['exec_key'])
             elif member["type"] == "Group":
                 self.members[nm] = Group(name=nm, serial_obj=member,
-                                         exec_key=self.exec_key)
+                                         exec_key=member['exec_key'])
         mem_create_nm = serial_obj["mbr_creator"]
         self.mbr_creator = mem_create_nm
 

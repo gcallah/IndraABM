@@ -170,6 +170,7 @@ class Model():
         jrep["user_type"] = self.user_type
         jrep["props"] = self.props
         jrep["env"] = self.env.to_json()
+        jrep["type"] = type(self).__name__
         return jrep
 
     def create_user(self):

@@ -243,6 +243,8 @@ class Registry(object):
 
     def __json_to_object(self, serial_obj, exec_key):
         restored_obj = dict()
+        restored_groups = []
+        model_deserialized = False
         for obj_name in serial_obj:
             should_restore_object = isinstance(serial_obj[obj_name],
                                                dict) and "type" in serial_obj[
@@ -253,8 +255,25 @@ class Registry(object):
                                                    serial_obj=serial_obj[
                                                        obj_name],
                                                    exec_key=exec_key)
+                elif serial_obj[obj_name]["type"] == "Model":
+                    from lib.model import Model
+                    restored_obj[obj_name] = Model(exec_key=exec_key,
+                                                   serial_obj=serial_obj[
+                                                       obj_name])
+                    model_deserialized = True
+                elif serial_obj[obj_name]["type"] == "Group":
+                    from lib.group import Group
+                    restored_obj[obj_name] = Group(exec_key=exec_key,
+                                                   serial_obj=serial_obj[
+                                                       obj_name],
+                                                   name=serial_obj[obj_name][
+                                                       'name'])
+                    restored_groups.append(restored_obj[obj_name])
             else:
                 restored_obj[obj_name] = serial_obj[obj_name]
+
+        if model_deserialized:
+            restored_obj['model'].groups = restored_groups
         return restored_obj
 
     def create_exec_env(self, save_on_register=True):
