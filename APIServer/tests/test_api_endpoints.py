@@ -8,12 +8,10 @@ from unittest import TestCase, main, skip
 from flask_restplus import Resource
 
 from APIServer.api_endpoints import Props, ModelMenu, RunModel
-from APIServer.api_endpoints import Props, ModelMenu, RunModel
 from APIServer.api_endpoints import app, HelloWorld, Endpoints, Models
 from APIServer.api_endpoints import indra_dir
 from APIServer.api_utils import err_return
 from APIServer.models_api import load_models, MODEL_FILE, MODEL_ID
-
 
 MIN_NUM_ENDPOINTS = 2
 
@@ -32,6 +30,7 @@ def random_name():
     return "".join(random.choices(string.ascii_letters,
                                   k=random.randrange(1, 10)))
 
+
 class Test(TestCase):
     def setUp(self):
         self.hello_world = HelloWorld(Resource)
@@ -41,7 +40,6 @@ class Test(TestCase):
         self.model_menu = ModelMenu(Resource)
         self.run = RunModel(Resource)
         self.models = load_models(indra_dir)
-        # self.execution_key = self.props.get(13).get("execution_key").get("val")
 
     def test_load_models(self):
         """
@@ -75,7 +73,6 @@ class Test(TestCase):
         for model in api_ret:
             self.assertIn(MODEL_ID, model)
 
-    @skip("Skipping get props.")
     def test_get_props(self):
         """
         See if we can get props.
@@ -90,6 +87,11 @@ class Test(TestCase):
         with open(indra_dir + "/" + test_models_db[model_id]["props"]) as file:
             test_props = json.loads(file.read())
 
+        self.assertTrue("exec_key" in rv)
+        self.assertTrue(rv["exec_key"] is not None)
+        # since exec_key is dynamically added to props the returned value
+        # contains one extra key compared to the test_props loaded from file
+        del rv["exec_key"]
         self.assertEqual(rv, test_props)
 
     @skip("Skipping put props while json format is in flux.")
@@ -113,7 +115,7 @@ class Test(TestCase):
             test_menu = json.loads(file.read())["menu_database"]
         self.assertEqual(rv, test_menu)
     '''
-    
+
     def test_err_return(self):
         """
         Testing whether we are able to get the right error message
