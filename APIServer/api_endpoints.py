@@ -100,6 +100,7 @@ class Props(Resource):
             LOWVAL: None
         }
         print("The execution key in get prop is", exec_key)
+        print("THE model id is", model_id)
         return props
 
     @api.expect(props)

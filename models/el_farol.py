@@ -84,7 +84,7 @@ class ElFarol(Model):
         self.grp_struct[AT_HOME]["num_mbrs"] = at_home
 
 
-def create_model(serial_obj=None):
+def el_farol_create_model(serial_obj=None):
     """
     This is for the sake of the API server:
     """

@@ -74,7 +74,7 @@ class GameOfLife(Model):
         return super().run()
 
 
-def create_model(serial_obj=None):
+def game_of_life_create_model(serial_obj=None):
     """
     This is for the sake of the API server:
     """

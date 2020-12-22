@@ -11,6 +11,7 @@ def get_props_for_curr_exec(model_id, indra_dir):
     try:
         # execution_key = Registry.create_exec_env()
         model = get_model(model_id, indra_dir=indra_dir)
+        print("The model props in get props is", model["props"])
         with open(indra_dir + "/" + model["props"]) as file:
             props = json.loads(file.read())
         return props

@@ -129,7 +129,7 @@ class ForestFire(Model):
         self.grp_struct[HEALTHY]["num_mbrs"] = num_agents
 
 
-def create_model(serial_obj=None):
+def forest_fire_create_model(serial_obj=None):
     """
     This is for the sake of the API server:
     """
