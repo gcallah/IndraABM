@@ -6,6 +6,7 @@
             "graph": "scatter",
             "model ID": 0,
             "name": "Basic",
+            "package": "models",
             "props": "models/props/basic.props.json",
             "run": "basic",
             "source": "https://github.com/gcallah/indras_net/blob/master/models/basic.py"
@@ -16,6 +17,7 @@
             "graph": "scatter",
             "model ID": 1,
             "name": "Bacteria",
+            "package": "models",
             "props": "models/props/bacteria.props.json",
             "run": "bacteria",
             "source": "https://github.com/gcallah/indras_net/blob/master/models/bacteria.py"
@@ -26,6 +28,7 @@
             "graph": "line",
             "model ID": 2,
             "name": "Financial Market Cycles",
+            "package": "models",
             "props": "models/props/fmarket.props.json",
             "run": "fmarket",
             "source": "https://github.com/gcallah/indras_net/blob/master/models/fmarket.py"
@@ -76,6 +79,7 @@
             "graph": "line",
             "model ID": 7,
             "name": "El Farol Bar",
+            "package": "models",
             "props": "models/props/el_farol.props.json",
             "run": "el_farol",
             "source": "https://github.com/gcallah/indras_net/blob/master/models/el_farol.py"
@@ -96,6 +100,7 @@
             "graph": "line",
             "model ID": 9,
             "name": "Menger's Origin of Money",
+            "package": "capital",
             "props": "capital/props/money.props.json",
             "run": "money",
             "source": "https://github.com/gcallah/indras_net/blob/master/capital/money.py"
