@@ -6,7 +6,6 @@ from APIServer.api_utils import ERROR
 REGISTRY = "registry"
 MODELS_DB = "models.json"
 MODEL_FILE = "/" + REGISTRY + "/" + MODELS_DB
-
 MODEL_ID = "model ID"
 
 
@@ -40,7 +39,7 @@ def get_model(model_id, indra_dir=None, models_db=None):
             return {ERROR: msg}
     for model in models_db:
         if int(model[MODEL_ID]) == model_id:
-            # user_log_notif("Matched model: " + model["name"])
+            print("Matched model: " + model["name"])
             return model
     msg = "Model id not found: " + str(model_id)
     return {ERROR: msg}

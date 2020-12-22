@@ -99,7 +99,6 @@ class Props(Resource):
             HIVAL: None,
             LOWVAL: None
         }
-        print("The execution key in get prop is", exec_key)
         return props
 
     @api.expect(props)
@@ -108,7 +107,6 @@ class Props(Resource):
         Put a revised list of properties (parameters) for a model
         back to the server.
         """
-        print(api.payload.get("exec_key"))
         return json_converter(create_model(model_id, api.payload, indra_dir))
 
 

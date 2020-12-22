@@ -84,8 +84,18 @@ class ElFarol(Model):
         self.grp_struct[AT_HOME]["num_mbrs"] = at_home
 
 
+def el_farol_create_model(serial_obj=None):
+    """
+    This is for the sake of the API server:
+    """
+    if serial_obj is not None:
+        return ElFarol(serial_obj=serial_obj)
+    else:
+        return ElFarol(MODEL_NAME, grp_struct=el_farol_grps)
+
+
 def main():
-    model = ElFarol(MODEL_NAME, grp_struct=el_farol_grps)
+    model = el_farol_create_model()
     model.run()
     return 0
 

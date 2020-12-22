@@ -8,6 +8,7 @@
             "name": "Basic",
             "package": "models",
             "props": "models/props/basic.props.json",
+            "create_model": "basic_create_model()",
             "run": "basic",
             "source": "https://github.com/gcallah/indras_net/blob/master/models/basic.py"
         },
@@ -54,14 +55,15 @@
             "source": "https://github.com/gcallah/indras_net/blob/master/models/wolfsheep.py"
         },
         {
-            "active": false,
+            "active": true,
             "doc": "Examine how fires spread in a forest.",
             "graph": "scatter",
             "model ID": 5,
             "name": "Forest Fire",
-            "props": "models/props/forestfire.props.json",
+            "props": "models/props/forest_fire.props.json",
+            "create_model": "forest_fire_create_model()",
             "run": "forestfire",
-            "source": "https://github.com/gcallah/indras_net/blob/master/models/forestfire.py"
+            "source": "https://github.com/gcallah/indras_net/blob/master/models/forest_fire.py"
         },
         {
             "active": false,
@@ -74,13 +76,14 @@
             "source": "https://github.com/gcallah/indras_net/blob/master/models/segregation.py"
         },
         {
-            "active": false,
+            "active": true,
             "doc": "Everyone loves the El Farol Bar... until it is too crowded.",
             "graph": "line",
             "model ID": 7,
             "name": "El Farol Bar",
             "package": "models",
             "props": "models/props/el_farol.props.json",
+            "create_model": "el_farol_create_model()",
             "run": "el_farol",
             "source": "https://github.com/gcallah/indras_net/blob/master/models/el_farol.py"
         },
@@ -104,6 +107,28 @@
             "props": "capital/props/money.props.json",
             "run": "money",
             "source": "https://github.com/gcallah/indras_net/blob/master/capital/money.py"
+        },
+        {
+            "active": true,
+            "doc": "A model which simulates the spread of panic",
+            "graph": "scatter",
+            "model ID": 10,
+            "name": "Panic",
+            "props": "models/props/panic.props.json",
+            "create_model": "panic_create_model()",
+            "run": "panic",
+            "source": "https://github.com/gcallah/indras_net/blob/master/models/panic.py"
+        },
+        {
+            "active": true,
+            "doc": "The implementation of Conway's Game of Life",
+            "graph": "scatter",
+            "model ID": 11,
+            "name": "Game of Life",
+            "props": "models/props/game_of_life.props.json",
+            "create_model": "game_of_life_create_model()",
+            "run": "game_of_life",
+            "source": "https://github.com/gcallah/indras_net/blob/master/models/game_of_life.py"
         }
     ]
 }

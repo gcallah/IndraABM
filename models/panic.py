@@ -66,8 +66,18 @@ class Panic(Model):
         self.grp_struct[PANIC]["num_mbrs"] = int(pct_panic * num_agents)
 
 
+def panic_create_model(serial_obj=None):
+    """
+    This is for the sake of the API server:
+    """
+    if serial_obj is not None:
+        return Panic(serial_obj=serial_obj)
+    else:
+        return Panic(MODEL_NAME, grp_struct=panic_grps)
+
+
 def main():
-    model = Panic(MODEL_NAME, grp_struct=panic_grps)
+    model = panic_create_model()
     model.run()
     return 0
 
