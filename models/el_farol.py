@@ -95,7 +95,7 @@ def el_farol_create_model(serial_obj=None):
 
 
 def main():
-    model = ElFarol(MODEL_NAME, grp_struct=el_farol_grps)
+    model = el_farol_create_model()
     model.run()
     return 0
 

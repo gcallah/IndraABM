@@ -140,7 +140,7 @@ def forest_fire_create_model(serial_obj=None):
 
 
 def main():
-    model = ForestFire(MODEL_NAME, grp_struct=ff_grps)
+    model = forest_fire_create_model()
     model.run()
     return 0
 

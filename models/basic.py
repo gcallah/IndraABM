@@ -61,7 +61,7 @@ def basic_create_model(serial_obj=None):
 
 
 def main():
-    model = create_model()
+    model = basic_create_model()
     model.run()
     return 0
 

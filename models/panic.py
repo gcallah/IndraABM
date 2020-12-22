@@ -77,7 +77,7 @@ def panic_create_model(serial_obj=None):
 
 
 def main():
-    model = Panic(MODEL_NAME, grp_struct=panic_grps)
+    model = panic_create_model()
     model.run()
     return 0
 

@@ -85,7 +85,7 @@ def game_of_life_create_model(serial_obj=None):
 
 
 def main():
-    model = GameOfLife(MODEL_NAME, grp_struct=game_group_struct)
+    model = game_of_life_create_model()
     model.run()
     return 0
 
