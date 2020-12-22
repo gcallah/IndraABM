@@ -31,7 +31,7 @@ def get_func_name(f):
 
 
 def get_prop_path(model_name, model_dir="models"):
-    ihome = os.getenv("INDRA_HOME", " ")
+    ihome = os.getenv("INDRA_HOME", "")
     return ihome + "/" + model_dir + "/props/" + model_name + ".props.json"
 
 

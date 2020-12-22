@@ -1,5 +1,6 @@
 import json
 
+from lib.utils import get_prop_path
 from APIServer.api_utils import json_converter, err_return
 from APIServer.models_api import get_model
 from registry.registry import get_env
@@ -11,8 +12,9 @@ def get_props_for_curr_exec(model_id, indra_dir):
     try:
         # execution_key = Registry.create_exec_env()
         model = get_model(model_id, indra_dir=indra_dir)
-        print("The model props in get props is", model["props"])
-        with open(indra_dir + "/" + model["props"]) as file:
+        prop_file = get_prop_path(model["module"], model["package"])
+        print("prop_file = ", prop_file)
+        with open(prop_file) as file:
             props = json.loads(file.read())
         return props
     except (IndexError, KeyError, ValueError):

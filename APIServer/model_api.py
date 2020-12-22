@@ -1,13 +1,10 @@
 """
 This module restores an env from json and runs it.
 """
+import importlib
+
 from lib.model import Model
 from APIServer.models_api import get_model
-from models.basic import basic_create_model # noqa F401
-from models.forest_fire import forest_fire_create_model # noqa F401
-from models.el_farol import el_farol_create_model # noqa F401
-from models.panic import panic_create_model # noqa F401
-from models.game_of_life import game_of_life_create_model # noqa F401
 
 
 def create_model(model_id, props, indra_dir):
@@ -15,8 +12,10 @@ def create_model(model_id, props, indra_dir):
     We get some props and create a model in response.
     """
     model = get_model(model_id, indra_dir=indra_dir)
-    create_model_func = model["create_model"]
-    model = eval(create_model_func)
+    mod_name = f'{model["package"]}.{model["module"]}'
+    print("mod_name = ", mod_name)
+    this_mod = importlib.import_module(mod_name)
+    model = this_mod.create_model()
     return model
 
 

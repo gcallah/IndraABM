@@ -50,7 +50,7 @@ class Basic(Model):
     """
 
 
-def basic_create_model(serial_obj=None):
+def create_model(serial_obj=None):
     """
     This is for the sake of the API server:
     """
@@ -61,7 +61,7 @@ def basic_create_model(serial_obj=None):
 
 
 def main():
-    model = basic_create_model()
+    model = create_model()
     model.run()
     return 0
 
