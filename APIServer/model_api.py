@@ -16,7 +16,6 @@ def create_model(model_id, props, indra_dir):
     """
     model = get_model(model_id, indra_dir=indra_dir)
     create_model_func = model["create_model"]
-    print("The create model func is", create_model_func)
     model = eval(create_model_func)
     return model
 
