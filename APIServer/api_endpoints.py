@@ -137,7 +137,7 @@ class RunModel(Resource):
         """
         Put a model env to the server and run it `run_time` periods.
         """
-        return json_converter(run_model(api.payload, run_time))
+        return json_converter(run_model(api.payload, run_time, indra_dir))
 
 
 @api.route('/registry/clear/<int:exec_key>')
