@@ -11,9 +11,7 @@ def create_model(model_id, props, indra_dir):
     We get some props and create a model in response.
     """
     model = get_model(model_id, indra_dir=indra_dir)
-    print("The model is", model)
     mod_name = f'{model["package"]}.{model["module"]}'
-    print("mod_name = ", mod_name)
     this_mod = importlib.import_module(mod_name)
     model = this_mod.create_model()
     return model
