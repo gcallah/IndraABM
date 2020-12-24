@@ -6,6 +6,7 @@ do nothing except move around randomly.
 
 import random
 from lib.agent import MOVE, Agent
+from lib.env import Env
 from lib.display_methods import RED, BLUE
 from lib.model import Model
 from registry.registry import get_model
@@ -17,6 +18,10 @@ DEF_AT_HOME = 2
 DEF_AT_BAR = 2
 DEF_MOTIV = 0.06
 MOTIV = "motivation"
+BAR_ATTEND = "bar attendees"
+
+
+DEBUG = True
 
 
 def get_decision(agent):
@@ -24,6 +29,15 @@ def get_decision(agent):
     Decide whether to get wasted today or not
     """
     return random.random() <= agent[MOTIV]
+
+
+def setup_attendance(pop_hist):
+    """
+    Set up our pop hist object to record exchanges per period.
+    """
+    if DEBUG:
+        print("setting up attendance")
+    pop_hist.record_pop(BAR_ATTEND, 0)
 
 
 def drinker_action(agent, **kwargs):
@@ -49,7 +63,10 @@ def drinker_action(agent, **kwargs):
 
 
 def create_drinker(name, i, exec_key=None, action=drinker_action):
-    return Agent(name + str(i), attrs={"motivation": DEF_MOTIV},
+    """
+    Create a drinker
+    """
+    return Agent(name + str(i), attrs={MOTIV: DEF_MOTIV},
                  action=action, exec_key=exec_key)
 
 
@@ -80,8 +97,17 @@ class ElFarol(Model):
         num_mbrs = self.props.get("population")
         at_bar = num_mbrs//2
         at_home = num_mbrs - at_bar
-        self.grp_struct[AT_BAR]["num_mbrs"] = at_home
+        self.grp_struct[AT_BAR]["num_mbrs"] = at_bar
         self.grp_struct[AT_HOME]["num_mbrs"] = at_home
+
+    def create_env(self, env_action=None):
+        """
+        Overriding this method to  setup for pop_hist
+        """
+        self.env = Env(self.name, members=self.groups, exec_key=self.exec_key,
+                       width=self.width, height=self.height, action=env_action,
+                       pop_hist_setup=setup_attendance)
+        return self.env
 
 
 def create_model(serial_obj=None):
