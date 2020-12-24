@@ -3,7 +3,6 @@ This module restores an env from json and runs it.
 """
 import importlib
 from lib.model import Model
-from APIServer.api_utils import ERROR
 from APIServer.models_api import get_model, load_models
 
 
@@ -26,15 +25,10 @@ def run_model(serial_model, run_time, indra_dir):
     the real env from the payload.
     """
     model_module = serial_model["name"]
-    print(isinstance(model_module, str))
-    print("THE  MODEL NAME IS", model_module)
     models_db = load_models(indra_dir)
-    print("THE MODEL DB IS", models_db)
     for model in models_db:
         if model["module"] == model_module:
-            print("The found model is", model["module"])
             mod_file = f'{model["package"]}.{model["module"]}'
-            print("The model file is", mod_file)
             this_mod = importlib.import_module(mod_file)
             model = this_mod.create_model(serial_obj=serial_model)
             model.runN(run_time)
