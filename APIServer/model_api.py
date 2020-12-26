@@ -16,9 +16,9 @@ def create_model(model_id, props, indra_dir):
     """
     We get some props and create a model in response.
     """
-    model = get_model_by_id(model_id, indra_dir=indra_dir)
-    if model is not None:
-        return module_from_model(model).create_model()
+    model_rec = get_model_by_id(model_id, indra_dir=indra_dir)
+    if model_rec is not None:
+        return module_from_model(model_rec).create_model()
     else:
         return err_return("Model not found: " + str(model_id))
 
@@ -26,10 +26,13 @@ def create_model(model_id, props, indra_dir):
 def run_model(serial_model, periods, indra_dir):
     """
     We get passed `serial_model` and run it `periods` times.
+    `model_rec` refers to the record from the model db.
+    `model` refers to an instance of the Python Model class.
     """
-    model = get_model_by_mod(serial_model["name"], indra_dir=indra_dir)
-    if model is not None:
-        model = module_from_model(model).create_model(serial_obj=serial_model)
+    model_rec = get_model_by_mod(serial_model["name"], indra_dir=indra_dir)
+    if model_rec is not None:
+        module = module_from_model(model_rec)
+        model = module.create_model(serial_obj=serial_model)
         model.runN(periods)
         return model
     else:
