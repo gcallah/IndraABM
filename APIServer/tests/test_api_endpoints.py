@@ -79,6 +79,7 @@ class Test(TestCase):
     def test_get_props(self):
         """
         See if we can get props.
+        This test is way too coupled to model db details: Must re-write!
         """
         model_id = random.randint(0, 10)
         rv = self.props.get(model_id)
@@ -91,35 +92,6 @@ class Test(TestCase):
             test_props = json.loads(file.read())
 
         self.assertEqual(rv, test_props)
-
-    @skip("Skipping put props while json format is in flux.")
-    def test_put_props(self):
-        """
-        Test whether we are able to put props
-        """
-        model_id = random.randint(0, 10)
-        with app.test_request_context():
-            rv = self.props.put(model_id)
-        self.assertEqual(type(rv), dict)
-
-    '''
-    def test_get_ModelMenu(self):
-        """
-        Testing whether we are getting the menu.
-        """
-        rv = self.model_menu.get()
-        test_menu_file = indra_dir + "/lib/menu.json"
-        with open(test_menu_file) as file:
-            test_menu = json.loads(file.read())["menu_database"]
-        self.assertEqual(rv, test_menu)
-    '''
-    
-    def test_err_return(self):
-        """
-        Testing whether we are able to get the right error message
-        """
-        rv = err_return("error message")
-        self.assertEqual(rv, {"Error:": "error message"})
 
 
 if __name__ == "__main__":
