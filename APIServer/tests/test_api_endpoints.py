@@ -8,28 +8,20 @@ from unittest import TestCase, main, skip
 from flask_restplus import Resource
 
 from APIServer.api_endpoints import Props, ModelMenu, RunModel
+from APIServer.api_endpoints import Props, ModelMenu, RunModel
 from APIServer.api_endpoints import app, HelloWorld, Endpoints, Models
 from APIServer.api_endpoints import indra_dir
 from APIServer.api_utils import err_return
 from APIServer.models_api import load_models, MODEL_FILE, MODEL_ID
+from lib.utils import get_prop_path
 
+BASIC_ID = 0
 MIN_NUM_ENDPOINTS = 2
-
-menu = [{"val": 0, "func": "run", "question": "Run for N periods"},
-        {"val": 1, "func": "line_graph", "question":
-            "Display a population graph."},
-        {"val": 2, "func": "scatter_plot", "question":
-            "Display a scatter plot."},
-        {"val": 3, "func": "ipython", "question":
-            "Leave menu for interactive python session."},
-        {"val": 4, "func": "leave", "question": "Quit)."}
-        ]
 
 
 def random_name():
     return "".join(random.choices(string.ascii_letters,
                                   k=random.randrange(1, 10)))
-
 
 class Test(TestCase):
     def setUp(self):
@@ -37,7 +29,6 @@ class Test(TestCase):
         self.endpoints = Endpoints(Resource)
         self.model = Models(Resource)
         self.props = Props(Resource)
-        self.model_menu = ModelMenu(Resource)
         self.run = RunModel(Resource)
         self.models = load_models(indra_dir)
 

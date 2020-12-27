@@ -74,8 +74,18 @@ class GameOfLife(Model):
         return super().run()
 
 
+def create_model(serial_obj=None):
+    """
+    This is for the sake of the API server:
+    """
+    if serial_obj is not None:
+        return GameOfLife(serial_obj=serial_obj)
+    else:
+        return GameOfLife(MODEL_NAME, grp_struct=game_group_struct)
+
+
 def main():
-    model = GameOfLife(MODEL_NAME, grp_struct=game_group_struct)
+    model = create_model()
     model.run()
     return 0
 

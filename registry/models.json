@@ -6,9 +6,8 @@
             "graph": "scatter",
             "model ID": 0,
             "name": "Basic",
-            "props": "models/props/basic.props.json",
-            "run": "basic",
-            "source": "https://github.com/gcallah/indras_net/blob/master/models/basic.py"
+            "package": "models",
+            "module": "basic"
         },
         {
             "active": false,
@@ -16,9 +15,8 @@
             "graph": "scatter",
             "model ID": 1,
             "name": "Bacteria",
-            "props": "models/props/bacteria.props.json",
-            "run": "bacteria",
-            "source": "https://github.com/gcallah/indras_net/blob/master/models/bacteria.py"
+            "package": "models",
+            "module": "bacteria"
         },
         {
             "active": false,
@@ -26,9 +24,8 @@
             "graph": "line",
             "model ID": 2,
             "name": "Financial Market Cycles",
-            "props": "models/props/fmarket.props.json",
-            "run": "fmarket",
-            "source": "https://github.com/gcallah/indras_net/blob/master/models/fmarket.py"
+            "package": "models",
+            "module": "fmarket"
         },
         {
             "active": false,
@@ -36,9 +33,8 @@
             "graph": "line",
             "model ID": 3,
             "name": "Adam Smith's Fashion Model",
-            "props": "models/props/fashion.props.json",
-            "run": "fashion",
-            "source": "https://github.com/gcallah/indras_net/blob/master/models/fashion.py"
+            "package": "models",
+            "module": "fashion"
         },
         {
             "active": false,
@@ -46,19 +42,17 @@
             "graph": "line",
             "model ID": 4,
             "name": "Predator-Prey Dynamics",
-            "props": "models/props/wolfsheep.props.json",
-            "run": "wolfsheep",
-            "source": "https://github.com/gcallah/indras_net/blob/master/models/wolfsheep.py"
+            "package": "models",
+            "module": "wolfsheep"
         },
         {
-            "active": false,
+            "active": true,
             "doc": "Examine how fires spread in a forest.",
             "graph": "scatter",
             "model ID": 5,
             "name": "Forest Fire",
-            "props": "models/props/forestfire.props.json",
-            "run": "forestfire",
-            "source": "https://github.com/gcallah/indras_net/blob/master/models/forestfire.py"
+            "package": "models",
+            "module": "forest_fire"
         },
         {
             "active": false,
@@ -66,19 +60,17 @@
             "graph": "scatter",
             "model ID": 6,
             "name": "Schelling's Segregation Model",
-            "props": "models/props/segregation.props.json",
-            "run": "segregation",
-            "source": "https://github.com/gcallah/indras_net/blob/master/models/segregation.py"
+            "package": "models",
+            "module": "segregation"
         },
         {
-            "active": false,
+            "active": true,
             "doc": "Everyone loves the El Farol Bar... until it is too crowded.",
             "graph": "line",
             "model ID": 7,
             "name": "El Farol Bar",
-            "props": "models/props/el_farol.props.json",
-            "run": "el_farol",
-            "source": "https://github.com/gcallah/indras_net/blob/master/models/el_farol.py"
+            "package": "models",
+            "module": "el_farol"
         },
         {
             "active": false,
@@ -86,9 +78,8 @@
             "graph": "scatter",
             "model ID": 8,
             "name": "Capital Structure",
-            "props": "capital/props/complementary.props.json",
-            "run": "complementary",
-            "source": "https://github.com/gcallah/indras_net/blob/master/capital/complementary.py"
+            "package": "capital",
+            "module": "complementary"
         },
         {
             "active": false,
@@ -96,9 +87,26 @@
             "graph": "line",
             "model ID": 9,
             "name": "Menger's Origin of Money",
-            "props": "capital/props/money.props.json",
-            "run": "money",
-            "source": "https://github.com/gcallah/indras_net/blob/master/capital/money.py"
+            "package": "capital",
+            "module": "money"
+        },
+        {
+            "active": true,
+            "doc": "A model which simulates the spread of panic",
+            "graph": "scatter",
+            "model ID": 10,
+            "name": "Panic",
+            "package": "models",
+            "module": "panic"
+        },
+        {
+            "active": true,
+            "doc": "The implementation of Conway's Game of Life",
+            "graph": "scatter",
+            "model ID": 11,
+            "name": "Game of Life",
+            "package": "models",
+            "module": "game_of_life"
         }
     ]
 }

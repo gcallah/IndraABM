@@ -8,7 +8,7 @@ from APIServer.api_utils import err_return
 # from lib.user import APIUser
 from APIServer.api_utils import json_converter
 from APIServer.models_api import get_models
-from APIServer.props_api import get_props_for_curr_exec
+from APIServer.props_api import get_props
 from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
 from registry.registry import registry
 from APIServer.model_api import run_model, create_model
@@ -89,9 +89,7 @@ class Props(Resource):
         """
         Get the list of properties (parameters) for a model.
         """
-
-        props = \
-            get_props_for_curr_exec(model_id, indra_dir)
+        props = get_props(model_id, indra_dir)
         exec_key = registry.create_exec_env(save_on_register=True)
         props["exec_key"] = {
             VALUE: exec_key,
@@ -99,7 +97,6 @@ class Props(Resource):
             HIVAL: None,
             LOWVAL: None
         }
-        print("The execution key in get prop is", exec_key)
         return props
 
     @api.expect(props)
@@ -108,7 +105,6 @@ class Props(Resource):
         Put a revised list of properties (parameters) for a model
         back to the server.
         """
-        print(api.payload.get("exec_key"))
         return json_converter(create_model(model_id, api.payload, indra_dir))
 
 
@@ -139,7 +135,7 @@ class RunModel(Resource):
         """
         Put a model env to the server and run it `run_time` periods.
         """
-        return json_converter(run_model(api.payload, run_time))
+        return json_converter(run_model(api.payload, run_time, indra_dir))
 
 
 @api.route('/registry/clear/<int:exec_key>')

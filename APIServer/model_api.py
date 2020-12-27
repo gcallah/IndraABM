@@ -1,23 +1,39 @@
 """
 This module restores an env from json and runs it.
 """
-from lib.model import Model
+import importlib
+
+from APIServer.api_utils import err_return
+from APIServer.models_api import get_model_by_id, get_model_by_mod
+
+
+def module_from_model(model):
+    mod_path = f'{model["package"]}.{model["module"]}'
+    return importlib.import_module(mod_path)
 
 
 def create_model(model_id, props, indra_dir):
     """
     We get some props and create a model in response.
     """
-    return Model("test_model", props=props)
+    model_rec = get_model_by_id(model_id, indra_dir=indra_dir)
+    if model_rec is not None:
+        return module_from_model(model_rec).create_model()
+    else:
+        return err_return("Model not found: " + str(model_id))
 
 
-def run_model(serial_model, run_time):
+def run_model(serial_model, periods, indra_dir):
     """
-    We create a dummy env that fills itself in to create
-    the real env from the payload.
+    We get passed `serial_model` and run it `periods` times.
+    `model_rec` refers to the record from the model db.
+    `model` refers to an instance of the Python Model class.
     """
-    print("About to recreate model from json")
-    model = Model(serial_obj=serial_model)
-    print("About to run model restored from json")
-    model.runN(run_time)
-    return model
+    model_rec = get_model_by_mod(serial_model["module"], indra_dir=indra_dir)
+    if model_rec is not None:
+        module = module_from_model(model_rec)
+        model = module.create_model(serial_obj=serial_model)
+        model.runN(periods)
+        return model
+    else:
+        return err_return("Model not found: " + serial_model["name"])
