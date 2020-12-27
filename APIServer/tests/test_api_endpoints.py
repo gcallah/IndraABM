@@ -18,16 +18,6 @@ from lib.utils import get_prop_path
 BASIC_ID = 0
 MIN_NUM_ENDPOINTS = 2
 
-menu = [{"val": 0, "func": "run", "question": "Run for N periods"},
-        {"val": 1, "func": "line_graph", "question":
-            "Display a population graph."},
-        {"val": 2, "func": "scatter_plot", "question":
-            "Display a scatter plot."},
-        {"val": 3, "func": "ipython", "question":
-            "Leave menu for interactive python session."},
-        {"val": 4, "func": "leave", "question": "Quit)."}
-        ]
-
 
 def random_name():
     return "".join(random.choices(string.ascii_letters,
@@ -39,10 +29,8 @@ class Test(TestCase):
         self.endpoints = Endpoints(Resource)
         self.model = Models(Resource)
         self.props = Props(Resource)
-        self.model_menu = ModelMenu(Resource)
         self.run = RunModel(Resource)
         self.models = load_models(indra_dir)
-        # self.execution_key = self.props.get(13).get("execution_key").get("val")
 
     def test_load_models(self):
         """
