@@ -31,6 +31,7 @@ def get_func_name(f):
 
 
 def get_prop_path(model_name, model_dir="models"):
+    # this doesnt work because file names have underscores
     ihome = os.getenv("INDRA_HOME", "")
     return ihome + "/" + model_dir + "/props/" + model_name + ".props.json"
 

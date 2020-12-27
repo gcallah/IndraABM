@@ -1,5 +1,7 @@
 """
 """
+import os
+
 import json
 import random
 import string
@@ -7,7 +9,6 @@ from unittest import TestCase, main, skip
 
 from flask_restplus import Resource
 
-from APIServer.api_endpoints import Props, ModelMenu, RunModel
 from APIServer.api_endpoints import Props, ModelMenu, RunModel
 from APIServer.api_endpoints import app, HelloWorld, Endpoints, Models
 from APIServer.api_endpoints import indra_dir
@@ -23,6 +24,7 @@ def random_name():
     return "".join(random.choices(string.ascii_letters,
                                   k=random.randrange(1, 10)))
 
+
 class Test(TestCase):
     def setUp(self):
         self.hello_world = HelloWorld(Resource)
@@ -31,6 +33,9 @@ class Test(TestCase):
         self.props = Props(Resource)
         self.run = RunModel(Resource)
         self.models = load_models(indra_dir)
+        test_model_file = indra_dir + MODEL_FILE
+        with open(test_model_file) as file:
+            self.test_models_db = json.loads(file.read())["models_database"]
 
     def test_load_models(self):
         """
@@ -66,16 +71,14 @@ class Test(TestCase):
 
     def test_get_props(self):
         """
-        See if we can get props.
+        See if we can get props. Doing this for basic right now.
+        Cannot seem to resolve props from model_id or name
         """
-        model_id = random.randint(0, 10)
+        model_id = 0
         rv = self.props.get(model_id)
 
-        test_model_file = indra_dir + MODEL_FILE
-        with open(test_model_file) as file:
-            test_models_db = json.loads(file.read())["models_database"]
-
-        with open(indra_dir + "/" + test_models_db[model_id]["props"]) as file:
+        with open(os.path.join(indra_dir, "models", "props",
+                               "basic.props.json")) as file:
             test_props = json.loads(file.read())
 
         self.assertTrue("exec_key" in rv)
@@ -85,15 +88,28 @@ class Test(TestCase):
         del rv["exec_key"]
         self.assertEqual(rv, test_props)
 
-    @skip("Skipping put props while json format is in flux.")
     def test_put_props(self):
         """
         Test whether we are able to put props
         """
-        model_id = random.randint(0, 10)
-        with app.test_request_context():
-            rv = self.props.put(model_id)
-        self.assertEqual(type(rv), dict)
+        # some models are disabled
+        model_id = 0
+        props = self.props.get(model_id)
+        changed_props = {}
+        for prop_name in props:
+            prop_val = props[prop_name]
+            if prop_name != "exec_key" and prop_val['atype'] == "INT":
+                prop_val['val'] = random.randint(prop_val['lowval'],
+                                                 prop_val['hival'])
+                changed_props[prop_name] = prop_val['val']
+        with app.test_client() as client:
+            rv = client.put('/models/props/' + str(model_id),
+                            data=json.dumps(props))
+        self.assertEqual(type(rv.json['props']), dict)
+
+        for prop_name in changed_props:
+            self.assertTrue(rv.json['props'][prop_name]['val'],
+                            changed_props[prop_name])
 
     '''
     def test_get_ModelMenu(self):
