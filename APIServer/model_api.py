@@ -29,7 +29,7 @@ def run_model(serial_model, periods, indra_dir):
     `model_rec` refers to the record from the model db.
     `model` refers to an instance of the Python Model class.
     """
-    model_rec = get_model_by_mod(serial_model["name"], indra_dir=indra_dir)
+    model_rec = get_model_by_mod(serial_model["module"], indra_dir=indra_dir)
     if model_rec is not None:
         module = module_from_model(model_rec)
         model = module.create_model(serial_obj=serial_model)
