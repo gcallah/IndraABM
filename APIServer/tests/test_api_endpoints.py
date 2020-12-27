@@ -13,8 +13,9 @@ from APIServer.api_endpoints import app, HelloWorld, Endpoints, Models
 from APIServer.api_endpoints import indra_dir
 from APIServer.api_utils import err_return
 from APIServer.models_api import load_models, MODEL_FILE, MODEL_ID
+from lib.utils import get_prop_path
 
-
+BASIC_ID = 0
 MIN_NUM_ENDPOINTS = 2
 
 menu = [{"val": 0, "func": "run", "question": "Run for N periods"},
@@ -75,23 +76,13 @@ class Test(TestCase):
         for model in api_ret:
             self.assertIn(MODEL_ID, model)
 
-    @skip("Skipping get props.")
     def test_get_props(self):
         """
         See if we can get props.
         This test is way too coupled to model db details: Must re-write!
         """
-        model_id = random.randint(0, 10)
-        rv = self.props.get(model_id)
-
-        test_model_file = indra_dir + MODEL_FILE
-        with open(test_model_file) as file:
-            test_models_db = json.loads(file.read())["models_database"]
-
-        with open(indra_dir + "/" + test_models_db[model_id]["props"]) as file:
-            test_props = json.loads(file.read())
-
-        self.assertEqual(rv, test_props)
+        basic_api_props = self.props.get(BASIC_ID)
+        self.assertNotEqual(basic_api_props, None)
 
 
 if __name__ == "__main__":
