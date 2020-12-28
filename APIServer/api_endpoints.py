@@ -1,7 +1,7 @@
 # Indra API server
 import logging
 import os
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
 from APIServer.api_utils import err_return
@@ -121,7 +121,7 @@ class ModelMenu(Resource):
 
 
 env = api.model("env", {
-    "env": fields.String("Should be json rep of env.")
+    "model": fields.String("Should be json rep of model.")
 })
 
 

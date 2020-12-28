@@ -29,7 +29,7 @@ basic_grps = {
     "blue_grp": {
         "mbr_action": basic_action,
         "num_mbrs": DEF_BLUE_MBRS,
-        "num_mbrs_prop": num_blue,
+        "num_mbrs_prop": "num_blue",
         "color": BLUE
     },
     "red_grp": {
@@ -50,12 +50,14 @@ class Basic(Model):
     """
 
 
-def create_model(serial_obj=None):
+def create_model(serial_obj=None, serial_obj_with_only_props=False):
     """
     This is for the sake of the API server:
     """
-    if serial_obj is not None:
+    if serial_obj is not None and not serial_obj_with_only_props:
         return Basic(serial_obj=serial_obj)
+    elif serial_obj is not None and serial_obj_with_only_props:
+        return Basic(MODEL_NAME, grp_struct=basic_grps, props=serial_obj)
     else:
         return Basic(MODEL_NAME, grp_struct=basic_grps)
 
