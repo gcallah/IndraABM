@@ -36,4 +36,4 @@ def run_model(serial_model, periods, indra_dir):
         model.runN(periods)
         return model
     else:
-        return err_return("Model not found: " + serial_model["name"])
+        return None
