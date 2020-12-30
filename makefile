@@ -76,8 +76,8 @@ pytests: FORCE
 	cd $(MODELS_DIR); make tests
 	cd $(LIB_DIR); make tests
 	cd $(REG_DIR); make tests
+	cd $(API_DIR); make tests
 	# put these back in once working:
-	# cd $(API_DIR); make tests
 	# cd capital; make tests
 	# cd epidemics; make tests
 
