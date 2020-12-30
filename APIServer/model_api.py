@@ -3,8 +3,8 @@ This module restores an env from json and runs it.
 """
 import importlib
 
+from registry.model_db import get_model_by_id, get_model_by_mod
 from APIServer.api_utils import err_return
-from APIServer.models_api import get_model_by_id, get_model_by_mod
 
 
 def module_from_model(model):
