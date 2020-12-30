@@ -167,7 +167,7 @@ class RegisteryTestCase(TestCase):
         registry.save_reg(key=complexModel.exec_key)
         loaded_object = registry.load_reg(complexModel.exec_key)
         self.assertTrue("model" in loaded_object)
-        self.assertTrue("Basic" == loaded_object['model'].name)
+        self.assertTrue("Basic" == loaded_object['model'].module)
         all_red_members_have_attribute_5 = True
         all_blue_memebrs_have_attribute_10 = True
         deserialized_model = loaded_object['model']

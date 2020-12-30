@@ -110,6 +110,7 @@ class Props(Resource):
 
 @api.route('/models/menu/<int:execution_id>')
 class ModelMenu(Resource):
+    # ModelMenu is used by the Frontend
     '''
     def get(self, execution_id):
         """
@@ -135,7 +136,10 @@ class RunModel(Resource):
         """
         Put a model env to the server and run it `run_time` periods.
         """
-        return json_converter(run_model(api.payload, run_time, indra_dir))
+        model = run_model(api.payload, run_time, indra_dir)
+        if model is None:
+            return err_return("Model not found: " + api.payload["module"])
+        return json_converter(model)
 
 
 @api.route('/registry/clear/<int:exec_key>')

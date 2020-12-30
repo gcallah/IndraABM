@@ -104,8 +104,9 @@ class ElFarol(Model):
         """
         Overriding this method to  setup for pop_hist
         """
-        self.env = Env(self.name, members=self.groups, exec_key=self.exec_key,
-                       width=self.width, height=self.height, action=env_action,
+        self.env = Env(self.module, members=self.groups,
+                       exec_key=self.exec_key, width=self.width,
+                       height=self.height, action=env_action,
                        pop_hist_setup=setup_attendance)
         return self.env
 

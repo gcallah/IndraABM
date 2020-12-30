@@ -110,7 +110,7 @@ class Model():
         """
         Create the model for the first time.
         """
-        self.name = model_nm
+        self.module = model_nm
         self.grp_struct = grp_struct
         self.handle_props(props)
         if exec_key is not None:
@@ -129,7 +129,7 @@ class Model():
         self.period = 0
 
     def handle_props(self, props):
-        self.props = init_props(self.name, props)
+        self.props = init_props(self.module, props)
         self.height = self.props.get(GRID_HEIGHT, DEF_HEIGHT)
         self.width = self.props.get(GRID_WIDTH, DEF_WIDTH)
 
@@ -143,7 +143,7 @@ class Model():
         """
         This method restores a model from its JSON rep.
         """
-        self.name = jrep["name"]
+        self.module = jrep["module"]
         self.exec_key = jrep["exec_key"]
         self.period = jrep["period"]
         self.switches = jrep["switches"]
@@ -154,7 +154,7 @@ class Model():
                             exec_key=self.exec_key)
         self.user_type = jrep["user_type"]
         self.props = jrep["props"]
-        self.env = Env(self.name, serial_obj=jrep["env"],
+        self.env = Env(self.module, serial_obj=jrep["env"],
                        exec_key=self.exec_key)
 
     def to_json(self):
@@ -162,7 +162,7 @@ class Model():
         This method generates the JSON representation for this model.
         """
         jrep = {}
-        jrep["name"] = self.name
+        jrep["module"] = self.module
         jrep["exec_key"] = self.exec_key
         jrep["period"] = self.period
         jrep["switches"] = self.switches
@@ -197,8 +197,9 @@ class Model():
         but this one will already set the model name and add
         the groups.
         """
-        self.env = Env(self.name, members=self.groups, exec_key=self.exec_key,
-                       width=self.width, height=self.height, action=env_action)
+        self.env = Env(self.module, members=self.groups,
+                       exec_key=self.exec_key, width=self.width,
+                       height=self.height, action=env_action)
         return self.env
 
     def create_groups(self):
@@ -235,7 +236,7 @@ class Model():
                                                                == API):
             self.runN()
         else:
-            self.user.tell("Running model " + self.name)
+            self.user.tell("Running model " + self.module)
             while True:
                 # run until user exit!
                 if self.user() == USER_EXIT:
