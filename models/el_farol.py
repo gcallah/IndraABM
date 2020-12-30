@@ -106,8 +106,7 @@ class ElFarol(Model):
         """
         self.env = Env(self.module, members=self.groups,
                        exec_key=self.exec_key, width=self.width,
-                       height=self.height, action=env_action,
-                       pop_hist_setup=setup_attendance)
+                       height=self.height, action=env_action)
         return self.env
 
 
