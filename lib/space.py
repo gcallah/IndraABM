@@ -225,15 +225,22 @@ class Space(Group):
         self.from_json(serial_obj)
 
     def to_json(self):
-        rep = super().to_json()
+        """
+        We can order these as we wish to make debugging the API easier:
+        """
+        rep = {}
         rep["type"] = self.type
         rep["width"] = self.width
         rep["height"] = self.height
-        rep["locations"] = self.locations
         rep["random_placing"] = self.random_placing
+        rep.update(super().to_json())
+        rep["locations"] = self.locations
         return rep
 
     def from_json(self, rep):
+        """
+        Recover a space from JSON.
+        """
         super().from_json(rep)
         self.type = rep["type"]
         self.width = rep["width"]

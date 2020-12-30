@@ -31,7 +31,7 @@ def game_agent_action(agent, **kwargs):
     return DONT_MOVE
 
 
-game_group_struct = {
+game_grp_struct = {
     "dead": {
         "num_mbrs": DEF_NUM_DEAD,
         "num_mbrs_prop": "num_blue",
@@ -48,7 +48,7 @@ game_group_struct = {
 
 def populate_board(patterns, pattern_num):
     agent_locs = patterns[pattern_num]
-    grp = game_group_struct["dead"]
+    grp = game_grp_struct["dead"]
     for loc in agent_locs:
         agent = create_agent(loc[X], loc[Y], game_agent_action)
         grp += create_agent
@@ -62,6 +62,7 @@ def live_or_die(agent):
     """
     num_live_neighbors = get_num_of_neighbors(exclude_self=True, pred=None,
                                               size=1, region_type=None)
+    # 2 and 3 should not be hard-coded!
     if (num_live_neighbors != 2 and num_live_neighbors != 3):
         return BLUE
     else:
@@ -74,14 +75,14 @@ class GameOfLife(Model):
         return super().run()
 
 
-def create_model(serial_obj=None):
+def create_model(serial_obj=None, props=None):
     """
     This is for the sake of the API server:
     """
     if serial_obj is not None:
         return GameOfLife(serial_obj=serial_obj)
     else:
-        return GameOfLife(MODEL_NAME, grp_struct=game_group_struct)
+        return GameOfLife(MODEL_NAME, grp_struct=game_grp_struct, props=props)
 
 
 def main():

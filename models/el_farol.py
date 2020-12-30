@@ -110,14 +110,14 @@ class ElFarol(Model):
         return self.env
 
 
-def create_model(serial_obj=None):
+def create_model(serial_obj=None, props=None):
     """
     This is for the sake of the API server:
     """
     if serial_obj is not None:
         return ElFarol(serial_obj=serial_obj)
     else:
-        return ElFarol(MODEL_NAME, grp_struct=el_farol_grps)
+        return ElFarol(MODEL_NAME, grp_struct=el_farol_grps, props=props)
 
 
 def main():
