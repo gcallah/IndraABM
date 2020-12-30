@@ -9,14 +9,20 @@ MODEL_ID = "modelID"
 MODEL_MOD = "module"
 
 
-def get_models(indra_dir):
+def get_models(indra_dir, active_only=False):
     """
     Return a list of available models.
+    If `active_only` is True, only return active models.
     """
     model_file = indra_dir + MODEL_PATH
     try:
         with open(model_file) as file:
-            return json.loads(file.read())
+            model_list = json.loads(file.read())
+            if active_only:
+                # filter list with a list comprehension:
+                # model_list = [ list comprehension ]
+                pass
+            return model_list
     except FileNotFoundError:
         return None
 
