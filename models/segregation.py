@@ -1,8 +1,9 @@
 """
 A model to simulate the spread of fire in a forest.
 """
-
+import random
 from lib.agent import DONT_MOVE
+from lib.space import neighbor_ratio
 from lib.display_methods import RED, BLUE
 from lib.model import Model
 
@@ -43,10 +44,33 @@ hood_size = None
 opp_group = None
 
 
+def get_tolerance(default_tolerance, sigma):
+    """
+    `tolerance` measures how *little* of one's own group one will
+    tolerate being among.
+    """
+    tol = random.gauss(default_tolerance, sigma)
+    # a low tolerance number here means high tolerance!
+    tol = min(tol, MAX_TOL)
+    tol = max(tol, MIN_TOL)
+    return tol
+
+
+def env_favorable(hood_ratio, my_tolerance):
+    """
+    Is the environment to our agent's liking or not??
+    """
+    return hood_ratio >= my_tolerance
+
+
 def agent_action(agent, **kwargs):
     """
     This is what agents do each turn of the model.
     """
+    agent_group = agent.group_name()
+    ratio_num = neighbor_ratio(agent, # noqa F841
+                               lambda agent: agent.group_name() == agent_group,
+                               size=1)
     return DONT_MOVE
 
 
