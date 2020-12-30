@@ -127,14 +127,14 @@ class ForestFire(Model):
         self.grp_struct[HEALTHY]["num_mbrs"] = num_agents
 
 
-def create_model(serial_obj=None):
+def create_model(serial_obj=None, props=None):
     """
     This is for the sake of the API server:
     """
     if serial_obj is not None:
         return ForestFire(serial_obj=serial_obj)
     else:
-        return ForestFire(MODEL_NAME, grp_struct=ff_grps)
+        return ForestFire(MODEL_NAME, grp_struct=ff_grps, props=props)
 
 
 def main():

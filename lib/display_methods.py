@@ -290,10 +290,12 @@ class LineGraph():
         plt.close()
         self.legend = ["Type"]
         self.title = title
-        # self.anim = anim
-        # self.data_func = data_func
-        for i in varieties:
-            data_points = len(varieties[i]["data"])
+        self.anim = anim
+        self.data_func = data_func
+        for key in varieties:
+            # Since all varieties have the same length, we just need the length
+            # of one of them:
+            data_points = len(varieties[key]["data"])
             break
         self.headless = is_headless
         self.draw_graph(data_points, varieties, attrs)
@@ -310,7 +312,7 @@ class LineGraph():
         ax.set_title(self.title)
         x = np.arange(0, data_points)
         lines = self.create_lines(x, varieties)
-        g = sns.lineplot("x", "y", data=lines,
+        g = sns.lineplot(x="x", y="y", data=lines,
                          hue="color", palette=colors_dict)
         if attrs is not None:
             """
@@ -389,6 +391,9 @@ class LineGraph():
         self.show()
 
 
+DEF_SIZE = 40
+
+
 class ScatterPlot():
     """
     We are going to use a class here to save state for our animation
@@ -402,13 +407,16 @@ class ScatterPlot():
         plot, which will get assigned different colors and perhaps markers.
         """
         global anim_func
-        DEF_SIZE = 40
 
         plt.close()
         self.scats = None
         self.anim = anim
         self.data_func = data_func
         self.headless = is_headless
+        self.draw_graph(title, width, height, varieties, attrs)
+
+    @expects_plt
+    def draw_graph(self, title, width, height, varieties, attrs):
         self.legend = ["Type"]
         legend_pos = "upper left"
 

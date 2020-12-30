@@ -7,12 +7,12 @@ from unittest import TestCase, main, skip
 
 from flask_restplus import Resource
 
+from registry.model_db import get_models, MODEL_PATH, MODEL_ID
 from APIServer.api_endpoints import Props, ModelMenu, RunModel
 from APIServer.api_endpoints import Props, ModelMenu, RunModel
 from APIServer.api_endpoints import app, HelloWorld, Endpoints, Models
 from APIServer.api_endpoints import indra_dir
 from APIServer.api_utils import err_return
-from APIServer.models_api import load_models, MODEL_FILE, MODEL_ID
 from lib.utils import get_prop_path
 
 BASIC_ID = 0
@@ -30,17 +30,7 @@ class Test(TestCase):
         self.model = Models(Resource)
         self.props = Props(Resource)
         self.run = RunModel(Resource)
-        self.models = load_models(indra_dir)
-
-    def test_load_models(self):
-        """
-        See if models can be loaded.
-        """
-        rv = self.models
-        test_model_file = indra_dir + MODEL_FILE
-        with open(test_model_file) as file:
-            test_rv = json.loads(file.read())["models_database"]
-        self.assertEqual(rv, test_rv)
+        self.models = get_models(indra_dir)
 
     def test_hello_world(self):
         """
