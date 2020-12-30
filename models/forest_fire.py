@@ -61,30 +61,28 @@ def tree_action(agent, **kwargs):
     """
     A simple default agent action.
     """
+    # print("The agent is", agent)
+    # print("The agent's group is", agent.group_name())
     model = get_model(agent.exec_key)
     old_group = agent.group_name()
     if old_group == HEALTHY:
         if exists_neighbor(agent, lambda agent: agent.group_name() == ON_FIRE):
             if DEBUG2:
                 print("Setting nearby tree on fire!")
-            model.add_switch(str(agent), HEALTHY, NEW_FIRE)
+            agent.set_prim_group(NEW_FIRE)
 
     # if we didn't catch on fire above, do probabilistic transition:
     if old_group == agent.group_name():
         curr_state = STATE_MAP[old_group]
         # we gotta do these str/int shenanigans with state cause
         # JSON only allows strings as dict keys
-        agent.has_acted = True
         agent.set_prim_group(GROUP_MAP[str(prob_state_trans(int(curr_state),
                                                             state_trans))])
-
         if DEBUG2:
             if agent.group_name == NEW_FIRE:
                 print("Tree spontaneously catching fire.")
 
     if old_group != agent.group_name():
-        # if we entered a new state, then...
-        agent.has_acted = True
         model.add_switch(str(agent),
                          old_group,
                          agent.group_name())
