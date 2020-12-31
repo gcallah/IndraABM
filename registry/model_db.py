@@ -19,9 +19,9 @@ def get_models(indra_dir, active_only=False):
         with open(model_file) as file:
             model_list = json.loads(file.read())
             if active_only:
-                # filter list with a list comprehension:
-                # model_list = [ list comprehension ]
-                pass
+                model_list = [model for model in model_list if model['active']
+                              == True] # noqa E712
+                return model_list
             return model_list
     except FileNotFoundError:
         return None
