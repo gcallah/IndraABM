@@ -46,7 +46,7 @@ $(MODEL_REGISTRY)/%_model.json: $(MODELS_DIR)/%.py
 models.json: $(MODELJSON_FILES)
 	python3 json_combiner.py $? --models_fp $(JSON_DESTINATION)
 
-create_dev_env: FORCE
+dev_env: FORCE
 	./setup.sh .bashrc  # change to .bash_profile for Mac!
 	git submodule init $(UTILS_DIR)
 	git submodule update $(UTILS_DIR)
