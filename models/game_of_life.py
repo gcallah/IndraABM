@@ -5,6 +5,8 @@ from lib.space import get_num_of_neighbors
 from registry.registry import get_agent
 from lib.agent import X, Y
 
+DEBUG = False
+
 MODEL_NAME = "game_of_life"
 
 DEF_NUM_ALIVE = 4

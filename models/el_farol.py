@@ -45,8 +45,9 @@ def drinker_action(agent, **kwargs):
     To go or not to go, that is the question -Not Callahan
     for the now the decision is made at random
     """
-    print("Alcoholic {} is located at {}".format(agent.name,
-                                                 agent.get_pos()))
+    if DEBUG:
+        print("Alcoholic {} is located at {}".format(agent.name,
+                                                     agent.get_pos()))
     curr_model = get_model(agent.exec_key)
     if agent.group_name() == AT_HOME:
         # decid to go to bar or not
