@@ -34,7 +34,8 @@ def def_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    print("Agent {} is acting".format(agent.name))
+    if DEBUG:
+        print("Agent {} is acting".format(agent.name))
     return DONT_MOVE
 
 

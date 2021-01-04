@@ -160,7 +160,8 @@ class Group(Agent):
         This should return the total of all
         agents who acted in a particular call.
         """
-        print("Calling {} to act.".format(self.name))
+        if DEBUG:
+            print("Calling {} to act.".format(self.name))
         total_acts = 0
         total_moves = 0
         del_list = []
