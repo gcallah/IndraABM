@@ -6,6 +6,8 @@ import random
 
 from propargs.propargs import PropArgs
 
+DEF_MODEL_DIR = "models"
+
 
 def agent_by_name(agent):
     return agent if isinstance(agent, str) else agent.name
@@ -30,13 +32,17 @@ def get_func_name(f):
         return ""
 
 
-def get_prop_path(model_name, model_dir="models"):
+def get_prop_path(model_name, model_dir=None):
+    if model_dir is None:
+        model_dir = DEF_MODEL_DIR
     ihome = os.getenv("INDRA_HOME", "")
     return ihome + "/" + model_dir + "/props/" + model_name + ".props.json"
 
 
-def init_props(model_nm, props=None, model_dir="models",
+def init_props(model_nm, props=None, model_dir=None,
                skip_user_questions=False):
+    if model_dir is None:
+        model_dir = DEF_MODEL_DIR
     props_file = get_prop_path(model_nm, model_dir=model_dir)
     if props is None:
         pa = PropArgs.create_props(model_nm,
