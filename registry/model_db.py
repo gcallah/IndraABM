@@ -17,12 +17,10 @@ def get_models(indra_dir, active_only=False):
     model_file = indra_dir + MODEL_PATH
     try:
         with open(model_file) as file:
-            model_list = json.loads(file.read())
+            ml = json.loads(file.read())
             if active_only:
-                model_list = [model for model in model_list if model['active']
-                              == True] # noqa E712
-                return model_list
-            return model_list
+                ml = [model for model in ml if model['active']]
+            return ml
     except FileNotFoundError:
         return None
 

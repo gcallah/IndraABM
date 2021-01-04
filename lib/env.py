@@ -329,6 +329,8 @@ class Env(Space):
                     data[var]["color"] = self.get_color(var)
                     if not period:
                         period = len(data[var]["data"])
+        print(self.pop_hist.periods, self.pop_hist.pops)
+        print(period, data)
         return period, data
 
     def bar_data(self):
