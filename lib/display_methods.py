@@ -235,19 +235,20 @@ class BarGraph():
     @expects_plt
     def create_bars(self, x, ax, varieties):
         bar_coordinates = 0
+        print(varieties)
+        steps = 1 / len(varieties)
         for i, var in enumerate(varieties):
-            if var != "Infected":
-                data = varieties[var]["data"]
-                color = get_color(varieties[var], i)
-                if len(x) > 40:
-                    ax.bar(x[-40:] + bar_coordinates,
-                           height=data[-40:], label=var,
-                           color=color, width=.2)
-                else:
-                    ax.bar(x + bar_coordinates,
-                           height=data, label=var, color=color, width=.2)
-
-                bar_coordinates += 0.2
+            # take care of this kluge later
+            data = varieties[var]["data"]
+            color = get_color(varieties[var], i)
+            if len(x) > 40:
+                ax.bar(x[-40:] + bar_coordinates,
+                       height=data[-40:], label=var,
+                       color=color, width=steps)
+            else:
+                ax.bar(x + bar_coordinates,
+                       height=data, label=var, color=color, width=steps)
+            bar_coordinates += steps
 
     @expects_plt
     def show(self):
@@ -331,7 +332,7 @@ class LineGraph():
                 anno_x, anno_y = special_points[0][0], special_points[0][1]
                 plt.annotate(special_points_name, xy=(anno_x, anno_y),
                              xytext=(3, 1.5),
-                             arrowprops=dict(facecolor='black', shrink=0.05),
+                             arrowprops=dict(facecolor='black', shrink=0.05)
                              )
             if "show_xy_labels" not in attrs:
                 ax.set_xlabel('')
