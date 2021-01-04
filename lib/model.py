@@ -128,8 +128,8 @@ class Model():
         self.switches = []  # for agents waiting to switch groups
         self.period = 0
 
-    def handle_props(self, props):
-        self.props = init_props(self.module, props)
+    def handle_props(self, props, model_dir=None):
+        self.props = init_props(self.module, props, model_dir=model_dir)
         self.height = self.props.get(GRID_HEIGHT, DEF_HEIGHT)
         self.width = self.props.get(GRID_WIDTH, DEF_WIDTH)
 
