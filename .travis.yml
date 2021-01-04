@@ -6,10 +6,10 @@ python:
 services:
     - docker
 
-before_install:
-
 install:
     - pip install -r requirements/requirements-dev.txt
+    - sudo apt-get update
+    - sudo apt-get install sshpass
 
 env:
     global:
