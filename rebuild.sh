@@ -11,5 +11,5 @@ source /home/project_name/.virtualenvs/indra-virtualenv/bin/activate
 # install all of our packages:
 pip install -r docker/requirements.txt
 echo "Going to reboot the webserver"
-API_TOKEN=$pa_pwd pa_reload_webapp.py project_name.pythonanywhere.com
+API_TOKEN=$api_token pa_reload_webapp.py project_name.pythonanywhere.com
 touch reboot
