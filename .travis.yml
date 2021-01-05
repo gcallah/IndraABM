@@ -12,10 +12,9 @@ install:
     - sudo apt-get install sshpass
 
 env:
-    global:
-        - INDRA_HOME=/home/travis/build/gcallah/IndraABM
-        - PYTHONPATH=$INDRA_HOME:$(pwd)
-        - props_dir=$INDRA_HOME/APIServer/data/
+    - INDRA_HOME=/home/travis/build/gcallah/IndraABM
+    - PYTHONPATH=$INDRA_HOME:$(pwd)
+    - props_dir=$INDRA_HOME/APIServer/data/
 
 script:
     - make tests
