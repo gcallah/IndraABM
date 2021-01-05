@@ -65,7 +65,7 @@ def env_favorable(hood_ratio, my_tolerance):
 
 def agent_action(agent, **kwargs):
     """
-    This is what agents do each  turn of the model.
+    This is what agents do each turn of the model.
     """
     agent_group = agent.group_name()
     ratio_num = neighbor_ratio(agent, # noqa F841
