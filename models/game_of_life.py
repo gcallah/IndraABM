@@ -74,7 +74,8 @@ def live_or_die(agent):
 
 class GameOfLife(Model):
     def run(self):
-        print("My groups are:", self.groups)
+        if DEBUG:
+            print("My groups are:", self.groups)
         return super().run()
 
 
