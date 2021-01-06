@@ -2,7 +2,7 @@
 # This runs on the production server: fetches new code,
 # installs needed packages, and restarts the server.
 
-export RELOAD=/home/IndraABM/.local/bin/pa_reload_webapp.py
+export RELOAD=pa_reload_webapp.py
 
 # get new source code onto the server
 git pull origin master
