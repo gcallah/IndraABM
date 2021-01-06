@@ -7,11 +7,11 @@ do nothing except move around randomly.
 
 from lib.agent import Agent, MOVE
 from lib.display_methods import GREEN
-from lib.model import Model, MBR_CREATOR, NUM_MBRS, MBR_ACTION, GRP_ACTION
+from lib.model import Model, MBR_CREATOR, NUM_MBRS, MBR_ACTION  # , GRP_ACTION
 from lib.model import NUM_MBRS_PROP, COLOR
-import capital.trade_utils as tu
+# import capital.trade_utils as tu
 from capital.trade_utils import seek_a_trade, GEN_UTIL_FUNC
-from capital.trade_utils import AMT_AVAIL, endow, UTIL_FUNC, trader_debug
+from capital.trade_utils import AMT_AVAIL, endow, UTIL_FUNC  # , trader_debug
 
 MODEL_NAME = "money"
 
@@ -100,7 +100,7 @@ def create_trader(name, i, action=None, **kwargs):
                  attrs={"goods": {},
                         "util": 0,
                         "pre_trade_util": 0},
-                **kwargs)
+                 **kwargs)
 
 
 def trader_action(agent, **kwargs):
