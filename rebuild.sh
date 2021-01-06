@@ -9,5 +9,5 @@ source /home/IndraABM/.virtualenvs/indra-virtualenv/bin/activate
 # install all of our packages:
 pip install -r requirements/requirements.txt
 echo "Going to reboot the webserver"
-API_TOKEN=$api_token pa_reload_webapp.py IndraABM.pythonanywhere.com
+API_TOKEN=830cfdea135023dfc162d0986700b6d1f4ac9dfd pa_reload_webapp.py IndraABM.pythonanywhere.com
 touch reboot
