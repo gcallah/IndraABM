@@ -21,7 +21,7 @@ MOTIV = "motivation"
 BAR_ATTEND = "bar attendees"
 
 
-DEBUG = True
+DEBUG = False
 
 
 def get_decision(agent):

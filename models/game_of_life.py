@@ -29,7 +29,8 @@ def game_agent_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    print("GofL agent {} is acting".format(agent.name))
+    if DEBUG:
+        print("GofL agent {} is acting".format(agent.name))
     return DONT_MOVE
 
 
