@@ -5,8 +5,8 @@ import random
 from lib.agent import DONT_MOVE
 from lib.space import neighbor_ratio
 from lib.display_methods import RED, BLUE
-from lib.model import Model
-
+from lib.model import Model, MBR_ACTION, NUM_MBRS
+from lib.model import COLOR, GRP_ACTION, NUM_MBRS_PROP
 MODEL_NAME = "segregation"
 DEBUG = False  # Turns debugging code on or off
 DEBUG2 = False  # Turns deeper debugging code on or off
@@ -76,18 +76,18 @@ def agent_action(agent, **kwargs):
 
 segregation_grps = {
     "blue_group": {
-        "grp_action": None,
-        "mbr_action": agent_action,
-        "num_mbrs": NUM_BLUE,
-        "num_mbs_prop": "num_blue",
-        "color": BLUE
+        GRP_ACTION: None,
+        MBR_ACTION: agent_action,
+        NUM_MBRS: NUM_BLUE,
+        NUM_MBRS_PROP: "num_blue",
+        COLOR: BLUE
     },
     "red_group": {
-        "grp_action": None,
-        "mbr_action": agent_action,
-        "num_members": NUM_RED,
-        "num_mbrs_prop": "num_red",
-        "color": RED
+        GRP_ACTION: None,
+        MBR_ACTION: agent_action,
+        NUM_MBRS: NUM_RED,
+        NUM_MBRS_PROP: "num_red",
+        COLOR: RED
     },
 }
 

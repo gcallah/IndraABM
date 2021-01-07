@@ -5,7 +5,7 @@ A model for how fires spread through a forest.
 
 from lib.agent import DONT_MOVE
 from lib.display_methods import TOMATO, GREEN, RED, SPRINGGREEN, BLACK
-from lib.model import Model
+from lib.model import Model, MBR_ACTION, NUM_MBRS, COLOR
 from lib.agent import prob_state_trans
 from lib.space import exists_neighbor
 from registry.registry import get_model
@@ -91,25 +91,25 @@ def tree_action(agent, **kwargs):
 
 ff_grps = {
     HEALTHY: {
-        "mbr_action": tree_action,
-        "num_mbrs": DEF_NUM_TREES,
-        "color": GREEN,
+        MBR_ACTION: tree_action,
+        NUM_MBRS: DEF_NUM_TREES,
+        COLOR: GREEN,
     },
     NEW_FIRE: {
-        "num_mbrs": 0,
-        "color": TOMATO,
+        NUM_MBRS: 0,
+        COLOR: TOMATO,
     },
     ON_FIRE: {
-        "num_mbrs": 0,
-        "color": RED,
+        NUM_MBRS: 0,
+        COLOR: RED,
     },
     BURNED_OUT: {
-        "num_mbrs": 0,
-        "color": BLACK,
+        NUM_MBRS: 0,
+        COLOR: BLACK,
     },
     NEW_GROWTH: {
-        "num_mbrs": 0,
-        "color": SPRINGGREEN,
+        NUM_MBRS: 0,
+        COLOR: SPRINGGREEN,
     },
 }
 

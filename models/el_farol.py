@@ -8,7 +8,8 @@ import random
 from lib.agent import MOVE, Agent
 from lib.env import Env
 from lib.display_methods import RED, BLUE
-from lib.model import Model
+from lib.model import Model, NUM_MBRS, MBR_ACTION
+from lib.model import COLOR, MBR_CREATOR
 from registry.registry import get_model
 AT_HOME = "At home"
 AT_BAR = "At bar"
@@ -73,16 +74,16 @@ def create_drinker(name, i, exec_key=None, action=drinker_action):
 
 el_farol_grps = {
     AT_HOME: {
-        "mbr_creator": create_drinker,
-        "mbr_action": drinker_action,
-        "num_mbrs": DEF_AT_HOME,
-        "color": BLUE
+        MBR_CREATOR: create_drinker,
+        MBR_ACTION: drinker_action,
+        NUM_MBRS: DEF_AT_HOME,
+        COLOR: BLUE
     },
     AT_BAR: {
-        "mbr_creator": create_drinker,
-        "mbr_action": drinker_action,
-        "num_mbrs": DEF_AT_BAR,
-        "color": RED
+        MBR_CREATOR: create_drinker,
+        MBR_ACTION: drinker_action,
+        NUM_MBRS: DEF_AT_BAR,
+        COLOR: RED
     },
 }
 

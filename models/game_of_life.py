@@ -1,6 +1,7 @@
 from lib.display_methods import RED, BLUE
 from lib.agent import DONT_MOVE
-from lib.model import Model, create_agent, MBR_ACTION
+from lib.model import Model, create_agent, NUM_MBRS, NUM_MBRS_PROP
+from lib.model import COLOR, MBR_ACTION
 from lib.space import get_num_of_neighbors
 from registry.registry import get_agent
 from lib.agent import X, Y
@@ -36,15 +37,15 @@ def game_agent_action(agent, **kwargs):
 
 game_grp_struct = {
     "dead": {
-        "num_mbrs": DEF_NUM_DEAD,
-        "num_mbrs_prop": "num_blue",
-        "color": BLUE
+        NUM_MBRS: DEF_NUM_DEAD,
+        NUM_MBRS_PROP: "num_blue",
+        COLOR: BLUE
     },
     "alive": {
         MBR_ACTION: game_agent_action,
-        "num_mbrs": DEF_NUM_ALIVE,
-        "num_mbrs_prop": "num_red",
-        "color": RED
+        NUM_MBRS: DEF_NUM_ALIVE,
+        NUM_MBRS_PROP: "num_red",
+        COLOR: RED
     },
 }
 

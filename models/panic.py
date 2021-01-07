@@ -5,7 +5,7 @@ A model to simulate the spread of panic in a crowd.
 from lib.agent import DONT_MOVE
 from lib.space import neighbor_ratio
 from lib.display_methods import RED, GREEN
-from lib.model import Model
+from lib.model import Model, MBR_ACTION, NUM_MBRS, COLOR, GRP_ACTION
 from registry.registry import get_model
 
 MODEL_NAME = "panic"
@@ -40,16 +40,16 @@ def agent_action(agent, **kwargs):
 
 panic_grps = {
     CALM: {
-        "grp_action": None,
-        "mbr_action": agent_action,
-        "num_mbrs": DEF_NUM_CALM,
-        "color": GREEN
+        GRP_ACTION: None,
+        MBR_ACTION: agent_action,
+        NUM_MBRS: DEF_NUM_CALM,
+        COLOR: GREEN
     },
     PANIC: {
-        "grp_action": None,
-        "mbr_action": agent_action,
-        "num_mbrs": DEF_NUM_PANIC,
-        "color": RED
+        GRP_ACTION: None,
+        MBR_ACTION: agent_action,
+        NUM_MBRS: DEF_NUM_PANIC,
+        COLOR: RED
     },
 }
 

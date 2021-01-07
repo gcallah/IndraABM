@@ -7,7 +7,7 @@ do nothing except move around randomly.
 
 from lib.agent import MOVE
 from lib.display_methods import RED, BLUE
-from lib.model import Model
+from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
 
 DEBUG = False
 
@@ -28,16 +28,16 @@ def basic_action(agent, **kwargs):
 
 basic_grps = {
     "blue_grp": {
-        "mbr_action": basic_action,
-        "num_mbrs": DEF_BLUE_MBRS,
-        "num_mbrs_prop": "num_blue",
-        "color": BLUE
+        MBR_ACTION: basic_action,
+        NUM_MBRS: DEF_BLUE_MBRS,
+        NUM_MBRS_PROP: "num_blue",
+        COLOR: BLUE
     },
     "red_grp": {
-        "mbr_action": basic_action,
-        "num_mbrs": DEF_RED_MBRS,
-        "num_mbrs_prop": "num_red",
-        "color": RED
+        MBR_ACTION: basic_action,
+        NUM_MBRS: DEF_RED_MBRS,
+        NUM_MBRS_PROP: "num_red",
+        COLOR: RED
     },
 }
 
