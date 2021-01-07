@@ -22,8 +22,8 @@ def header(s):
 class MoneyTestCase(TestCase):
     def setUp(self, props=None):
         header("Setting up")
-        self.goodA = {AMT_AVAIL: 10, "durability": 0.6}
-        self.goodB = {AMT_AVAIL: 8, "durability": 0.9}
+        self.goodA = {AMT_AVAIL: 10, mn.DUR: 0.6}
+        self.goodB = {AMT_AVAIL: 8, mn.DUR: 0.9}
         self.trader = {}
         self.goods = {"a": self.goodA, "b": self.goodB}
         self.goods_dict_empty = {}
