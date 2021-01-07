@@ -40,7 +40,7 @@ def get_model_dir(model_dir):
 
 def get_prop_path(model_name, model_dir=None):
     model_dir = get_model_dir(model_dir)
-    ihome = os.getenv("INDRA_HOME", "")
+    ihome = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
     return ihome + "/" + model_dir + "/props/" + model_name + ".props.json"
 
 
