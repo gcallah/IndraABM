@@ -32,17 +32,21 @@ def get_func_name(f):
         return ""
 
 
-def get_prop_path(model_name, model_dir=None):
+def get_model_dir(model_dir):
     if model_dir is None:
-        model_dir = DEF_MODEL_DIR
+        return DEF_MODEL_DIR
+    return model_dir
+
+
+def get_prop_path(model_name, model_dir=None):
+    model_dir = get_model_dir(model_dir)
     ihome = os.getenv("INDRA_HOME", "")
     return ihome + "/" + model_dir + "/props/" + model_name + ".props.json"
 
 
 def init_props(model_nm, props=None, model_dir=None,
                skip_user_questions=False):
-    if model_dir is None:
-        model_dir = DEF_MODEL_DIR
+    model_dir = get_model_dir(model_dir)
     props_file = get_prop_path(model_nm, model_dir=model_dir)
     if props is None:
         pa = PropArgs.create_props(model_nm,
