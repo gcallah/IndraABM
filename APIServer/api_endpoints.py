@@ -75,6 +75,8 @@ props = api.model("props", {
 @api.route('/models/props/<int:model_id>')
 class Props(Resource):
 
+    global indra_dir
+
     def get(self, model_id):
         """
         Get the list of properties (parameters) for a model.
