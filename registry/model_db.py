@@ -25,7 +25,7 @@ def get_models(indra_dir, active_only=False):
         return None
 
 
-def get_model_by_id(model_id, indra_dir='/home/IndraABM/IndraABM'):
+def get_model_by_id(model_id, indra_dir=''):
     """
     Fetch a model from the model db by id.
     """
@@ -38,7 +38,7 @@ def get_model_by_id(model_id, indra_dir='/home/IndraABM/IndraABM'):
     return None
 
 
-def get_model_by_mod(mod, indra_dir='/home/IndraABM/IndraABM'):
+def get_model_by_mod(mod, indra_dir=''):
     """
     Fetch a model from the model db by module name.
     """
