@@ -186,7 +186,16 @@ class Env(Space):
         pass
 
     def handle_pop_hist(self):
-        pass
+        self.pop_hist.add_period()
+        if "pop_hist_func" in self.attrs:
+            self.attrs["pop_hist_func"](self.pop_hist,
+                                        execution_key=self.execution_key)
+        else:
+            for mbr in self.pop_hist.pops:
+                if mbr in self.members and self.is_mbr_comp(mbr):
+                    self.pop_hist.record_pop(mbr, self.pop_count(mbr))
+                else:
+                    self.pop_hist.record_pop(mbr, 0)
 
     def get_census(self, num_moves):
         """

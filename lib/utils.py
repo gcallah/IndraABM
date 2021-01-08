@@ -8,6 +8,9 @@ from propargs.propargs import PropArgs
 
 DEF_MODEL_DIR = "models"
 
+INDRA_HOME_VAR = "INDRA_HOME"
+PA_INDRA_HOME = "/home/IndraABM/IndraABM"
+
 
 def agent_by_name(agent):
     return agent if isinstance(agent, str) else agent.name
@@ -40,7 +43,7 @@ def get_model_dir(model_dir):
 
 def get_prop_path(model_name, model_dir=None):
     model_dir = get_model_dir(model_dir)
-    ihome = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
+    ihome = os.getenv(INDRA_HOME_VAR, PA_INDRA_HOME)
     return ihome + "/" + model_dir + "/props/" + model_name + ".props.json"
 
 
