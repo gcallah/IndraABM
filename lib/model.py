@@ -121,8 +121,8 @@ class Model():
             print(f"exec_key = {self.exec_key}")
         else:
             self.exec_key = registry.create_exec_env()
-        registry.reg_model(self, self.exec_key)
         self.create_user()
+        registry.reg_model(self, self.exec_key)
         self.groups = self.create_groups()
         self.env = self.create_env(env_action=env_action)
         self.num_switches = 0
@@ -130,6 +130,10 @@ class Model():
         self.period = 0
 
     def handle_props(self, props, model_dir=None):
+        self.user_type = os.getenv("user_type", TERMINAL)
+        if self.user_type == API:
+            init_props(self.module, props, model_dir=model_dir,
+                       skip_user_questions=True)
         self.props = init_props(self.module, props, model_dir=model_dir)
         self.height = self.props.get(GRID_HEIGHT, DEF_HEIGHT)
         self.width = self.props.get(GRID_WIDTH, DEF_WIDTH)
