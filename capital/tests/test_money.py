@@ -3,12 +3,13 @@ This is the test suite for trade.py.
 """
 
 from unittest import TestCase, main, skip
+from registry.registry import create_exec_env
 from capital.trade_utils import AMT_AVAIL
 # from indra.agent import Agent
 # from capital.trade_utils import endow, get_rand_good,
 # is_depleted, transfer
 # from capital.trade_utils import rand_dist, equal_dist, GOODS
-# from capital.trade_utils import GOODS
+from capital.trade_utils import GOODS
 import capital.money as mn
 from capital.money import MODEL_NAME, money_grps, create_trader, natures_goods
 # import capital.trade_utils as tu
@@ -23,12 +24,11 @@ def header(s):
 class MoneyTestCase(TestCase):
     def setUp(self):
         header("Setting up")
-        self.mn = mn.Money(MODEL_NAME, grp_struct=money_grps)
-        self.trader = create_trader("trader", 0, exec_key=self.mn.exec_key)
-        self.goodA = {AMT_AVAIL: 10, mn.DUR: 0.6}
-        self.goodB = {AMT_AVAIL: 8, mn.DUR: 0.9}
-        self.goods = {"a": self.goodA, "b": self.goodB}
-        self.goods_dict_empty = {}
+        # self.mn = mn.Money(MODEL_NAME, grp_struct=money_grps)
+        # self.goodA = {AMT_AVAIL: 10, mn.DUR: 0.6}
+        # self.goodB = {AMT_AVAIL: 8, mn.DUR: 0.9}
+        # self.goods = {"a": self.goodA, "b": self.goodB}
+        # self.goods_dict_empty = {}
 
     # def tearDown(self):
     #     header("Tearing down")
@@ -38,12 +38,14 @@ class MoneyTestCase(TestCase):
     #     self.goods = None
 
 
-    # def test_create_trader(self):
+    def test_create_trader(self):
     #     header("Testing create_trader")
+          exec_key = create_exec_env()
+          self.trader = create_trader("trader", 0, exec_key=exec_key)
     #     pass
-    #     self.assertEqual(self.trader.name, "trader0")
-    #     self.assertEqual(self.trader[GOODS], {})
-    #     self.assertEqual(self.trader["util"], 0)
+          self.assertEqual(self.trader.name, "trader0")
+          self.assertTrue(isinstance(self.trader[GOODS], dict))
+          self.assertEqual(self.trader["util"], 0)
 
 
     # def test_nature_to_traders(self):

@@ -1,4 +1,3 @@
-
 """
 This is a minimal model that inherits from model.py
 and just sets up a couple of agents in two groups that
@@ -112,6 +111,10 @@ def trader_action(agent, **kwargs):
     """
     seek_a_trade(agent, **kwargs)
     for good in natures_goods:
+        if good not in natures_goods:
+            raise(KeyError(f"{good} not in nature."))
+        if good not in agent[GOODS]:
+            raise(KeyError(f"{good} not in {repr(agent)}."))
         # update current period's trade count in natures_good
         natures_goods[good][TRADE_COUNT] += agent[GOODS][good][TRADE_COUNT]
         # return agent's trade_count to 0
