@@ -14,13 +14,16 @@ from capital.trade_utils import seek_a_trade, GEN_UTIL_FUNC
 from capital.trade_utils import AMT_AVAIL, endow, UTIL_FUNC  # , trader_debug
 
 MODEL_NAME = "money"
-
-DEF_NUM_TRADERS = 4
-
-MONEY_MAX_UTIL = 100
-
 DUR = "durability"
 TRADE_COUNT = "trade_count"
+INCR = "incr"
+DIVISIBILITY = "divisibility"
+IS_ALLOC = "is_allocated"
+AGE = "age"
+GOODS = "goods"
+
+DEF_NUM_TRADERS = 4
+MONEY_MAX_UTIL = 100
 INIT_COUNT = 0  # a starting point for trade_count
 
 # a counter for counting number of continuous periods with no trade
@@ -41,37 +44,37 @@ natures_goods = {
     # add initial value to this data?
     # color choice isn't working yet, but we want to build it in
     "cow": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-            "incr": 0, DUR: 0.8, "divisibility": 1.0,
-            "trade_count": 0, "is_allocated": False,
-            "age": 1, },
+            INCR: 0, DUR: 0.8, DIVISIBILITY: 1.0,
+            TRADE_COUNT: 0, IS_ALLOC: False,
+            AGE: 1, },
     "cheese": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-               "incr": 0, DUR: 0.5, "divisibility": 0.4,
-               "trade_count": 0, "is_allocated": False,
-               "age": 1, },
+               INCR: 0, DUR: 0.5, DIVISIBILITY: 0.4,
+               TRADE_COUNT: 0, IS_ALLOC: False,
+               AGE: 1, },
     "gold": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-             "incr": 0, DUR: 1.0, "divisibility": 0.05,
-             "trade_count": 0, "is_allocated": False,
-             "age": 1, },
+             INCR: 0, DUR: 1.0, DIVISIBILITY: 0.05,
+             TRADE_COUNT: 0, IS_ALLOC: False,
+             AGE: 1, },
     "banana": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-               "incr": 0, DUR: 0.2, "divisibility": 0.2,
-               "trade_count": 0, "is_allocated": False,
-               "age": 1, },
+               INCR: 0, DUR: 0.2, DIVISIBILITY: 0.2,
+               TRADE_COUNT: 0, IS_ALLOC: False,
+               AGE: 1, },
     "diamond": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-                "incr": 0, DUR: 1.0, "divisibility": 0.8,
-                "trade_count": 0, "is_allocated": False,
-                "age": 1, },
+                INCR: 0, DUR: 1.0, DIVISIBILITY: 0.8,
+                TRADE_COUNT: 0, IS_ALLOC: False,
+                AGE: 1, },
     "avocado": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-                "incr": 0, DUR: 0.3, "divisibility": 0.5,
-                "trade_count": 0, "is_allocated": False,
-                "age": 1, "color": GREEN},
+                INCR: 0, DUR: 0.3, DIVISIBILITY: 0.5,
+                TRADE_COUNT: 0, IS_ALLOC: False,
+                AGE: 1, "color": GREEN},
     "stone": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-              "incr": 0, DUR: 1.0, "divisibility": 1.0,
-              "trade_count": 0, "is_allocated": False,
-              "age": 1, },
+              INCR: 0, DUR: 1.0, DIVISIBILITY: 1.0,
+              TRADE_COUNT: 0, IS_ALLOC: False,
+              AGE: 1, },
     "milk": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-             "incr": 0, DUR: 0.2, "divisibility": 0.15,
-             "trade_count": 0, "is_allocated": False,
-             "age": 1, },
+             INCR: 0, DUR: 0.2, DIVISIBILITY: 0.15,
+             TRADE_COUNT: 0, IS_ALLOC: False,
+             AGE: 1, },
 }
 
 
@@ -97,7 +100,7 @@ def create_trader(name, i, action=None, **kwargs):
                  action=action,
                  # goods will now be a dictionary like:
                  # goods["cow"] = [cowA, cowB, cowC, etc.]
-                 attrs={"goods": {},
+                 attrs={GOODS: {},
                         "util": 0,
                         "pre_trade_util": 0},
                  **kwargs)
@@ -110,11 +113,11 @@ def trader_action(agent, **kwargs):
     seek_a_trade(agent, **kwargs)
     for good in natures_goods:
         # update current period's trade count in natures_good
-        natures_goods[good][TRADE_COUNT] += agent["goods"][good][TRADE_COUNT]
+        natures_goods[good][TRADE_COUNT] += agent[GOODS][good][TRADE_COUNT]
         # return agent's trade_count to 0
-        agent["goods"][good][TRADE_COUNT] = 0
+        agent[GOODS][good][TRADE_COUNT] = 0
         # increment every good's age by one each period
-        agent["goods"][good]["age"] += 1
+        agent[GOODS][good][AGE] += 1
     return MOVE
 
 
@@ -135,9 +138,9 @@ def nature_to_traders(traders, nature):
     """
     for trader in traders:
         endow(traders[trader], nature)
-        for good in traders[trader]["goods"]:
-            if traders[trader]["goods"][good][AMT_AVAIL] != 0:
-                nature[good]["is_allocated"] = True
+        for good in traders[trader][GOODS]:
+            if traders[trader][GOODS][good][AMT_AVAIL] != 0:
+                nature[good][IS_ALLOC] = True
         print(repr(traders[trader]))
 
 
