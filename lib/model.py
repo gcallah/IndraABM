@@ -132,9 +132,10 @@ class Model():
     def handle_props(self, props, model_dir=None):
         self.user_type = os.getenv("user_type", TERMINAL)
         if self.user_type == API:
-            init_props(self.module, props, model_dir=model_dir,
+            self.props = init_props(self.module, props, model_dir=model_dir,
                        skip_user_questions=True)
-        self.props = init_props(self.module, props, model_dir=model_dir)
+        else:
+            self.props = init_props(self.module, props, model_dir=model_dir)
         self.height = self.props.get(GRID_HEIGHT, DEF_HEIGHT)
         self.width = self.props.get(GRID_WIDTH, DEF_WIDTH)
 

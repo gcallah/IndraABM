@@ -245,6 +245,10 @@ class Agent(object):
                                                self.action.__name__))
             self.__pickle_func(pickle_file, self.action)
             action_val = pickle_file
+        elif self.action is not None and self.action.__name__ in \
+                registry[self.exec_key]['functions']:
+            action_val = registry[self.exec_key]['functions'][
+                self.action.__name__]
         else:
             action_val = None
         return {"name": self.name,
