@@ -1,7 +1,7 @@
 # Indra API server
 import logging
 import os
-from flask import Flask, request
+from flask import Flask
 from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
 from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
@@ -74,7 +74,6 @@ props = api.model("props", {
 
 @api.route('/models/props/<int:model_id>')
 class Props(Resource):
-
     global indra_dir
 
     def get(self, model_id):
@@ -123,6 +122,7 @@ class RunModel(Resource):
     """
     This endpoint runs the model.
     """
+
     @api.expect(env)
     def put(self, run_time):
         """

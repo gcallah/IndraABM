@@ -23,6 +23,7 @@ def random_name():
     return "".join(random.choices(string.ascii_letters,
                                   k=random.randrange(1, 10)))
 
+
 class Test(TestCase):
     def setUp(self):
         self.hello_world = HelloWorld(Resource)
@@ -99,10 +100,11 @@ class Test(TestCase):
 
         for grp_name, group in rv.json.get('env').get('members').items():
             if group.get('color') == 'blue':
-                self.assertTrue(changed_props['num_blue'] == len(group.get('members')))
+                self.assertTrue(
+                    changed_props['num_blue'] == len(group.get('members')))
             else:
-                self.assertTrue(changed_props['num_red'] == len(group.get('members')))
-
+                self.assertTrue(
+                    changed_props['num_red'] == len(group.get('members')))
 
     def test_model_run(self):
         model_id = 0
