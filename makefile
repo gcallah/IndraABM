@@ -46,7 +46,7 @@ $(MODEL_REGISTRY)/%_model.json: $(MODELS_DIR)/%.py
 models.json: $(MODELJSON_FILES)
 	python3 json_combiner.py $? --models_fp $(JSON_DESTINATION)
 
-create_dev_env: FORCE
+dev_env: FORCE
 	./setup.sh .bashrc  # change to .bash_profile for Mac!
 	git submodule init $(UTILS_DIR)
 	git submodule update $(UTILS_DIR)
@@ -76,8 +76,8 @@ pytests: FORCE
 	cd $(MODELS_DIR); make tests
 	cd $(LIB_DIR); make tests
 	cd $(REG_DIR); make tests
+	cd $(API_DIR); make tests
 	# put these back in once working:
-	# cd $(API_DIR); make tests
 	# cd capital; make tests
 	# cd epidemics; make tests
 

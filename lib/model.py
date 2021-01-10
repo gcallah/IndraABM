@@ -34,7 +34,8 @@ def def_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    print("Agent {} is acting".format(agent.name))
+    if DEBUG:
+        print("Agent {} is acting".format(agent.name))
     return DONT_MOVE
 
 
@@ -120,16 +121,20 @@ class Model():
             print(f"exec_key = {self.exec_key}")
         else:
             self.exec_key = registry.create_exec_env()
-        registry.reg_model(self, self.exec_key)
         self.create_user()
+        registry.reg_model(self, self.exec_key)
         self.groups = self.create_groups()
         self.env = self.create_env(env_action=env_action)
         self.num_switches = 0
         self.switches = []  # for agents waiting to switch groups
         self.period = 0
 
-    def handle_props(self, props):
-        self.props = init_props(self.module, props)
+    def handle_props(self, props, model_dir=None):
+        self.user_type = os.getenv("user_type", TERMINAL)
+        if self.user_type == API:
+            init_props(self.module, props, model_dir=model_dir,
+                       skip_user_questions=True)
+        self.props = init_props(self.module, props, model_dir=model_dir)
         self.height = self.props.get(GRID_HEIGHT, DEF_HEIGHT)
         self.width = self.props.get(GRID_WIDTH, DEF_WIDTH)
 
@@ -265,9 +270,12 @@ class Model():
             self.user.tell(census_rpt)
             # these things need to be done before action loop:
             self.handle_switches()
-            # self.handle_pop_hist()
+            self.handle_pop_hist()
             # self.handle_womb()
         return num_acts
+
+    def handle_pop_hist(self):
+        self.env.handle_pop_hist()
 
     def rpt_census(self, acts, moves):
         """

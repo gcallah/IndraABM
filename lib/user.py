@@ -72,12 +72,17 @@ def line_graph(user, update=False):
     return get_env(user.exec_key).line_graph()
 
 
+def bar_graph(user, update=False):
+    from registry.registry import get_env
+    return get_env(user.exec_key).bar_graph()
+
+
 menu_functions = {
     "run": run,
     "leave": leave,
     "scatter_plot": scatter_plot,
     "line_graph": line_graph,
-    # "bar_graph": bar_graph,
+    "bar_graph": bar_graph,
     # "debug": debug,
     # "logs": not_impl,
 }

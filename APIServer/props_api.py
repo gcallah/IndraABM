@@ -1,8 +1,8 @@
 import json
 
 from lib.utils import get_prop_path
+from registry.model_db import get_model_by_id
 from APIServer.api_utils import err_return
-from APIServer.models_api import get_model_by_id
 
 
 def get_props(model_id, indra_dir):

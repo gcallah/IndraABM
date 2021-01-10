@@ -4,16 +4,11 @@ Places two groups of agents in the enviornment randomly
 and moves them around randomly.
 """
 import copy
-import random
 
-from indra.agent import Agent
-from indra.composite import Composite
-from indra.display_methods import RED, BLUE
-from indra.env import Env
-from registry.registry import get_env, get_prop
-from registry.registry import user_tell
-from indra.space import DEF_HEIGHT, DEF_WIDTH
-from indra.utils import init_props
+from lib.agent import Agent
+from lib.display_methods import RED, BLUE
+from lib.model import Model, MBR_CREATOR, NUM_MBRS, MBR_ACTION
+from lib.model import NUM_MBRS_PROP, COLOR
 
 MODEL_NAME = "capital"
 DEBUG = False  # turns debugging code on or off
@@ -44,11 +39,61 @@ def dict_to_string(dict):
                     for good, amt in dict.items())
 
 
+def create_rholder(name, i, action=None, **kwargs):
+    """
+    Create an agent.
+    """
+    # TO BE FIXED
+    # k_price = DEF_K_PRICE
+    resources = copy.deepcopy(DEF_CAP_WANTED)
+    # num_resources = len(resources)
+    price_list = copy.deepcopy(DEF_EACH_CAP_PRICE)
+    starting_cash = DEF_RHOLDER_CASH
+    return Agent(name + str(i),
+                 action=rholder_action,
+                 attrs={"cash": starting_cash,
+                        "resources": resources,
+                        "price": price_list},
+                 **kwargs)
+
+
+def rholder_action(agent, **kwargs):
+    if agent["resources"]:
+        print("I'm " + agent.name
+              + " and I've got resources. I have "
+              + str(agent["cash"]) + " dollars now."
+              + " I have " + str(agent["resources"]) + ".")
+    else:
+        print("I'm " + agent.name
+              + " and I've got resources. I have "
+              + str(agent["cash"]) + " dollars now."
+              + " I ran out of resources!")
+    # resource holder dont move
+    return True
+
+
+def create_entr(name, i, action=None, **kwargs):
+    """
+    Create an agent.
+    """
+    # TO BE FIXED
+    starting_cash = DEF_ENTR_CASH
+    resources = copy.deepcopy(DEF_CAP_WANTED)
+    return Agent(name + str(i),
+                 action=entr_action,
+                 attrs={"cash": starting_cash,
+                        "wants": resources,
+                        "have": {}},
+                 **kwargs)
+
+
 def entr_action(agent, **kwargs):
     if agent["cash"] > 0:
-        nearby_rholder = get_env().get_neighbor_of_groupX(agent,
-                                                          resource_holders,
-                                                          hood_size=4)
+        # TO BE FIXED
+        # nearby_rholder = get_env().get_neighbor_of_groupX(agent,
+        #                                         resource_holders,
+        #                                         hood_size=4)
+        nearby_rholder = None
         if nearby_rholder is not None:
             # try to buy a resource if you have cash
             for good in agent["wants"].keys():
@@ -73,155 +118,80 @@ def entr_action(agent, **kwargs):
                     break
 
             if agent["wants"] and agent["have"]:
-                user_tell("I'm " + agent.name
-                          + " and I will buy resources from "
-                          + str(nearby_rholder) + ". I have "
-                          + "{0:.2f}".format(agent["cash"])
-                          + " dollars left."
-                          + " I want "
-                          + dict_to_string(agent["wants"])
-                          + ", and I have "
-                          + dict_to_string(agent["have"]) + ".")
+                print("I'm " + agent.name
+                      + " and I will buy resources from "
+                      + str(nearby_rholder) + ". I have "
+                      + "{0:.2f}".format(agent["cash"])
+                      + " dollars left."
+                      + " I want "
+                      + dict_to_string(agent["wants"])
+                      + ", and I have "
+                      + dict_to_string(agent["have"]) + ".")
             elif agent["wants"]:
-                user_tell("I'm " + agent.name
-                          + " and I will buy resources from "
-                          + str(nearby_rholder) + ". I have "
-                          + "{0:.2f}".format(agent["cash"])
-                          + " dollars left."
-                          + " I want "
-                          + dict_to_string(agent["wants"])
-                          + ", and I don't have any capital.")
+                print("I'm " + agent.name
+                      + " and I will buy resources from "
+                      + str(nearby_rholder) + ". I have "
+                      + "{0:.2f}".format(agent["cash"])
+                      + " dollars left."
+                      + " I want "
+                      + dict_to_string(agent["wants"])
+                      + ", and I don't have any capital.")
             elif agent["have"]:
-                user_tell("I'm " + agent.name
-                          + " and I will buy resources from "
-                          + str(nearby_rholder) + ". I have "
-                          + "{0:.2f}".format(agent["cash"])
-                          + " dollars left."
-                          + " I got all I need, and I have "
-                          + dict_to_string(agent["have"]) + "!")
+                print("I'm " + agent.name
+                      + " and I will buy resources from "
+                      + str(nearby_rholder) + ". I have "
+                      + "{0:.2f}".format(agent["cash"])
+                      + " dollars left."
+                      + " I got all I need, and I have "
+                      + dict_to_string(agent["have"]) + "!")
             return False
             # move to find resource holder
 
         else:
-            user_tell("I'm " + agent.name + " and I'm broke!")
+            print("I'm " + agent.name + " and I'm broke!")
     else:
-        user_tell("I'm " + agent.name
-                  + " and I can't find resources.")
+        print("I'm " + agent.name
+              + " and I can't find resources.")
     return True
 
 
-def rholder_action(agent, **kwargs):
-    if agent["resources"]:
-        get_env().user.tell("I'm " + agent.name
-                            + " and I've got resources. I have "
-                            + str(agent["cash"]) + " dollors now."
-                            + " I have " + str(agent["resources"]) + ".")
+cap_grps = {
+    "entrepreneurs": {
+        MBR_CREATOR: create_entr,
+        MBR_ACTION: entr_action,
+        NUM_MBRS: DEF_NUM_ENTR,
+        NUM_MBRS_PROP: "num_entr",
+        COLOR: BLUE,
+    },
+    "resource_holders": {
+        MBR_CREATOR: create_rholder,
+        MBR_ACTION: rholder_action,
+        NUM_MBRS: DEF_NUM_RHOLDER,
+        NUM_MBRS_PROP: "num_rholder",
+        COLOR: RED,
+    }
+}
+
+
+class CapStruct(Model):
+    def handle_props(self, props, model_dir=None):
+        super().handle_props(props, model_dir='capital')
+
+    def create_groups(self):
+        grps = super().create_groups()
+        return grps
+
+
+def create_model(serial_obj=None, props=None):
+    if serial_obj is not None:
+        return CapStruct(serial_obj=serial_obj)
     else:
-        get_env().user.tell("I'm " + agent.name
-                            + " and I've got resources. I have "
-                            + str(agent["cash"]) + " dollors now."
-                            + " I ran out of resources!")
-    # resource holder dont move
-    return True
-
-
-def create_entr(name, i, props=None):
-    """
-    Create an agent.
-    """
-    starting_cash = DEF_ENTR_CASH
-    if props is not None:
-        starting_cash = get_prop('entr_starting_cash',
-                                 DEF_ENTR_CASH)
-
-    resources = copy.deepcopy(DEF_CAP_WANTED)
-    if props is not None:
-        total_resources = get_prop('entr_want_resource_total',
-                                   DEF_TOTAL_RESOURCES_ENTR_WANT)
-        num_resources = len(resources)
-        for k in resources.keys():
-            resources[k] = int((total_resources * 2)
-                               * (random.random() / num_resources))
-
-    return Agent(name + str(i), action=entr_action,
-                 attrs={"cash": starting_cash,
-                        "wants": resources,
-                        "have": {}})
-
-
-def create_rholder(name, i, props=None):
-    """
-    Create an agent.
-    """
-    k_price = DEF_K_PRICE
-    resources = copy.deepcopy(DEF_CAP_WANTED)
-    num_resources = len(resources)
-
-    price_list = copy.deepcopy(DEF_EACH_CAP_PRICE)
-    if props is not None:
-        k_price = props.get('cap_price',
-                            DEF_K_PRICE)
-        for k in price_list.keys():
-            price_list[k] = float("{0:.2f}".format(float(k_price
-                                                   * random.uniform(0.5,
-                                                                    1.5))))
-
-    starting_cash = DEF_RHOLDER_CASH
-    if props is not None:
-        starting_cash = get_prop('rholder_starting_cash',
-                                 DEF_RHOLDER_CASH)
-
-    if props is not None:
-        total_resources = get_prop('rholder_starting_resource_total',
-                                   DEF_TOTAL_RESOURCES_RHOLDER_HAVE)
-        for k in resources.keys():
-            resources[k] = int((total_resources * 2)
-                               * (random.random() / num_resources))
-
-    return Agent(name + str(i), action=rholder_action,
-                 attrs={"cash": starting_cash,
-                        "resources": resources,
-                        "price": price_list})
-
-
-def set_up(props=None):
-    """
-    A func to set up run that can also be used by test code.
-    """
-
-    global resource_holders
-    global entrepreneurs
-
-    pa = init_props(MODEL_NAME, props, model_dir="capital")
-    entrepreneurs = Composite("Entrepreneurs", {"color": BLUE},
-                              member_creator=create_entr,
-                              props=pa,
-                              num_members=pa.get('num_entr',
-                                                 DEF_NUM_ENTR))
-    resource_holders = Composite("Resource_holders", {"color": RED},
-                                 member_creator=create_rholder,
-                                 props=pa,
-                                 num_members=pa.get('num_rholder',
-                                                    DEF_NUM_RHOLDER))
-
-    Env("neighborhood",
-        height=get_prop('grid_height', DEF_HEIGHT),
-        width=get_prop('grid_width', DEF_WIDTH),
-        members=[resource_holders, entrepreneurs])
-
-    return resource_holders, entrepreneurs
+        return CapStruct(MODEL_NAME, grp_struct=cap_grps, props=props)
 
 
 def main():
-    global resource_holders
-    global entrepreneurs
-
-    (blue_group, red_group) = set_up()
-
-    if DEBUG2:
-        get_env().user.tell(get_env().__repr__())
-
-    get_env()()
+    model = create_model()
+    model.run()
     return 0
 
 

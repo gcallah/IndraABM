@@ -5,7 +5,7 @@ A model for how fires spread through a forest.
 
 from lib.agent import DONT_MOVE
 from lib.display_methods import TOMATO, GREEN, RED, SPRINGGREEN, BLACK
-from lib.model import Model
+from lib.model import Model, MBR_ACTION, NUM_MBRS, COLOR
 from lib.agent import prob_state_trans
 from lib.space import exists_neighbor
 from registry.registry import get_model
@@ -61,30 +61,28 @@ def tree_action(agent, **kwargs):
     """
     A simple default agent action.
     """
+    # print("The agent is", agent)
+    # print("The agent's group is", agent.group_name())
     model = get_model(agent.exec_key)
     old_group = agent.group_name()
     if old_group == HEALTHY:
         if exists_neighbor(agent, lambda agent: agent.group_name() == ON_FIRE):
             if DEBUG2:
                 print("Setting nearby tree on fire!")
-            model.add_switch(str(agent), HEALTHY, NEW_FIRE)
+            agent.set_prim_group(NEW_FIRE)
 
     # if we didn't catch on fire above, do probabilistic transition:
     if old_group == agent.group_name():
         curr_state = STATE_MAP[old_group]
         # we gotta do these str/int shenanigans with state cause
         # JSON only allows strings as dict keys
-        agent.has_acted = True
         agent.set_prim_group(GROUP_MAP[str(prob_state_trans(int(curr_state),
                                                             state_trans))])
-
         if DEBUG2:
             if agent.group_name == NEW_FIRE:
                 print("Tree spontaneously catching fire.")
 
     if old_group != agent.group_name():
-        # if we entered a new state, then...
-        agent.has_acted = True
         model.add_switch(str(agent),
                          old_group,
                          agent.group_name())
@@ -93,25 +91,25 @@ def tree_action(agent, **kwargs):
 
 ff_grps = {
     HEALTHY: {
-        "mbr_action": tree_action,
-        "num_mbrs": DEF_NUM_TREES,
-        "color": GREEN,
+        MBR_ACTION: tree_action,
+        NUM_MBRS: DEF_NUM_TREES,
+        COLOR: GREEN,
     },
     NEW_FIRE: {
-        "num_mbrs": 0,
-        "color": TOMATO,
+        NUM_MBRS: 0,
+        COLOR: TOMATO,
     },
     ON_FIRE: {
-        "num_mbrs": 0,
-        "color": RED,
+        NUM_MBRS: 0,
+        COLOR: RED,
     },
     BURNED_OUT: {
-        "num_mbrs": 0,
-        "color": BLACK,
+        NUM_MBRS: 0,
+        COLOR: BLACK,
     },
     NEW_GROWTH: {
-        "num_mbrs": 0,
-        "color": SPRINGGREEN,
+        NUM_MBRS: 0,
+        COLOR: SPRINGGREEN,
     },
 }
 
@@ -129,14 +127,14 @@ class ForestFire(Model):
         self.grp_struct[HEALTHY]["num_mbrs"] = num_agents
 
 
-def create_model(serial_obj=None):
+def create_model(serial_obj=None, props=None):
     """
     This is for the sake of the API server:
     """
     if serial_obj is not None:
         return ForestFire(serial_obj=serial_obj)
     else:
-        return ForestFire(MODEL_NAME, grp_struct=ff_grps)
+        return ForestFire(MODEL_NAME, grp_struct=ff_grps, props=props)
 
 
 def main():

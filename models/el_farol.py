@@ -8,7 +8,8 @@ import random
 from lib.agent import MOVE, Agent
 from lib.env import Env
 from lib.display_methods import RED, BLUE
-from lib.model import Model
+from lib.model import Model, NUM_MBRS, MBR_ACTION
+from lib.model import COLOR, MBR_CREATOR
 from registry.registry import get_model
 AT_HOME = "At home"
 AT_BAR = "At bar"
@@ -21,7 +22,7 @@ MOTIV = "motivation"
 BAR_ATTEND = "bar attendees"
 
 
-DEBUG = True
+DEBUG = False
 
 
 def get_decision(agent):
@@ -45,8 +46,9 @@ def drinker_action(agent, **kwargs):
     To go or not to go, that is the question -Not Callahan
     for the now the decision is made at random
     """
-    print("Alcoholic {} is located at {}".format(agent.name,
-                                                 agent.get_pos()))
+    if DEBUG:
+        print("Alcoholic {} is located at {}".format(agent.name,
+                                                     agent.get_pos()))
     curr_model = get_model(agent.exec_key)
     if agent.group_name() == AT_HOME:
         # decid to go to bar or not
@@ -72,16 +74,16 @@ def create_drinker(name, i, exec_key=None, action=drinker_action):
 
 el_farol_grps = {
     AT_HOME: {
-        "mbr_creator": create_drinker,
-        "mbr_action": drinker_action,
-        "num_mbrs": DEF_AT_HOME,
-        "color": BLUE
+        MBR_CREATOR: create_drinker,
+        MBR_ACTION: drinker_action,
+        NUM_MBRS: DEF_AT_HOME,
+        COLOR: BLUE
     },
     AT_BAR: {
-        "mbr_creator": create_drinker,
-        "mbr_action": drinker_action,
-        "num_mbrs": DEF_AT_BAR,
-        "color": RED
+        MBR_CREATOR: create_drinker,
+        MBR_ACTION: drinker_action,
+        NUM_MBRS: DEF_AT_BAR,
+        COLOR: RED
     },
 }
 
@@ -106,19 +108,18 @@ class ElFarol(Model):
         """
         self.env = Env(self.module, members=self.groups,
                        exec_key=self.exec_key, width=self.width,
-                       height=self.height, action=env_action,
-                       pop_hist_setup=setup_attendance)
+                       height=self.height, action=env_action)
         return self.env
 
 
-def create_model(serial_obj=None):
+def create_model(serial_obj=None, props=None):
     """
     This is for the sake of the API server:
     """
     if serial_obj is not None:
         return ElFarol(serial_obj=serial_obj)
     else:
-        return ElFarol(MODEL_NAME, grp_struct=el_farol_grps)
+        return ElFarol(MODEL_NAME, grp_struct=el_farol_grps, props=props)
 
 
 def main():

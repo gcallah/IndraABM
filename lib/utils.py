@@ -6,6 +6,11 @@ import random
 
 from propargs.propargs import PropArgs
 
+DEF_MODEL_DIR = "models"
+
+INDRA_HOME_VAR = "INDRA_HOME"
+PA_INDRA_HOME = "/home/IndraABM/IndraABM"
+
 
 def agent_by_name(agent):
     return agent if isinstance(agent, str) else agent.name
@@ -30,14 +35,21 @@ def get_func_name(f):
         return ""
 
 
-def get_prop_path(model_name, model_dir="models"):
-    # this doesnt work because file names have underscores
-    ihome = os.getenv("INDRA_HOME", "")
+def get_model_dir(model_dir):
+    if model_dir is None:
+        return DEF_MODEL_DIR
+    return model_dir
+
+
+def get_prop_path(model_name, model_dir=None):
+    model_dir = get_model_dir(model_dir)
+    ihome = os.getenv(INDRA_HOME_VAR, PA_INDRA_HOME)
     return ihome + "/" + model_dir + "/props/" + model_name + ".props.json"
 
 
-def init_props(model_nm, props=None, model_dir="models",
+def init_props(model_nm, props=None, model_dir=None,
                skip_user_questions=False):
+    model_dir = get_model_dir(model_dir)
     props_file = get_prop_path(model_nm, model_dir=model_dir)
     if props is None:
         pa = PropArgs.create_props(model_nm,

@@ -3,8 +3,8 @@ This module restores an env from json and runs it.
 """
 import importlib
 
+from registry.model_db import get_model_by_id, get_model_by_mod
 from APIServer.api_utils import err_return
-from APIServer.models_api import get_model_by_id, get_model_by_mod
 
 
 def module_from_model(model):
@@ -18,10 +18,7 @@ def create_model(model_id, props, indra_dir):
     """
     model_rec = get_model_by_id(model_id, indra_dir=indra_dir)
     if model_rec is not None:
-        module = module_from_model(model_rec)
-        model = module.create_model(serial_obj=props,
-                                    serial_obj_with_only_props=True)
-        return model
+        return module_from_model(model_rec).create_model(props=props)
     else:
         return err_return("Model not found: " + str(model_id))
 
@@ -39,4 +36,4 @@ def run_model(serial_model, periods, indra_dir):
         model.runN(periods)
         return model
     else:
-        return err_return("Model not found: " + serial_model["name"])
+        return None

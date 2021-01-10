@@ -2,12 +2,14 @@
 # This runs on the production server: fetches new code,
 # installs needed packages, and restarts the server.
 
+export RELOAD=pa_reload_webapp.py
+
 # get new source code onto the server
 git pull origin master
 # activate our virtual env:
-source /home/indrasnet/.virtualenvs/django2/bin/activate
+source /home/IndraABM/.virtualenvs/indra-virtualenv/bin/activate
 # install all of our packages:
-pip install -r docker/requirements.txt
+pip install -r requirements/requirements.txt
 echo "Going to reboot the webserver"
-API_TOKEN=14ca851554fc716c30e031b0583fb7e64e05e0db pa_reload_webapp.py indrasnet.pythonanywhere.com
+API_TOKEN=1bd1d39b21de527564c04430402fe8eae3b2825b $RELOAD IndraABM.pythonanywhere.com
 touch reboot

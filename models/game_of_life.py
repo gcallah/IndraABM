@@ -1,9 +1,12 @@
 from lib.display_methods import RED, BLUE
 from lib.agent import DONT_MOVE
-from lib.model import Model, create_agent, MBR_ACTION
+from lib.model import Model, create_agent, NUM_MBRS, NUM_MBRS_PROP
+from lib.model import COLOR, MBR_ACTION
 from lib.space import get_num_of_neighbors
 from registry.registry import get_agent
 from lib.agent import X, Y
+
+DEBUG = False
 
 MODEL_NAME = "game_of_life"
 
@@ -27,28 +30,29 @@ def game_agent_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    print("GofL agent {} is acting".format(agent.name))
+    if DEBUG:
+        print("GofL agent {} is acting".format(agent.name))
     return DONT_MOVE
 
 
-game_group_struct = {
+game_grp_struct = {
     "dead": {
-        "num_mbrs": DEF_NUM_DEAD,
-        "num_mbrs_prop": "num_blue",
-        "color": BLUE
+        NUM_MBRS: DEF_NUM_DEAD,
+        NUM_MBRS_PROP: "num_blue",
+        COLOR: BLUE
     },
     "alive": {
         MBR_ACTION: game_agent_action,
-        "num_mbrs": DEF_NUM_ALIVE,
-        "num_mbrs_prop": "num_red",
-        "color": RED
+        NUM_MBRS: DEF_NUM_ALIVE,
+        NUM_MBRS_PROP: "num_red",
+        COLOR: RED
     },
 }
 
 
 def populate_board(patterns, pattern_num):
     agent_locs = patterns[pattern_num]
-    grp = game_group_struct["dead"]
+    grp = game_grp_struct["dead"]
     for loc in agent_locs:
         agent = create_agent(loc[X], loc[Y], game_agent_action)
         grp += create_agent
@@ -62,6 +66,7 @@ def live_or_die(agent):
     """
     num_live_neighbors = get_num_of_neighbors(exclude_self=True, pred=None,
                                               size=1, region_type=None)
+    # 2 and 3 should not be hard-coded!
     if (num_live_neighbors != 2 and num_live_neighbors != 3):
         return BLUE
     else:
@@ -70,18 +75,19 @@ def live_or_die(agent):
 
 class GameOfLife(Model):
     def run(self):
-        print("My groups are:", self.groups)
+        if DEBUG:
+            print("My groups are:", self.groups)
         return super().run()
 
 
-def create_model(serial_obj=None):
+def create_model(serial_obj=None, props=None):
     """
     This is for the sake of the API server:
     """
     if serial_obj is not None:
         return GameOfLife(serial_obj=serial_obj)
     else:
-        return GameOfLife(MODEL_NAME, grp_struct=game_group_struct)
+        return GameOfLife(MODEL_NAME, grp_struct=game_grp_struct, props=props)
 
 
 def main():

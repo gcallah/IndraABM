@@ -7,7 +7,9 @@ do nothing except move around randomly.
 
 from lib.agent import MOVE
 from lib.display_methods import RED, BLUE
-from lib.model import Model
+from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
+
+DEBUG = False
 
 MODEL_NAME = "basic"
 DEF_RED_MBRS = 2
@@ -19,24 +21,24 @@ def basic_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    print("Agent {} is located at {}".format(agent.name,
-                                             agent.get_pos()))
-    print("The number of blue agents is", num_blue)
+    if DEBUG:
+        print("Agent {} is located at {}".format(agent.name,
+                                                 agent.get_pos()))
     return MOVE
 
 
 basic_grps = {
     "blue_grp": {
-        "mbr_action": basic_action,
-        "num_mbrs": DEF_BLUE_MBRS,
-        "num_mbrs_prop": "num_blue",
-        "color": BLUE
+        MBR_ACTION: basic_action,
+        NUM_MBRS: DEF_BLUE_MBRS,
+        NUM_MBRS_PROP: "num_blue",
+        COLOR: BLUE
     },
     "red_grp": {
-        "mbr_action": basic_action,
-        "num_mbrs": DEF_RED_MBRS,
-        "num_mbrs_prop": "num_red",
-        "color": RED
+        MBR_ACTION: basic_action,
+        NUM_MBRS: DEF_RED_MBRS,
+        NUM_MBRS_PROP: "num_red",
+        COLOR: RED
     },
 }
 
@@ -50,16 +52,14 @@ class Basic(Model):
     """
 
 
-def create_model(serial_obj=None, serial_obj_with_only_props=False):
+def create_model(serial_obj=None, props=None):
     """
     This is for the sake of the API server:
     """
-    if serial_obj is not None and not serial_obj_with_only_props:
+    if serial_obj is not None:
         return Basic(serial_obj=serial_obj)
-    elif serial_obj is not None and serial_obj_with_only_props:
-        return Basic(MODEL_NAME, grp_struct=basic_grps, props=serial_obj)
     else:
-        return Basic(MODEL_NAME, grp_struct=basic_grps)
+        return Basic(MODEL_NAME, grp_struct=basic_grps, props=props)
 
 
 def main():

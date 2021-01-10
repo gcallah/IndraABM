@@ -226,7 +226,8 @@ class Agent(object):
         self.from_json(serial_obj)
 
     def __pickle_func(self, pickle_file: str, func):
-        print("Pickling to: {}".format(pickle_file))
+        if DEBUG:
+            print("Pickling to: {}".format(pickle_file))
         with open(pickle_file, 'wb') as file:
             pickle.dump(func, file)
         from registry.registry import registry

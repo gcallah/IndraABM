@@ -5,7 +5,7 @@ A model to simulate the spread of panic in a crowd.
 from lib.agent import DONT_MOVE
 from lib.space import neighbor_ratio
 from lib.display_methods import RED, GREEN
-from lib.model import Model
+from lib.model import Model, MBR_ACTION, NUM_MBRS, COLOR, GRP_ACTION
 from registry.registry import get_model
 
 MODEL_NAME = "panic"
@@ -40,16 +40,16 @@ def agent_action(agent, **kwargs):
 
 panic_grps = {
     CALM: {
-        "grp_action": None,
-        "mbr_action": agent_action,
-        "num_mbrs": DEF_NUM_CALM,
-        "color": GREEN
+        GRP_ACTION: None,
+        MBR_ACTION: agent_action,
+        NUM_MBRS: DEF_NUM_CALM,
+        COLOR: GREEN
     },
     PANIC: {
-        "grp_action": None,
-        "mbr_action": agent_action,
-        "num_mbrs": DEF_NUM_PANIC,
-        "color": RED
+        GRP_ACTION: None,
+        MBR_ACTION: agent_action,
+        NUM_MBRS: DEF_NUM_PANIC,
+        COLOR: RED
     },
 }
 
@@ -60,20 +60,20 @@ class Panic(Model):
         grid_height = self.props.get("grid_height")
         grid_width = self.props.get("grid_width")
         num_agents = grid_height * grid_width
-        pct_panic = self.props.get("pct_panic") / 100
-        pct_calm = 1 - pct_panic
-        self.grp_struct[CALM]["num_mbrs"] = int(pct_calm * num_agents)
-        self.grp_struct[PANIC]["num_mbrs"] = int(pct_panic * num_agents)
+        ratio_panic = self.props.get("pct_panic") / 100
+        ratio_calm = 1 - ratio_panic
+        self.grp_struct[CALM]["num_mbrs"] = int(ratio_calm * num_agents)
+        self.grp_struct[PANIC]["num_mbrs"] = int(ratio_panic * num_agents)
 
 
-def create_model(serial_obj=None):
+def create_model(serial_obj=None, props=None):
     """
     This is for the sake of the API server:
     """
     if serial_obj is not None:
         return Panic(serial_obj=serial_obj)
     else:
-        return Panic(MODEL_NAME, grp_struct=panic_grps)
+        return Panic(MODEL_NAME, grp_struct=panic_grps, props=props)
 
 
 def main():

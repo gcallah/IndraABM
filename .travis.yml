@@ -6,10 +6,10 @@ python:
 services:
     - docker
 
-before_install:
-
 install:
     - pip install -r requirements/requirements-dev.txt
+    - sudo apt-get update
+    - sudo apt-get install sshpass
 
 env:
     global:
@@ -21,6 +21,8 @@ script:
     - make tests
 
 after_success:
+    - ./deploy.sh
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 notifications:
   slack: indras-net:QlnWeHMOpmEHCGJfG3SndDTr

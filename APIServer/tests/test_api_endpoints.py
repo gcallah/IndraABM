@@ -9,11 +9,12 @@ from unittest import TestCase, main, skip
 
 from flask_restplus import Resource
 
+from registry.model_db import get_models, MODEL_PATH, MODEL_ID, load_models, MODEL_FILE, MODEL_ID
+from APIServer.api_endpoints import Props, ModelMenu, RunModel
 from APIServer.api_endpoints import Props, ModelMenu, RunModel
 from APIServer.api_endpoints import app, HelloWorld, Endpoints, Models
 from APIServer.api_endpoints import indra_dir
 from APIServer.api_utils import err_return
-from APIServer.models_api import load_models, MODEL_FILE, MODEL_ID
 from lib.utils import get_prop_path
 
 BASIC_ID = 0
@@ -24,7 +25,6 @@ def random_name():
     return "".join(random.choices(string.ascii_letters,
                                   k=random.randrange(1, 10)))
 
-
 class Test(TestCase):
     def setUp(self):
         self.hello_world = HelloWorld(Resource)
@@ -32,6 +32,8 @@ class Test(TestCase):
         self.model = Models(Resource)
         self.props = Props(Resource)
         self.run = RunModel(Resource)
+        self.models = get_models(indra_dir)
+
         self.models = load_models(indra_dir)
         test_model_file = indra_dir + MODEL_FILE
         with open(test_model_file) as file:

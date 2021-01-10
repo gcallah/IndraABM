@@ -1,32 +1,28 @@
 """
-A edgeworthbox model.
-Places two groups of agents in the enviornment randomly
-and moves them around randomly.
+This is a minimal model that inherits from model.py
+and just sets up a couple of agents in two groups that
+do nothing except move around randomly.
 """
 
-from indra.agent import Agent, MOVE
-from indra.composite import Composite
-from indra.env import Env
-from indra.display_methods import GREEN
-from registry.execution_registry import CLI_EXEC_KEY, \
-    EXEC_KEY, get_exec_key
-from registry.registry import get_env, get_prop, set_env_attr
-from indra.space import DEF_HEIGHT, DEF_WIDTH
-from indra.utils import init_props
-import capital.trade_utils as tu
+from lib.agent import Agent, MOVE
+from lib.display_methods import GREEN
+from lib.model import Model, MBR_CREATOR, NUM_MBRS, MBR_ACTION  # , GRP_ACTION
+from lib.model import NUM_MBRS_PROP, COLOR
+# import capital.trade_utils as tu
 from capital.trade_utils import seek_a_trade, GEN_UTIL_FUNC
-from capital.trade_utils import AMT_AVAIL, endow, UTIL_FUNC, trader_debug
+from capital.trade_utils import AMT_AVAIL, endow, UTIL_FUNC  # , trader_debug
 
 MODEL_NAME = "money"
-DEBUG = True  # turns debugging code on or off
-DEBUG2 = False  # turns deeper debugging code on or off
-
-DEF_NUM_TRADERS = 4
-
-MONEY_MAX_UTIL = 100
-
 DUR = "durability"
 TRADE_COUNT = "trade_count"
+INCR = "incr"
+DIVISIBILITY = "divisibility"
+IS_ALLOC = "is_allocated"
+AGE = "age"
+GOODS = "goods"
+
+DEF_NUM_TRADERS = 4
+MONEY_MAX_UTIL = 100
 INIT_COUNT = 0  # a starting point for trade_count
 
 # a counter for counting number of continuous periods with no trade
@@ -47,37 +43,37 @@ natures_goods = {
     # add initial value to this data?
     # color choice isn't working yet, but we want to build it in
     "cow": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-            "incr": 0, DUR: 0.8, "divisibility": 1.0,
-            "trade_count": 0, "is_allocated": False,
-            "age": 1, },
+            INCR: 0, DUR: 0.8, DIVISIBILITY: 1.0,
+            TRADE_COUNT: 0, IS_ALLOC: False,
+            AGE: 1, },
     "cheese": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-               "incr": 0, DUR: 0.5, "divisibility": 0.4,
-               "trade_count": 0, "is_allocated": False,
-               "age": 1, },
+               INCR: 0, DUR: 0.5, DIVISIBILITY: 0.4,
+               TRADE_COUNT: 0, IS_ALLOC: False,
+               AGE: 1, },
     "gold": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-             "incr": 0, DUR: 1.0, "divisibility": 0.05,
-             "trade_count": 0, "is_allocated": False,
-             "age": 1, },
+             INCR: 0, DUR: 1.0, DIVISIBILITY: 0.05,
+             TRADE_COUNT: 0, IS_ALLOC: False,
+             AGE: 1, },
     "banana": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-               "incr": 0, DUR: 0.2, "divisibility": 0.2,
-               "trade_count": 0, "is_allocated": False,
-               "age": 1, },
+               INCR: 0, DUR: 0.2, DIVISIBILITY: 0.2,
+               TRADE_COUNT: 0, IS_ALLOC: False,
+               AGE: 1, },
     "diamond": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-                "incr": 0, DUR: 1.0, "divisibility": 0.8,
-                "trade_count": 0, "is_allocated": False,
-                "age": 1, },
+                INCR: 0, DUR: 1.0, DIVISIBILITY: 0.8,
+                TRADE_COUNT: 0, IS_ALLOC: False,
+                AGE: 1, },
     "avocado": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-                "incr": 0, DUR: 0.3, "divisibility": 0.5,
-                "trade_count": 0, "is_allocated": False,
-                "age": 1, "color": GREEN},
+                INCR: 0, DUR: 0.3, DIVISIBILITY: 0.5,
+                TRADE_COUNT: 0, IS_ALLOC: False,
+                AGE: 1, "color": GREEN},
     "stone": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-              "incr": 0, DUR: 1.0, "divisibility": 1.0,
-              "trade_count": 0, "is_allocated": False,
-              "age": 1, },
+              INCR: 0, DUR: 1.0, DIVISIBILITY: 1.0,
+              TRADE_COUNT: 0, IS_ALLOC: False,
+              AGE: 1, },
     "milk": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
-             "incr": 0, DUR: 0.2, "divisibility": 0.15,
-             "trade_count": 0, "is_allocated": False,
-             "age": 1, },
+             INCR: 0, DUR: 0.2, DIVISIBILITY: 0.15,
+             TRADE_COUNT: 0, IS_ALLOC: False,
+             AGE: 1, },
 }
 
 
@@ -95,91 +91,48 @@ class Good:
         self.age += 1
 
 
-def debug_header(str):
-    hdr = "*" * len(str)
-    print("\n", hdr, "\n", str, "\n")
-
-
-def initial_amt(pop_hist):
-    """
-    Set up our pop hist object to record amount traded per period.
-    """
-    for good in natures_goods:
-        if natures_goods[good]["is_allocated"] is True:
-            pop_hist.record_pop(good, INIT_COUNT)
-
-
-def record_amt(pop_hist, execution_key=CLI_EXEC_KEY):
-    """
-    This is our hook into the env to record the number of trades each
-    period.
-    """
-    get_env(execution_key=execution_key)
-    for good in natures_goods:
-        if natures_goods[good]["is_allocated"] is True:
-            pop_hist.record_pop(good, natures_goods[good][TRADE_COUNT])
-
-
-def incr_trade_count(good, amt):
-    """
-    This function will increment the local trade_count by 1
-    """
-    natures_goods[good]["trade_count"] += amt
-
-
-def good_decay(goods):
-    """
-    This function will allow each good to be decaied in each period,
-    with AMT_AVAIL being adjusted by durability.
-    """
-    for good in goods:
-        # Durability calculation needs to be updated
-        goods[good][AMT_AVAIL] = goods[good][DUR]
-
-
-def trade_report(env, execution_key=CLI_EXEC_KEY):
-    global prev_trade, eq_count
-    get_env(execution_key=execution_key)
-    trade_count_dic = {x: natures_goods[x]["trade_count"]
-                       for x in natures_goods}
-    if trade_count_dic == prev_trade:
-        eq_count += 1
-    else:
-        eq_count = 0
-    # number '10' may be changed
-    if eq_count >= 10:
-        print("No trade between agents for", eq_count,
-              "periods. Equilibrium may have been reached.")
-    prev_trade = trade_count_dic
-    return "Number of trades last period: " + "\n" \
-           + str(trade_count_dic) + "\n"
-
-
-def money_trader_action(agent, **kwargs):
-    debug_header("Trader action called for: " + agent.name)
-    trader_debug(agent)
-    seek_a_trade(agent, **kwargs)
-    for good in natures_goods:
-        # update current period's trade count in natures_good
-        natures_goods[good][TRADE_COUNT] += agent["goods"][good][TRADE_COUNT]
-        # return agent's trade_count to 0
-        agent["goods"][good][TRADE_COUNT] = 0
-        # increment every good's age by one each period
-        agent["goods"][good]["age"] += 1
-    return MOVE
-
-
-def create_trader(name, i, **kwargs):
+def create_trader(name, i, action=None, **kwargs):
     """
     A func to create a trader.
     """
-    execution_key = get_exec_key(kwargs=kwargs)
-    return Agent(name + str(i), action=money_trader_action,
+    return Agent(name + str(i),
+                 action=action,
                  # goods will now be a dictionary like:
                  # goods["cow"] = [cowA, cowB, cowC, etc.]
-                 attrs={"goods": {},
+                 attrs={GOODS: {},
                         "util": 0,
-                        "pre_trade_util": 0}, execution_key=execution_key)
+                        "pre_trade_util": 0},
+                 **kwargs)
+
+
+def trader_action(agent, **kwargs):
+    """
+    A simple default agent action.
+    """
+    seek_a_trade(agent, **kwargs)
+    for good in natures_goods:
+        if good not in natures_goods:
+            raise(KeyError(f"{good} not in nature."))
+        if good not in agent[GOODS]:
+            raise(KeyError(f"{good} not in {repr(agent)}."))
+        # update current period's trade count in natures_good
+        natures_goods[good][TRADE_COUNT] += agent[GOODS][good][TRADE_COUNT]
+        # return agent's trade_count to 0
+        agent[GOODS][good][TRADE_COUNT] = 0
+        # increment every good's age by one each period
+        agent[GOODS][good][AGE] += 1
+    return MOVE
+
+
+money_grps = {
+    "traders": {
+        MBR_CREATOR: create_trader,
+        MBR_ACTION: trader_action,
+        NUM_MBRS: DEF_NUM_TRADERS,
+        NUM_MBRS_PROP: "num_traders",
+        COLOR: GREEN,
+    },
+}
 
 
 def nature_to_traders(traders, nature):
@@ -188,68 +141,41 @@ def nature_to_traders(traders, nature):
     """
     for trader in traders:
         endow(traders[trader], nature)
-        for good in traders[trader]["goods"]:
-            if traders[trader]["goods"][good][AMT_AVAIL] != 0:
-                nature[good]["is_allocated"] = True
+        for good in traders[trader][GOODS]:
+            if traders[trader][GOODS][good][AMT_AVAIL] != 0:
+                nature[good][IS_ALLOC] = True
         print(repr(traders[trader]))
 
 
-def set_env_attrs(execution_key=CLI_EXEC_KEY):
-    set_env_attr("pop_hist_func", record_amt, execution_key)
-    set_env_attr("census_func", trade_report, execution_key)
-    tu.max_utils = MONEY_MAX_UTIL
+TRADER_GRP = 0
 
 
-def check_props(**kwargs):
+class Money(Model):
     """
-    A func to delete properties of goods in nature_goods
-    dictionary if the user want to disable them.
+    The model class for the Menger money model.
     """
-    execution_key = get_exec_key(kwargs=kwargs)
-    div = get_prop('divisibility', execution_key=execution_key)
-    dua = get_prop('durability', execution_key=execution_key)
-    trans = get_prop('transportability', execution_key=execution_key)
-    for goods in natures_goods:
-        if div == 0 and "divisibility" in natures_goods[goods]:
-            del natures_goods[goods]["divisibility"]
-        if dua == 0 and DUR in natures_goods[goods]:
-            del natures_goods[goods][DUR]
-        if trans == 0 and "transportability" in natures_goods[goods]:
-            del natures_goods[goods]["transportability"]
+    def handle_props(self, props, model_dir=None):
+        super().handle_props(props, model_dir='capital')
+
+    def create_groups(self):
+        grps = super().create_groups()
+        nature_to_traders(grps[TRADER_GRP], natures_goods)
+        return grps
 
 
-def set_up(props=None):
+def create_model(serial_obj=None, props=None):
     """
-    A func to set up run that can also be used by test code.
+    This is for the sake of the API server:
     """
-    pa = init_props(MODEL_NAME, props, model_dir="capital")
-    execution_key = int(props[EXEC_KEY].val) \
-        if props is not None else CLI_EXEC_KEY
-    traders = Composite("Traders",
-                        member_creator=create_trader,
-                        props=pa,
-                        num_members=get_prop('num_traders',
-                                             DEF_NUM_TRADERS,
-                                             execution_key=execution_key),
-                        execution_key=execution_key)
-    check_props(execution_key=execution_key)
-    nature_to_traders(traders, natures_goods)
-
-    Env(MODEL_NAME,
-        height=get_prop('grid_height', DEF_HEIGHT,
-                        execution_key=execution_key),
-        width=get_prop('grid_width', DEF_WIDTH, execution_key=execution_key),
-        members=[traders],
-        attrs={"goods": natures_goods},
-        pop_hist_setup=initial_amt,
-        execution_key=execution_key)
-    set_env_attrs(execution_key=execution_key)
+    if serial_obj is not None:
+        return Money(serial_obj=serial_obj)
+    else:
+        return Money(MODEL_NAME, grp_struct=money_grps, props=props)
 
 
 def main():
-    set_up()
-    # `get_env()` returns an env, which itself is a callable object
-    get_env()()
+    model = create_model()
+    model.run()
     return 0
 
 

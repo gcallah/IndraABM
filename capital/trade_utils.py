@@ -1,10 +1,8 @@
 """
 This file contains general functions useful in trading goods.
 """
-from indra.agent import MOVE
-from indra.user import user_debug
-from registry.execution_registry import get_exec_key
-from registry.registry import get_env
+from lib.agent import MOVE
+from registry.registry import get_env, get_exec_key
 import random
 import copy
 import math
@@ -86,23 +84,23 @@ def get_util_func(fname):
 
 def trade_debug(agent1, agent2, good1, good2, amt1, amt2, gain, loss):
     if DEBUG:
-        user_debug(f"       {agent1.name} is offering {amt1} of {good1} to "
-                   + f"{agent2.name} for {amt2} of {good2} with a "
-                   + f"gain of {round(gain, 2)} and "
-                   + f"a loss of {round(loss, 2)}")
+        print(f"       {agent1.name} is offering {amt1} of {good1} to "
+              + f"{agent2.name} for {amt2} of {good2} with a "
+              + f"gain of {round(gain, 2)} and "
+              + f"a loss of {round(loss, 2)}")
 
 
 def trader_debug(agent):
     if DEBUG:
-        user_debug(f"{agent.name} has {goods_to_str(agent[GOODS])}")
+        print(f"{agent.name} has {goods_to_str(agent[GOODS])}")
 
 
 def offer_debug(agent, their_good, their_amt, counterparty=None):
     if DEBUG:
         if counterparty is None:
             counterparty = "Unknown"
-        user_debug(f"       {agent.name} has received an offer of {their_amt} "
-                   + f"of {their_good} from {counterparty}")
+        print(f"       {agent.name} has received an offer of {their_amt} "
+              + f"of {their_good} from {counterparty}")
 
 
 def is_complement(trader, good, comp):
@@ -168,13 +166,13 @@ def get_rand_good(goods_dict, nonzero=False):
     """
     What should this do with empty dict?
     """
-    # user_debug("Calling get_rand_good()")
+    # print("Calling get_rand_good()")
     if goods_dict is None or not len(goods_dict):
         return None
     else:
         if nonzero and is_depleted(goods_dict):
             # we can't allocate what we don't have!
-            user_debug("Goods are depleted!")
+            print("Goods are depleted!")
             return None
 
         goods_list = list(goods_dict.keys())
@@ -197,7 +195,7 @@ def incr_util(good_dict, good, amt=None, agent=None, graph=False, comp=None):
         if comp:
             incr = good_graph.get_weight(good, comp)
         else:
-            incr = good_graph.max_neighbors(good)
+            incr = good_graph.max_neighbors(good, good_dict)
         good_dict[good]["incr"] += incr
     else:
         if amt:
@@ -288,8 +286,8 @@ def rand_goods_list(goods):
 
 def negotiate(trader1, trader2, comp=False, amt=1):
     # this_good is a dict
-    user_debug(f"   {trader1.name} is entering negotiations with" +
-               f"{trader2.name}")
+    print(f"   {trader1.name} is entering negotiations with" +
+          f"{trader2.name}")
     # we randomize to eliminate bias towards earlier goods in list
     rand_goods = rand_goods_list(trader1["goods"])
     for this_good in rand_goods:
@@ -305,9 +303,7 @@ def negotiate(trader1, trader2, comp=False, amt=1):
 
 
 def seek_a_trade(agent, comp=False, **kwargs):
-    execution_key = get_exec_key(kwargs=kwargs)
-    nearby_agent = get_env(execution_key=execution_key).get_closest_agent(
-        agent)
+    nearby_agent = get_env(exec_key=agent.exec_key).get_closest_agent(agent)
     if nearby_agent is not None:
         negotiate(agent, nearby_agent, comp)
         return MOVE
@@ -362,7 +358,7 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
                 print("RESULT: offer is inadequate\n")
                 return INADEQ
     if DEBUG:
-        user_debug(f"{trader2} is rejecting all offers of {their_good}")
+        print(f"{trader2} is rejecting all offers of {their_good}")
     return REJECT
 
 
@@ -373,8 +369,8 @@ def send_reply(trader1, my_good, my_amt, their_good, their_amt, comp=False):
     # offer_debug(trader1, their_good, their_amt)
     gain = utility_delta(trader1, their_good, their_amt)
     loss = utility_delta(trader1, my_good, -my_amt)
-    user_debug(f"       {trader1.name} is evaluating the offer with gain: " +
-               f"{round(gain, 2)}, loss: {round(loss, 2)}")
+    print(f"       {trader1.name} is evaluating the offer with gain: " +
+          f"{round(gain, 2)}, loss: {round(loss, 2)}")
     if comp:
         gain += trader1[GOODS][their_good]["incr"]
         loss -= trader1[GOODS][my_good]["incr"]
@@ -465,7 +461,7 @@ def adj_add_good_w_comp(agent, good, amt, old_amt):
             incr_util(agent[GOODS], comp,
                       amt=amt * STEEP_GRADIENT, agent=agent,
                       graph=True, comp=good)
-        user_debug(agent[GOODS])
+        print(agent[GOODS])
 
     if good_all_gone(agent, good):
         for comp in compl_lst(agent, good):

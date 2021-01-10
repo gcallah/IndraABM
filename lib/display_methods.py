@@ -235,19 +235,20 @@ class BarGraph():
     @expects_plt
     def create_bars(self, x, ax, varieties):
         bar_coordinates = 0
+        print(varieties)
+        steps = 1 / len(varieties)
         for i, var in enumerate(varieties):
-            if var != "Infected":
-                data = varieties[var]["data"]
-                color = get_color(varieties[var], i)
-                if len(x) > 40:
-                    ax.bar(x[-40:] + bar_coordinates,
-                           height=data[-40:], label=var,
-                           color=color, width=.2)
-                else:
-                    ax.bar(x + bar_coordinates,
-                           height=data, label=var, color=color, width=.2)
-
-                bar_coordinates += 0.2
+            # take care of this kluge later
+            data = varieties[var]["data"]
+            color = get_color(varieties[var], i)
+            if len(x) > 40:
+                ax.bar(x[-40:] + bar_coordinates,
+                       height=data[-40:], label=var,
+                       color=color, width=steps)
+            else:
+                ax.bar(x + bar_coordinates,
+                       height=data, label=var, color=color, width=steps)
+            bar_coordinates += steps
 
     @expects_plt
     def show(self):
@@ -290,10 +291,12 @@ class LineGraph():
         plt.close()
         self.legend = ["Type"]
         self.title = title
-        # self.anim = anim
-        # self.data_func = data_func
-        for i in varieties:
-            data_points = len(varieties[i]["data"])
+        self.anim = anim
+        self.data_func = data_func
+        for key in varieties:
+            # Since all varieties have the same length, we just need the length
+            # of one of them:
+            data_points = len(varieties[key]["data"])
             break
         self.headless = is_headless
         self.draw_graph(data_points, varieties, attrs)
@@ -310,7 +313,7 @@ class LineGraph():
         ax.set_title(self.title)
         x = np.arange(0, data_points)
         lines = self.create_lines(x, varieties)
-        g = sns.lineplot("x", "y", data=lines,
+        g = sns.lineplot(x="x", y="y", data=lines,
                          hue="color", palette=colors_dict)
         if attrs is not None:
             """
@@ -329,7 +332,7 @@ class LineGraph():
                 anno_x, anno_y = special_points[0][0], special_points[0][1]
                 plt.annotate(special_points_name, xy=(anno_x, anno_y),
                              xytext=(3, 1.5),
-                             arrowprops=dict(facecolor='black', shrink=0.05),
+                             arrowprops=dict(facecolor='black', shrink=0.05)
                              )
             if "show_xy_labels" not in attrs:
                 ax.set_xlabel('')
@@ -389,6 +392,9 @@ class LineGraph():
         self.show()
 
 
+DEF_SIZE = 40
+
+
 class ScatterPlot():
     """
     We are going to use a class here to save state for our animation
@@ -402,13 +408,16 @@ class ScatterPlot():
         plot, which will get assigned different colors and perhaps markers.
         """
         global anim_func
-        DEF_SIZE = 40
 
         plt.close()
         self.scats = None
         self.anim = anim
         self.data_func = data_func
         self.headless = is_headless
+        self.draw_graph(title, width, height, varieties, attrs)
+
+    @expects_plt
+    def draw_graph(self, title, width, height, varieties, attrs):
         self.legend = ["Type"]
         legend_pos = "upper left"
 

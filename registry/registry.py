@@ -25,6 +25,8 @@ import types
 from lib.agent import Agent
 from lib.env import Env
 
+DEBUG = False
+
 BILLION = 10 ** 9
 
 EXEC_KEY = "exec_key"
@@ -293,7 +295,8 @@ class Registry(object):
         Remove an execution environment from the registry.
         """
         self.__does_key_exists(key)
-        print("Clearing exec env {} from registry".format(key))
+        if DEBUG:
+            print("Clearing exec env {} from registry".format(key))
         del self[key]
 
 
