@@ -235,7 +235,6 @@ class BarGraph():
     @expects_plt
     def create_bars(self, x, ax, varieties):
         bar_coordinates = 0
-        print(varieties)
         steps = 1 / len(varieties)
         for i, var in enumerate(varieties):
             # take care of this kluge later
