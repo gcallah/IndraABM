@@ -2,7 +2,7 @@
 This file contains general functions useful in trading goods.
 """
 from lib.agent import MOVE
-from registry.registry import get_env, get_exec_key
+from registry.registry import get_env
 import random
 import copy
 import math

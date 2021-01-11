@@ -4,7 +4,6 @@ of agents that share a timeline and a Space.
 """
 import json
 import os
-from types import FunctionType
 import traceback
 
 from lib.agent import Agent, AgentEncoder
@@ -23,7 +22,6 @@ UNLIMITED = 1000
 X = 0
 Y = 1
 
-CENSUS_FUNC = "census_func"
 
 POP_HIST_HDR = "PopHist for "
 POP_SEP = ", "
@@ -79,48 +77,34 @@ class Env(Space):
     A collection of entities that share a space and time.
     An env *is* a space and *has* a timeline (PopHist).
     That makes the inheritance work out as we want it to.
-    There are four functions possibly passed in here:
-
-        - census
-        - line_data_func
-        - pop_hist_func
-
-    These will all be cutover to be attributes of the model:
-    the handy new way to support serialization.
     """
 
     def __init__(self, name, action=None, random_placing=True,
                  serial_obj=None,
                  exclude_member=None,
-                 census=None,
-                 line_data_func=None,
-                 pop_hist_setup=None,
-                 pop_hist_func=None,
                  members=None,
+                 pop_hist_setup=None,
                  **kwargs):
         super().__init__(name, action=action,
                          random_placing=random_placing, serial_obj=serial_obj,
                          members=members, **kwargs)
         self.type = type(self).__name__
         self.user_type = os.getenv("user_type", TERMINAL)
+        self.pop_hist_setup = pop_hist_setup
 
         # might not need this here since we already create this in model
         if self.user_type == TERMINAL:
             self.user = TermUser(**kwargs)
         elif self.user_type == TEST:
             self.user = TestUser(**kwargs)
-        # this func is only used once, so no need to restore it
-        self.pop_hist_setup = pop_hist_setup
 
         if serial_obj is not None:
             # are we restoring env from json?
             self.restore_env(serial_obj)
         else:
-            self.construct_anew(line_data_func, exclude_member,
-                                census, pop_hist_func)
+            self.construct_anew(exclude_member)
 
-    def construct_anew(self, line_data_func=None, exclude_member=None,
-                       census=None, pop_hist_func=None):
+    def construct_anew(self, exclude_member=None):
         self.pop_hist = PopHist()  # this will record pops across time
         # Make sure varieties are present in the history
         if self.pop_hist_setup is not None:
@@ -133,13 +117,6 @@ class Env(Space):
         # these funcs will be stored as attrs...
         # but only if they're really funcs!
         # cause we're gonna try to call them
-        if isinstance(census, FunctionType):
-            print("Adding custom census func")
-            self.attrs[CENSUS_FUNC] = census
-        if isinstance(pop_hist_func, FunctionType):
-            self.attrs["pop_hist_func"] = pop_hist_func
-        if isinstance(line_data_func, FunctionType):
-            self.attrs["line_data_func"] = line_data_func
         self.exclude_member = exclude_member
         self.womb = []  # for agents waiting to be born
 
@@ -187,15 +164,11 @@ class Env(Space):
 
     def handle_pop_hist(self):
         self.pop_hist.add_period()
-        if "pop_hist_func" in self.attrs:
-            self.attrs["pop_hist_func"](self.pop_hist,
-                                        execution_key=self.execution_key)
-        else:
-            for mbr in self.pop_hist.pops:
-                if mbr in self.members and self.is_mbr_comp(mbr):
-                    self.pop_hist.record_pop(mbr, self.pop_count(mbr))
-                else:
-                    self.pop_hist.record_pop(mbr, 0)
+        for mbr in self.pop_hist.pops:
+            if mbr in self.members and self.is_mbr_comp(mbr):
+                self.pop_hist.record_pop(mbr, self.pop_count(mbr))
+            else:
+                self.pop_hist.record_pop(mbr, 0)
 
     def get_census(self, num_moves):
         """
@@ -205,32 +178,26 @@ class Env(Space):
         Takes in how many agent has moved from one place to another
         and how many agent has switched groups and returns
         a string of these census data.
-
-        census_func overrides the default behavior.
         """
-        if CENSUS_FUNC in self.attrs:
-            return self.attrs[CENSUS_FUNC](self,
-                                           exec_key=self.exec_key)
-        else:
-            SEP_STR = "==================\n"
-            census_str = ("\nTotal census for period "
-                          + str(self.get_periods()) + ":\n"
-                          + SEP_STR
-                          + "Group census:\n"
-                          + SEP_STR)
-            for name in self.members:
-                grp = self.members[name]
-                population = len(grp)
-                census_str += ("  " + name + " (id: "
-                               + str(id(grp)) + "): "
-                               + str(population) + "\n")
-            census_str += (SEP_STR
-                           + "Agent census:\n"
-                           + SEP_STR
-                           + "  Agents who moved: "
-                           + str(num_moves) + "\n"
-                           + "  Agents who switched groups: "
-                           + str(self.num_switches))
+        SEP_STR = "==================\n"
+        census_str = ("\nTotal census for period "
+                      + str(self.get_periods()) + ":\n"
+                      + SEP_STR
+                      + "Group census:\n"
+                      + SEP_STR)
+        for name in self.members:
+            grp = self.members[name]
+            population = len(grp)
+            census_str += ("  " + name + " (id: "
+                           + str(id(grp)) + "): "
+                           + str(population) + "\n")
+        census_str += (SEP_STR
+                       + "Agent census:\n"
+                       + SEP_STR
+                       + "  Agents who moved: "
+                       + str(num_moves) + "\n"
+                       + "  Agents who switched groups: "
+                       + str(self.num_switches))
         return census_str
 
     def has_disp(self):
@@ -323,23 +290,14 @@ class Env(Space):
 
     def line_data(self):
         period = None
-        if self.exclude_member is not None:
-            exclude = self.exclude_member
-        else:
-            exclude = None
-        if "line_data_func" in self.attrs:
-            (period, data) = self.attrs["line_data_func"](self)
-        else:
-            data = {}
-            for var in self.pop_hist.pops:
-                if var != exclude:
-                    data[var] = {}
-                    data[var]["data"] = self.pop_hist.pops[var]
-                    data[var]["color"] = self.get_color(var)
-                    if not period:
-                        period = len(data[var]["data"])
-        print(self.pop_hist.periods, self.pop_hist.pops)
-        print(period, data)
+        data = {}
+        for var in self.pop_hist.pops:
+            if var != self.exclude_member:
+                data[var] = {}
+                data[var]["data"] = self.pop_hist.pops[var]
+                data[var]["color"] = self.get_color(var)
+                if not period:
+                    period = len(data[var]["data"])
         return period, data
 
     def bar_data(self):
@@ -348,6 +306,9 @@ class Env(Space):
         This code assumes the env holds groups, and the groups
         hold agents with positions.
         This assumption is dangerous, and we should address it.
+        AMADOU: Please study the use of exclude_member below.
+        (I know it was copied from line_data, but there is a
+        serious amount of excess code.)
         """
         period = None
         if self.exclude_member is not None:

@@ -77,8 +77,8 @@ pytests: FORCE
 	cd $(LIB_DIR); make tests
 	cd $(REG_DIR); make tests
 	cd $(API_DIR); make tests
-	# put these back in once working:
-	# cd capital; make tests
+	cd capital; make tests
+	# put this back in once working:
 	# cd epidemics; make tests
 
 dockertests:
