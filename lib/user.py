@@ -63,18 +63,18 @@ def leave(user, **kwargs):
 
 
 def scatter_plot(user, update=False):
-    from registry.registry import get_env
-    return get_env(user.exec_key).scatter_graph()
+    from registry.registry import get_model
+    return get_model(user.exec_key).scatter_plot()
 
 
 def line_graph(user, update=False):
-    from registry.registry import get_env
-    return get_env(user.exec_key).line_graph()
+    from registry.registry import get_model
+    return get_model(user.exec_key).line_graph()
 
 
 def bar_graph(user, update=False):
-    from registry.registry import get_env
-    return get_env(user.exec_key).bar_graph()
+    from registry.registry import get_model
+    return get_model(user.exec_key).bar_graph()
 
 
 menu_functions = {

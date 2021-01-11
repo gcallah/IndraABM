@@ -318,6 +318,15 @@ class Model():
             self.switches.clear()
         pass
 
+    def line_graph(self):
+        self.env.line_graph()
+
+    def bar_graph(self):
+        self.env.bar_graph()
+
+    def scatter_plot(self):
+        self.env.scatter_plot()
+
 
 def main():
     model = Model()

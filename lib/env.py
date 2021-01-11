@@ -244,7 +244,7 @@ class Env(Space):
         else:
             return None
 
-    def scatter_graph(self):
+    def scatter_plot(self):
         """
         Show agent locations.
         """
