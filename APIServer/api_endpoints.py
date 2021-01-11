@@ -11,7 +11,8 @@ from APIServer.api_utils import err_return
 from APIServer.api_utils import json_converter
 from APIServer.props_api import get_props
 from APIServer.model_api import run_model, create_model
-from models.basic import create_model as cm
+# from models.basic import create_model as cm
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -105,8 +106,11 @@ class Props(Resource):
         """
         The endpoint created for testing purposes.
         """
-        print(api.payload)
-        return json_converter(cm(props=api.payload))
+        test_path = "test_data" + "/" + "basic_model.json"
+        basic_path = indra_dir + "/" + "APIServer" + "/" + test_path
+        with open(basic_path) as file:
+            basic_model = json.loads(file.read())
+        return basic_model
 
 
 @api.route('/models/menu/<int:execution_id>')
