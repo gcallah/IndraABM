@@ -95,6 +95,7 @@ class Props(Resource):
         """
         Put a revised list of properties (parameters) for a model
         back to the server.
+        This should return a new model with the revised props.
         """
         return json_converter(create_model(model_id, api.payload, indra_dir))
 
