@@ -19,6 +19,8 @@ DEF_USER = "User"
 
 UNLIMITED = 1000
 
+SEP_STR = "==================\n"
+
 X = 0
 Y = 1
 
@@ -170,7 +172,7 @@ class Env(Space):
             else:
                 self.pop_hist.record_pop(mbr, 0)
 
-    def get_census(self, num_moves):
+    def get_census(self, num_moves, num_switches):
         """
         Gets the census data for all the agents stored
         in the member dictionary.
@@ -179,25 +181,14 @@ class Env(Space):
         and how many agent has switched groups and returns
         a string of these census data.
         """
-        SEP_STR = "==================\n"
-        census_str = ("\nTotal census for period "
-                      + str(self.get_periods()) + ":\n"
-                      + SEP_STR
-                      + "Group census:\n"
-                      + SEP_STR)
+        census_str = (f"\n{SEP_STR}Census for period {self.get_periods()}\n"
+                      + f"{SEP_STR}Group census:\n{SEP_STR}")
         for name in self.members:
             grp = self.members[name]
-            population = len(grp)
-            census_str += ("  " + name + " (id: "
-                           + str(id(grp)) + "): "
-                           + str(population) + "\n")
-        census_str += (SEP_STR
-                       + "Agent census:\n"
-                       + SEP_STR
-                       + "  Agents who moved: "
-                       + str(num_moves) + "\n"
-                       + "  Agents who switched groups: "
-                       + str(self.num_switches))
+            census_str += f"  {name} (members: {len(grp)})\n"
+        census_str += (f"{SEP_STR} Agent census:\n{SEP_STR}"
+                       + f"  Agents who moved: {num_moves}\n"
+                       + f"  Agents who switched groups: {num_switches}")
         return census_str
 
     def has_disp(self):

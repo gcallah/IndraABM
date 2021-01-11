@@ -102,6 +102,7 @@ class Model():
                  grp_struct=DEF_GRP_STRUCT,
                  env_action=None,
                  serial_obj=None, exec_key=None):
+        self.num_switches = 0
         if serial_obj is None:
             self.create_anew(model_nm, props, grp_struct, exec_key, env_action)
         else:
@@ -125,7 +126,6 @@ class Model():
         registry.reg_model(self, self.exec_key)
         self.groups = self.create_groups()
         self.env = self.create_env(env_action=env_action)
-        self.num_switches = 0
         self.switches = []  # for agents waiting to switch groups
         self.period = 0
 
@@ -258,7 +258,6 @@ class Model():
         num_acts = 0
         num_moves = 0
         for i in range(periods):
-            self.num_switches = 0
             self.period += 1
 
             # now we call upon the env to act:
@@ -281,10 +280,12 @@ class Model():
     def rpt_census(self, acts, moves):
         """
         This is the default census report.
+        Right now, `acts` is not used: do we need it?
         Return: a string saying what happened in a period.
         """
-        return "In period {} there were {} actions".format(self.period,
-                                                           acts)
+        ret = self.env.get_census(moves, self.num_switches)
+        self.num_switches = 0
+        return ret
 
     def pending_switches(self):
         """
