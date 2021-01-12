@@ -20,6 +20,7 @@ pytests: FORCE
 	# nosetests tests.test_money.py --with-coverage
 	# nosetests --exe --with-coverage --cover-package=capital
 	nosetests tests/test_money.py
+	nosetests tests/test_trade_utils.py
 
 # test a python file:
 %.py: FORCE

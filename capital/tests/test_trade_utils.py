@@ -9,6 +9,7 @@ from capital.trade_utils import AMT_AVAIL, transfer
 from capital.trade_utils import rand_dist, equal_dist, GEN_UTIL_FUNC, UTIL_FUNC
 from capital.trade_utils import amt_adjust, is_complement
 from capital.trade_utils import COMPLEMENTS, adj_add_good_w_comp
+from capital.trade_utils import incr_util
 import capital.trade_utils as tu
 
 
@@ -16,8 +17,8 @@ class TradeUtilsTestCase(TestCase):
     def setUp(self, props=None):
         self.goodA = {AMT_AVAIL: 10}
         self.goodB = {AMT_AVAIL: 10}
-        self.goodC = {AMT_AVAIL: 10, "durability": 0.02, "divisibility": 0.2,}
-        self.goodD = {AMT_AVAIL: 10, "durability": 0.9, "divisibility": 0.8,}
+        self.goodC = {AMT_AVAIL: 10, "incr": 0, "durability": 0.02, "divisibility": 0.2, "age": 1}
+        self.goodD = {AMT_AVAIL: 10, "incr": 0, "durability": 0.9, "divisibility": 0.8, "age": 1}
         self.trader = {"goods": {}}
         # self.agent = Agent()
         self.goods = {"a": self.goodA, "b": self.goodB}
@@ -46,6 +47,34 @@ class TradeUtilsTestCase(TestCase):
     def test_gen_util_func(self):
         util = tu.gen_util_func(0)
         self.assertEqual(util, tu.DEF_MAX_UTIL)
+    
+    def test_penguin_util_func(self):
+        util = tu.penguin_util_func(1)
+        self.assertEqual(util, 25)
+
+    def test_cat_util_func(self):
+        util = tu.cat_util_func(1)
+        self.assertEqual(util, 10)
+    
+    def test_bear_util_func(self):
+        util = tu.bear_util_func(1)
+        self.assertEqual(util, 15)
+    
+    def test_steep_util_func(self):
+        util = tu.steep_util_func(1)
+        self.assertEqual(util, 10)
+
+    def test_util_func(self):
+        gen_util = tu.get_util_func(GEN_UTIL_FUNC)
+        self.assertEqual(gen_util, tu.gen_util_func)
+        penguin_util = tu.get_util_func("penguin_util_func")
+        self.assertEqual(penguin_util, tu.penguin_util_func)
+        cat_util = tu.get_util_func("cat_util_func")
+        self.assertEqual(cat_util, tu.cat_util_func)
+        bear_util = tu.get_util_func("bear_util_func")
+        self.assertEqual(bear_util, tu.bear_util_func)
+        steep_util = tu.get_util_func("steep_util_func")
+        self.assertEqual(steep_util, tu.steep_util_func)
 
     def test_endow(self):
         """
@@ -75,6 +104,15 @@ class TradeUtilsTestCase(TestCase):
         """
         self.assertIsNone(get_rand_good(self.goods_dict_empty))
         self.assertIsNotNone(get_rand_good(self.goods))
+
+
+    def test_incr_util(self):
+        # graph = True not tested
+        incr_util(self.goods_dict_du, "c")
+        incr_util(self.goods_dict_du, "d", 0.25)
+        self.assertEqual(self.goods_dict_du["c"]["incr"], 1)
+        self.assertEqual(self.goods_dict_du["d"]["incr"], 0.25)
+
 
     def test_transfer(self):
         transfer(self.trader["goods"], self.goods, "a")
@@ -122,14 +160,14 @@ class TradeUtilsTestCase(TestCase):
                          nature_before_trade["b"][AMT_AVAIL]/2)
 
 
-    # def test_amt_adjust(self):
-    #     """
-    #     Test if amt is adjusted based on the existence of divisibility
-    #     """
-    #     amt_c = amt_adjust(self.traderB, "c")
-    #     amt_a = amt_adjust(self.traderC, "a")
-    #     self.assertEqual(amt_c, 0.2)
-    #     self.assertEqual(amt_a, 1)
+    def test_amt_adjust(self):
+        """
+        Test if amt is adjusted based on the existence of divisibility
+        """
+        amt_c = amt_adjust(self.traderB, "c")
+        amt_a = amt_adjust(self.traderC, "a")
+        self.assertEqual(amt_c, 0.2)
+        self.assertEqual(amt_a, 1)
 
 
     @skip("Have to rewrite this test with new param!")
