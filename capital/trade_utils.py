@@ -1,7 +1,6 @@
 """
 This file contains general functions useful in trading goods.
 """
-from lib.agent import MOVE
 from registry.registry import get_env
 import random
 import copy
@@ -12,6 +11,7 @@ DEBUG = True
 ACCEPT = 1
 INADEQ = 0
 REJECT = -1
+NO_TRADER = -2
 
 AMT_AVAIL = "amt_available"
 GOODS = "goods"
@@ -305,8 +305,9 @@ def negotiate(trader1, trader2, comp=False, amt=1):
 def seek_a_trade(agent, comp=False, **kwargs):
     nearby_agent = get_env(exec_key=agent.exec_key).get_closest_agent(agent)
     if nearby_agent is not None:
-        negotiate(agent, nearby_agent, comp)
-        return MOVE
+        return negotiate(agent, nearby_agent, comp)
+    else:
+        return NO_TRADER
 
 
 def seek_a_trade_w_comp(agent, **kwargs):
