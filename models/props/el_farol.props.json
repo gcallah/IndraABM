@@ -6,7 +6,6 @@
     "hival": 500,
     "lowval": 1
   },
-
   "memory": {
     "val": 7,
     "question": "What is the memory capacity of drinkers?",
