@@ -1,115 +1,70 @@
+
 """
-A edgeworthbox model.
-Places two groups of agents in the enviornment randomly
-and moves them around randomly.
+This is a minimal model that inherits from model.py
+and just sets up a couple of agents in two groups that
+do nothing except move around randomly.
 """
 
-from indra.agent import Agent
-from indra.composite import Composite
-from indra.display_methods import RED, BLUE
-from indra.env import Env
-from registry.registry import get_env, get_prop
-from indra.space import DEF_HEIGHT, DEF_WIDTH
-from indra.utils import init_props
-from capital.trade_utils import seek_a_trade, AMT_AVAIL
-from capital.trade_utils import GEN_UTIL_FUNC, UTIL_FUNC
+from lib.agent import MOVE
+from lib.display_methods import RED, BLUE
+from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
+from capital.trade_utils import seek_a_trade
+
+DEBUG = False
 
 MODEL_NAME = "edgeworthbox"
-DEBUG = True  # turns debugging code on or off
-DEBUG2 = False  # turns deeper debugging code on or off
-
-DEF_NUM_CAGENTS = 1
-DEF_NUM_WAGENTS = 1
-DEF_NUM_CHEESE = 4
-DEF_NUM_WINE = 4
-
-DEF_MAX_UTIL = max(DEF_NUM_CHEESE, DEF_NUM_WINE)
-
-wine_group = None
-cheese_group = None
+DEF_WINE_MBRS = 1
+DEF_CHEESE_MBRS = 1
 
 
-def create_wagent(name, i, props=None):
-    start_wine = DEF_NUM_WINE
-    if props is not None:
-        start_wine = props.get('start_wine',
-                               DEF_NUM_WINE)
-    return Agent(name + str(i), action=seek_a_trade,
-                 attrs={"goods": {"wine": {AMT_AVAIL: start_wine,
-                                           UTIL_FUNC: GEN_UTIL_FUNC,
-                                           "incr": 0},
-                                  "cheese": {AMT_AVAIL: 0,
-                                             UTIL_FUNC: GEN_UTIL_FUNC,
-                                             "incr": 0}
-                                  },
-                        "util": 0,
-                        "pre_trade_util": 0,
-                        "trades_with": "Cheese holders"})
-
-
-def create_cagent(name, i, props=None):
-    start_cheese = DEF_NUM_CHEESE
-    if props is not None:
-        start_cheese = props.get('start_cheese',
-                                 DEF_NUM_CHEESE)
-    return Agent(name + str(i), action=seek_a_trade,
-                 attrs={"goods": {"cheese": {AMT_AVAIL: start_cheese,
-                                             UTIL_FUNC: GEN_UTIL_FUNC,
-                                             "incr": 0},
-                                  "wine": {AMT_AVAIL: 0,
-                                           UTIL_FUNC: GEN_UTIL_FUNC,
-                                           "incr": 0}},
-                        "util": 0,
-                        "pre_trade_util": 0,
-                        "trades_with": "Wine holders"})
-
-
-def set_up(props=None):
+def trader_action(agent, **kwargs):
     """
-    A func to set up run that can also be used by test code.
+    A simple default agent action.
     """
-    global max_util
-    pa = init_props(MODEL_NAME, props, model_dir="capital")
-    cheese_group = Composite("Cheese holders", {"color": BLUE},
-                             member_creator=create_cagent,
-                             props=pa,
-                             num_members=get_prop('num_cagents',
-                                                  DEF_NUM_CAGENTS))
-    wine_group = Composite("Wine holders", {"color": RED},
-                           member_creator=create_wagent,
-                           props=pa,
-                           num_members=get_prop('num_wagents',
-                                                DEF_NUM_WAGENTS))
+    if DEBUG:
+        print("Agent {} is located at {}".format(agent.name,
+                                                 agent.get_pos()))
+    return MOVE
 
-    Env("EdgeworthBox",
-        height=get_prop('grid_height', DEF_HEIGHT),
-        width=get_prop('grid_width', DEF_WIDTH),
-        members=[cheese_group, wine_group])
 
-    start_cheese = 0
-    start_wine = 0
-    if pa is not None:
-        start_cheese = get_prop('start_cheese',
-                                DEF_NUM_CHEESE)
-        start_wine = get_prop('start_wine',
-                              DEF_NUM_WINE)
-        max_util = max(start_cheese, start_wine)
+edge_grps = {
+    "wine_grp": {
+        MBR_CREATOR: create_wine,
+        MBR_ACTION: seek_a_trade,
+        NUM_MBRS: DEF_WINE_MBRS,
+        COLOR: RED
+    },
+    "cheese_grp": {
+        MBR_CREATOR: create_cheese,
+        MBR_ACTION: seek_a_trade,
+        NUM_MBRS: DEF_CHEESE_MBRS,
+        COLOR: BLUE
+    },
+}
+
+
+class EdgeworthBox(Model):
+    """
+    This class should just create a basic model that runs, has
+    some agents that move around, and allows us to test if
+    the system as a whole is working.
+    It turns out that so far, we don't really need to subclass anything!
+    """
+
+
+def create_model(serial_obj=None, props=None):
+    """
+    This is for the sake of the API server:
+    """
+    if serial_obj is not None:
+        return EdgeworthBox(serial_obj=serial_obj)
     else:
-        props_max_util = max(start_cheese, start_wine)
-        max_util = max(props_max_util, DEF_MAX_UTIL)
-
-    return (cheese_group, wine_group, max_util)
+        return EdgeworthBox(MODEL_NAME, grp_struct=edge_grps, props=props)
 
 
 def main():
-    global wine_group
-    global cheese_group
-    global max_util
-
-    (cheese_group, wine_group, max_util) = set_up()
-
-    # `get_env()` returns an env, which itself is a callable object
-    get_env()()
+    model = create_model()
+    model.run()
     return 0
 
 
