@@ -297,19 +297,11 @@ class Env(Space):
         This code assumes the env holds groups, and the groups
         hold agents with positions.
         This assumption is dangerous, and we should address it.
-        AMADOU: Please study the use of exclude_member below.
-        (I know it was copied from line_data, but there is a
-        serious amount of excess code.)
         """
         period = None
-        if self.exclude_member is not None:
-            exclude = self.exclude_member
-        else:
-            exclude = None
-
         data = {}
         for var in self.pop_hist.pops:
-            if var != exclude:
+            if var != self.exclude_member:
                 data[var] = {}
                 data[var]["data"] = self.pop_hist.pops[var]
                 data[var]["color"] = self.get_color(var)
