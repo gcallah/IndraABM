@@ -24,6 +24,7 @@ MIN_MOTIV = 0.05
 MAX_MOTIV = .95
 DEBUG = False
 OPT_OCUPANCY = 0.6
+MEM_CAPACITY = 7  # Must be an integer
 
 
 def get_decision(agent):
@@ -51,6 +52,23 @@ def encourage(agent):
     return encouraged
 
 
+def memory_check(agent):
+    """
+    return whether bar was full on average a set day
+    """
+    bar = get_model(agent.exec_key)
+    attandance = bar.env.pop_hist.pops[AT_BAR]
+    population = (bar.grp_struct[AT_BAR]["num_mbrs"] +
+                  bar.grp_struct[AT_HOME]["num_mbrs"])
+    if len(attandance) < MEM_CAPACITY:
+        n_last_days = attandance
+    else:
+        n_last_days = attandance[-MEM_CAPACITY:]
+    average = sum(n_last_days) / len(n_last_days)
+    was_full = average >= int(population * OPT_OCUPANCY)
+    return was_full
+
+
 def drinker_action(agent, **kwargs):
     """
     To go or not to go, that is the question -Not Callahan
@@ -60,25 +78,22 @@ def drinker_action(agent, **kwargs):
         print("Alcoholic {} is located at {}".format(agent.name,
                                                      agent.get_pos()))
     bar = get_model(agent.exec_key)
-    attandance = bar.env.pop_hist.pops[AT_BAR]
-    population = (bar.grp_struct[AT_BAR]["num_mbrs"] +
-                  bar.grp_struct[AT_HOME]["num_mbrs"])
-    last_night_full = attandance[-1] >= int(population * OPT_OCUPANCY)
+    was_full = memory_check(agent)
     going = get_decision(agent)
     # for people at home
     if agent.group_name() == AT_HOME:
         # if last night was full, discourage going, else encourage
-        if going and not last_night_full:
+        if going and not was_full:
             # drinker has motivation to go to bar today, consider him gone
             bar.add_switch(str(agent), AT_HOME, AT_BAR)
-        elif not going and not last_night_full:
+        elif not going and not was_full:
             encouraged = encourage(agent)
             if encouraged:
                 bar.add_switch(str(agent), AT_HOME, AT_BAR)
     else:
         # for people that went yesterday
         # if last night was full, discourage going, else encourage
-        if going and last_night_full:
+        if going and was_full:
             # drinker has motivation to go toleave bar today, consider him gone
             discouraged = discourage(agent)
             if discouraged:
