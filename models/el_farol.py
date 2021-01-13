@@ -135,13 +135,16 @@ class ElFarol(Model):
     also!
     """
     def handle_props(self, props):
+        """
+        overidding pop_hist
+        """
         super().handle_props(props)
-        # get total population and set  people at home and bar 50/50-ish
         num_mbrs = self.props.get("population")
         at_bar = int(num_mbrs * random.random())
         at_home = num_mbrs - at_bar
         self.grp_struct[AT_BAR]["num_mbrs"] = at_bar
         self.grp_struct[AT_HOME]["num_mbrs"] = at_home
+        # MEM_CAPACITY = self.props.get("memory")
 
 
 def create_model(serial_obj=None, props=None):
