@@ -13,21 +13,11 @@ DOCSTRING_TXT = "A short description about this model."
 
 def read_docstring(curr_line, mdl_lines):
     content = ""
-    start_line = curr_line
     
-    # Find first """
-    while not mdl_lines[start_line].startswith('"""'):
-        start_line += 1
-    
-    # Find second """
-    curr_line = start_line + 1
-    while not mdl_lines[curr_line].startswith('"""'):
+    while not mdl_lines[curr_line].startswith("from ") \
+            and not mdl_lines[curr_line].startswith("import "):
+        content += mdl_lines[curr_line]
         curr_line += 1
-    
-    # Concat content
-    curr_line += 1
-    for line in range(start_line, curr_line):
-        content += mdl_lines[line]
 
     return (curr_line, content.strip())
 
@@ -37,10 +27,6 @@ IMPORT_TXT = "We import all necessary modules and functions from other files."
 
 def read_imports(curr_line, mdl_lines):
     content = ""
-    
-    while not mdl_lines[curr_line].startswith("from ") \
-            and not mdl_lines[curr_line].startswith("import "):
-        curr_line += 1
 
     while mdl_lines[curr_line].startswith("from ") \
             or mdl_lines[curr_line].startswith("import "):
