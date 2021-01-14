@@ -82,10 +82,21 @@ def output_code_cell(code):
 
 
 def main():
-    # handle args -- model file in argv[1]
+    if len(sys.argv) != 2:
+        print("Usage: PROG [input file]")
+        exit(1)
+    
+    mdl_path = sys.argv[1]
+    try:
+        infile = open(mdl_path)
+        mdl_lines = infile.readlines()
+    except:
+        print("Unable to handle the given file.")
+        exit(1)
+    finally:
+        infile.close()
+    
     curr_line = 0
-    mdl_lines = []
-    # read mdl_file into mdl_lines
     for section in NB_STRUCT:
         output_md_cell(section["text"])
         (curr_line, code) = section["func"](curr_line, mdl_lines)
