@@ -1,3 +1,7 @@
+"""
+A model to simulate Conway's game of life.
+"""
+
 from lib.display_methods import RED, BLUE
 from lib.agent import DONT_MOVE
 from lib.model import Model, create_agent, NUM_MBRS, NUM_MBRS_PROP
