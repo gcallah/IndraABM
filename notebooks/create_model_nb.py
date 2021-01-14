@@ -35,7 +35,18 @@ IMPORT_TXT = "We import all necessary modules and functions from other files."
 
 
 def read_imports(curr_line, mdl_lines):
-    return (0, "the definition of the imports goes here!")
+    content = ""
+    
+    while not mdl_lines[curr_line].startswith("from ") \
+            and not mdl_lines[curr_line].startswith("import "):
+        curr_line += 1
+
+    while mdl_lines[curr_line].startswith("from ") \
+            or mdl_lines[curr_line].startswith("import "):
+        content += mdl_lines[curr_line]
+        curr_line += 1
+
+    return (curr_line, content)
 
 
 CONSTANT_TXT = "These are the constants and global variables we used in this model."
