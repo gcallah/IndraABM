@@ -59,7 +59,7 @@ class Panic(Model):
         super().handle_props(props)
         grid_height = self.props.get("grid_height")
         grid_width = self.props.get("grid_width")
-        num_agents = grid_height * grid_width
+        num_agents = (grid_height * grid_width) - 10
         ratio_panic = self.props.get("pct_panic") / 100
         ratio_calm = 1 - ratio_panic
         self.grp_struct[CALM]["num_mbrs"] = int(ratio_calm * num_agents)

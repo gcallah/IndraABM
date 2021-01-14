@@ -17,6 +17,8 @@ MAX_HEIGHT = 200
 
 DEF_MAX_MOVE = 2
 
+MAX_PLACE_ATTEMPTS = 100
+
 DEBUG = False
 DEBUG2 = False
 
@@ -31,7 +33,6 @@ class SpaceFull(Exception):
     """
     Exception to raise when a space fills up.
     """
-
     def __init__(self, message):
         self.message = message
 
@@ -377,7 +378,7 @@ class Space(Group):
         agent_nm = self.locations[str((x, y))]
         return get_agent(agent_nm, self.exec_key)
 
-    def place_member(self, mbr, max_move=None, xy=None):
+    def place_member(self, mbr, max_move=None, xy=None, attempts=0):
         """
         By default, locate a member at a random x, y spot in our grid.
         `max_move` constrains where that can be.
@@ -385,8 +386,13 @@ class Space(Group):
         `xy` must be a tuple!
         """
         if self.is_full():
-            # must replace with proper logging call:
             print(ALL_FULL)
+            raise (SpaceFull(ALL_FULL))
+
+        if attempts > MAX_PLACE_ATTEMPTS:
+            # we should create a better exception here, but this will work for
+            # now:
+            print(ALL_FULL, "attempts=", attempts)
             raise (SpaceFull(ALL_FULL))
 
         if not is_group(mbr):
@@ -410,7 +416,7 @@ class Space(Group):
                 # a full neighborhood as well.
                 # and if xy is not None, the user asked for a particular
                 # spot: don't give them another, but return None.
-                return self.place_member(mbr, max_move)
+                return self.place_member(mbr, max_move, attempts=attempts + 1)
         else:
             return self.rand_place_members(mbr.members, max_move)
 
