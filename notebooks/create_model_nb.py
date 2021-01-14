@@ -1,4 +1,3 @@
-
 """
 This script takes an Indra ABM model as input and outputs a notebook.
 It writes stdout.
@@ -6,20 +5,32 @@ It writes stdout.
 import sys
 
 
+DOCSTRING_TXT = "A short description about this model."
+
+
 def read_docstring(curr_line, mdl_lines):
-    pass
+    return (0, "the definition of the docstring goes here!")
+
+
+IMPORT_TXT = "We import all necessary modules and functions from other files."
 
 
 def read_imports(curr_line, mdl_lines):
-    pass
+    return (0, "the definition of the imports goes here!")
+
+
+CONSTANT_TXT = "These are the constants and global variables we used in this model."
 
 
 def read_constants(curr_line, mdl_lines):
-    pass
+    return (0, "the definition of the constants goes here!")
+
+
+ACTIONS_CREATORS_TXT = "The following functions define some actions that our agents can make."
 
 
 def read_actions_creators(curr_line, mdl_lines):
-    pass
+    return (0, "the definition of the actions creators goes here!")
 
 
 GRP_STRUCT_TXT = "This structure defines the groups that characterize our agents."
@@ -51,6 +62,10 @@ def read_main(curr_line, mdl_lines):
 
 
 NB_STRUCT = [
+    {"text": DOCSTRING_TXT, "func": read_docstring},
+    {"text": IMPORT_TXT, "func": read_imports},
+    {"text": CONSTANT_TXT, "func": read_constants},
+    {"text": ACTIONS_CREATORS_TXT, "func": read_actions_creators},
     {"text": GRP_STRUCT_TXT, "func": read_grp_struct},
     {"text": MODEL_CLASS_TXT, "func": read_model_class},
     {"text": CREATE_MODEL_TXT, "func": read_create_model},
