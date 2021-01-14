@@ -35,7 +35,7 @@ def game_agent_action(agent, **kwargs):
     return DONT_MOVE
 
 
-game_grp_struct = {
+game_grps = {
     "dead": {
         NUM_MBRS: DEF_NUM_DEAD,
         NUM_MBRS_PROP: "num_blue",
@@ -52,7 +52,7 @@ game_grp_struct = {
 
 def populate_board(patterns, pattern_num):
     agent_locs = patterns[pattern_num]
-    grp = game_grp_struct["dead"]
+    grp = game_grps["dead"]
     for loc in agent_locs:
         agent = create_agent(loc[X], loc[Y], game_agent_action)
         grp += create_agent
@@ -87,7 +87,7 @@ def create_model(serial_obj=None, props=None):
     if serial_obj is not None:
         return GameOfLife(serial_obj=serial_obj)
     else:
-        return GameOfLife(MODEL_NAME, grp_struct=game_grp_struct, props=props)
+        return GameOfLife(MODEL_NAME, grp_struct=game_grps, props=props)
 
 
 def main():
