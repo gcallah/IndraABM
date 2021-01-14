@@ -1,7 +1,9 @@
+
 """
 This script takes an Indra ABM model as input and outputs a notebook.
 It writes stdout.
 """
+
 import sys
 
 
@@ -9,7 +11,24 @@ DOCSTRING_TXT = "A short description about this model."
 
 
 def read_docstring(curr_line, mdl_lines):
-    return (0, "the definition of the docstring goes here!")
+    content = ""
+    start_line = curr_line
+    
+    # Find first """
+    while not mdl_lines[start_line].startswith('"""'):
+        start_line += 1
+    
+    # Find second """
+    curr_line = start_line + 1
+    while not mdl_lines[curr_line].startswith('"""'):
+        curr_line += 1
+    
+    # Concat content
+    curr_line += 1
+    for line in range(start_line, curr_line):
+        content += mdl_lines[line]
+    
+    return (curr_line, content)
 
 
 IMPORT_TXT = "We import all necessary modules and functions from other files."
