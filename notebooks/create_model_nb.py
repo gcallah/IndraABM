@@ -27,8 +27,8 @@ def read_docstring(curr_line, mdl_lines):
     curr_line += 1
     for line in range(start_line, curr_line):
         content += mdl_lines[line]
-    
-    return (curr_line, content)
+
+    return (curr_line, content.strip())
 
 
 IMPORT_TXT = "We import all necessary modules and functions from other files."
@@ -46,49 +46,85 @@ def read_imports(curr_line, mdl_lines):
         content += mdl_lines[curr_line]
         curr_line += 1
 
-    return (curr_line, content)
+    return (curr_line, content.strip())
 
 
 CONSTANT_TXT = "These are the constants and global variables we used in this model."
 
 
 def read_constants(curr_line, mdl_lines):
-    return (0, "the definition of the constants goes here!")
+    content = ""
+
+    while not mdl_lines[curr_line].startswith("def "):
+        content += mdl_lines[curr_line]
+        curr_line += 1
+
+    return (curr_line, content.strip())
 
 
 ACTIONS_CREATORS_TXT = "The following functions define some actions that our agents can make."
 
 
 def read_actions_creators(curr_line, mdl_lines):
-    return (0, "the definition of the actions creators goes here!")
+    content = ""
+
+    while not mdl_lines[curr_line].endswith("_grps = {\n"):
+        content += mdl_lines[curr_line]
+        curr_line += 1
+
+    return (curr_line, content.strip())
 
 
 GRP_STRUCT_TXT = "This structure defines the groups that characterize our agents."
 
 
 def read_grp_struct(curr_line, mdl_lines):
-    return (0, "the definition of the group structure goes here!")
+    content = ""
+
+    while not mdl_lines[curr_line].startswith("class "):
+        content += mdl_lines[curr_line]
+        curr_line += 1
+
+    return (curr_line, content.strip())
 
 
 MODEL_CLASS_TXT = "We subclass `Model` to create our own variant of it."
 
 
 def read_model_class(curr_line, mdl_lines):
-    return (0, "the definition of the model class goes here!")
+    content = ""
+
+    while not mdl_lines[curr_line].startswith("def create_model"):
+        content += mdl_lines[curr_line]
+        curr_line += 1
+
+    return (curr_line, content.strip())
 
 
 CREATE_MODEL_TXT = "Here's where we create the model class."
 
 
 def read_create_model(curr_line, mdl_lines):
-    return (0, "model code goes here!")
+    content = ""
+
+    while not mdl_lines[curr_line].startswith("def main"):
+        content += mdl_lines[curr_line]
+        curr_line += 1
+
+    return (curr_line, content.strip())
 
 
 MAIN_TXT = "The main function runs the whole model."
 
 
 def read_main(curr_line, mdl_lines):
-    return (0, "def main():\n    pass\n")
+    content = ""
+
+    while not mdl_lines[curr_line].startswith("if __name__"):
+        content += mdl_lines[curr_line]
+        curr_line += 1
+
+    return (curr_line, content.strip())
 
 
 NB_STRUCT = [
