@@ -5,6 +5,7 @@ It writes stdout.
 """
 
 import sys
+import nbformat as nbf
 
 
 DOCSTRING_TXT = "A short description about this model."
@@ -139,34 +140,33 @@ NB_STRUCT = [
 ]
 
 
-def output_md_cell(text):
-    print("*********\n", text)
+def output_md_cell(nb, text):
+    nb["cells"].append(nbf.v4.new_markdown_cell(text))
 
 
-def output_code_cell(code):
-    print(code, "\n")
+def output_code_cell(nb, code):
+    nb["cells"].append(nbf.v4.new_code_cell(code))
 
 
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("Usage: PROG [input file]")
         exit(1)
-    
+
     mdl_path = sys.argv[1]
-    try:
-        infile = open(mdl_path)
+    with open(mdl_path, "r") as infile:
         mdl_lines = infile.readlines()
-    except:
-        print("Unable to handle the given file.")
-        exit(1)
-    finally:
-        infile.close()
-    
+
+    nb = nbf.v4.new_notebook()
     curr_line = 0
     for section in NB_STRUCT:
-        output_md_cell(section["text"])
+        output_md_cell(nb, section["text"])
         (curr_line, code) = section["func"](curr_line, mdl_lines)
-        output_code_cell(code)
+        output_code_cell(nb, code)
+
+    output_path = sys.argv[2]
+    with open(output_path, "w") as outfile:
+        nbf.write(nb, outfile)
 
 
 if __name__ == "__main__":
