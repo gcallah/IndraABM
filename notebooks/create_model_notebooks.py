@@ -152,7 +152,7 @@ def main():
         # Running the model
         nb = execute(nb, env)
 
-    # Finish making notebook and add notebook 
+    # Finish making notebook and add notebook
     with open(output_file, 'w') as f:
         nbf.write(nb, f)
 

@@ -13,7 +13,7 @@ DOCSTRING_TXT = "A short description about this model."
 
 def read_docstring(curr_line, mdl_lines):
     content = ""
-    
+
     while not mdl_lines[curr_line].startswith("from ") \
             and not mdl_lines[curr_line].startswith("import "):
         content += mdl_lines[curr_line]
@@ -29,7 +29,8 @@ def read_imports(curr_line, mdl_lines):
     content = ""
 
     while mdl_lines[curr_line].startswith("from ") \
-            or mdl_lines[curr_line].startswith("import "):
+            or mdl_lines[curr_line].startswith("import ") \
+            or mdl_lines[curr_line].startswith("\n"):
         content += mdl_lines[curr_line]
         curr_line += 1
 
@@ -114,6 +115,19 @@ def read_main(curr_line, mdl_lines):
     return (curr_line, content.strip())
 
 
+RUN_TXT = "Here's how we run the model."
+
+
+def read_run(curr_line, mdl_lines):
+    content = ""
+
+    while curr_line < len(mdl_lines):
+        content += mdl_lines[curr_line]
+        curr_line += 1
+
+    return (curr_line, content.strip())
+
+
 NB_STRUCT = [
     {"text": DOCSTRING_TXT, "func": read_docstring},
     {"text": IMPORT_TXT, "func": read_imports},
@@ -123,6 +137,7 @@ NB_STRUCT = [
     {"text": MODEL_CLASS_TXT, "func": read_model_class},
     {"text": CREATE_MODEL_TXT, "func": read_create_model},
     {"text": MAIN_TXT, "func": read_main},
+    {"text": RUN_TXT, "func": read_run},
 ]
 
 
@@ -135,7 +150,7 @@ def output_code_cell(nb, code):
 
 
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         print("Usage: PROG [input file]")
         exit(1)
 
@@ -149,10 +164,7 @@ def main():
         output_md_cell(nb, section["text"])
         (curr_line, code) = section["func"](curr_line, mdl_lines)
         output_code_cell(nb, code)
-
-    output_path = sys.argv[2]
-    with open(output_path, "w") as outfile:
-        nbf.write(nb, outfile)
+    print(nbf.writes(nb))
 
 
 if __name__ == "__main__":
