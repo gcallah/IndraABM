@@ -19,9 +19,6 @@ DEF_AT_BAR = 2
 DEF_MOTIV = 0.6
 MOTIV = "motivation"
 BAR_ATTEND = "bar attendees"
-DISC_AMT = .01
-MIN_MOTIV = 0.05
-MAX_MOTIV = .95
 HALF_FULL = .5
 DEBUG = False
 OPT_OCUPANCY = 0.6
@@ -37,39 +34,14 @@ def get_decision(agent):
     return random.random() <= agent[MOTIV]
 
 
-def discourage(agent):
-    """
-    Discourage an agent from going to bar
-    """
-    agent[MOTIV] = max(agent[MOTIV] - DISC_AMT, MIN_MOTIV)
-    discouraged = not (get_decision(agent))
-    return discouraged
-
-
-def encourage(agent):
-    """
-    Increase motivation and try to change decision.
-    """
-    agent[MOTIV] = min(agent[MOTIV] + DISC_AMT, MAX_MOTIV)
-    encouraged = get_decision(agent)
-    return encouraged
-
-
 def memory_check(agent):
     """
-    Return percentage of capacity the bar was at.
+    Return percentage of capacity the bar was at
+    based on last attendances.
     """
-    bar = get_model(agent.exec_key)
-    attendance = bar.env.pop_hist.pops[AT_BAR]
-    population = (bar.grp_struct[AT_BAR]["num_mbrs"] +
-                  bar.grp_struct[AT_HOME]["num_mbrs"])
-    if len(attendance) < mem_capacity:
-        n_last_days = attendance
-    else:
-        n_last_days = attendance[-mem_capacity:]
-    average = sum(n_last_days) / len(n_last_days)
-    was_full = average >= int(population * OPT_OCUPANCY)
-    return was_full
+    mem_attendance = agent[MEMORY]
+    percent_full = sum(mem_attendance) / len(mem_attendance)
+    return percent_full
 
 
 def drinker_action(agent, **kwargs):
@@ -82,28 +54,25 @@ def drinker_action(agent, **kwargs):
         print("Alcoholic {} is located at {}".format(agent.name,
                                                      agent.get_pos()))
     bar = get_model(agent.exec_key)
-    recently_full = memory_check(agent)
+    percent_full = memory_check(agent)
+    # agent motivation is inverse agent's memory of percentage full
+    agent[MOTIV] = 1 - percent_full
     going = get_decision(agent)
-    # for people at home
     if agent.group_name() == AT_HOME:
-        # if last night was full, discourage going, else encourage
-        if going and not recently_full:
-            # drinker has motivation to go to bar today, consider him gone
+        if going:
             bar.add_switch(str(agent), AT_HOME, AT_BAR)
-        elif not going and not recently_full:
-            encouraged = encourage(agent)
-            if encouraged:
-                bar.add_switch(str(agent), AT_HOME, AT_BAR)
     else:
-        # for people that went yesterday
-        # if last night was full, discourage going, else encourage
-        if going and recently_full:
-            # drinker has motivation to go toleave bar today, consider him gone
-            discouraged = discourage(agent)
-            if discouraged:
-                bar.add_switch(str(agent), AT_BAR, AT_HOME)
-        elif not going:
+        if not going:
             bar.add_switch(str(agent), AT_BAR, AT_HOME)
+        # Updating the agent's memory for last night.
+        # There might be a better place to do this.
+        # doing it here has a one day lag.
+        population = (bar.grp_struct[AT_BAR]["num_mbrs"] +
+                      bar.grp_struct[AT_HOME]["num_mbrs"])
+        attendance = bar.env.pop_hist.pops[AT_BAR]
+        last_att_perc = attendance[-1]/population
+        agent[MEMORY].pop(0)
+        agent[MEMORY].append(last_att_perc)
     return MOVE
 
 
@@ -146,7 +115,7 @@ class ElFarol(Model):
         """
         super().handle_props(props)
         num_mbrs = self.props.get("population")
-        at_bar = int(num_mbrs * random.random())
+        at_bar = num_mbrs // 2
         at_home = num_mbrs - at_bar
         self.grp_struct[AT_BAR]["num_mbrs"] = at_bar
         self.grp_struct[AT_HOME]["num_mbrs"] = at_home
