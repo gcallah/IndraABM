@@ -13,6 +13,7 @@ DEBUG = False  # turns debugging code on or off
 DEBUG2 = False  # turns deeper debugging code on or off
 
 DEF_DIM = 10
+OFFSET = 15
 DEF_NUM_PEOPLE = DEF_DIM*DEF_DIM
 DEF_NUM_PANIC = int(.3 * DEF_NUM_PEOPLE)
 DEF_NUM_CALM = int(.7 * DEF_NUM_PEOPLE)
@@ -59,11 +60,13 @@ class Panic(Model):
         super().handle_props(props)
         grid_height = self.props.get("grid_height")
         grid_width = self.props.get("grid_width")
-        num_agents = (grid_height * grid_width) - 10
+        num_agents = (grid_height * grid_width) - OFFSET
+        print("The grid dimencions are", grid_height * grid_width)
+        print("The number of agents is", num_agents)
         ratio_panic = self.props.get("pct_panic") / 100
         ratio_calm = 1 - ratio_panic
-        self.grp_struct[CALM]["num_mbrs"] = int(ratio_calm * num_agents)
-        self.grp_struct[PANIC]["num_mbrs"] = int(ratio_panic * num_agents)
+        self.grp_struct[CALM][NUM_MBRS] = int(ratio_calm * num_agents)
+        self.grp_struct[PANIC][NUM_MBRS] = int(ratio_panic * num_agents)
 
 
 def create_model(serial_obj=None, props=None):
