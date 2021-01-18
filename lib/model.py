@@ -130,7 +130,7 @@ class Model():
         self.period = 0
 
     def handle_props(self, props, model_dir=None):
-        self.user_type = os.getenv("user_type", TERMINAL)
+        self.user_type = os.getenv("user_type", API)
         if self.user_type == API:
             self.props = init_props(self.module, props, model_dir=model_dir,
                                     skip_user_questions=True)
@@ -183,7 +183,7 @@ class Model():
         """
         This will create a user of the correct type.
         """
-        self.user_type = os.getenv("user_type", TERMINAL)
+        self.user_type = os.getenv("user_type", API)
         try:
             if self.user_type == TERMINAL:
                 self.user = TermUser(model=self, exec_key=self.exec_key)
