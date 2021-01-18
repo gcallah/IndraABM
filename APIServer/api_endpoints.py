@@ -11,8 +11,7 @@ from APIServer.api_utils import err_return
 from APIServer.api_utils import json_converter
 from APIServer.props_api import get_props
 from APIServer.model_api import run_model, create_model
-from lib.user import APIUser 
-import json
+from lib.user import APIUser
 
 app = Flask(__name__)
 CORS(app)
@@ -21,6 +20,7 @@ api = Api(app)
 # the hard-coded dir is needed for Python Anywhere, until
 # we figure out how to get the env var set there.
 indra_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
+
 
 @api.route('/hello')
 class HelloWorld(Resource):
@@ -114,7 +114,6 @@ class ModelMenu(Resource):
         """
         user = get_agent("API_USER", exec_key=execution_id)
         return user()
-
 
 
 env = api.model("env", {
