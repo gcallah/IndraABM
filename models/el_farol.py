@@ -1,7 +1,7 @@
 """
 This is a minimal model that inherits from model.py
 and just sets up a couple of agents in two groups that
-do nothing except move around randomly.
+do   nothing except move around randomly.
 """
 
 import random
@@ -65,6 +65,7 @@ def memory_check(agent):
     w_sum = weighted_sum(mem_attendance)
     total = add_up_to(len(mem_attendance))
     percent_full = w_sum / total
+    print(1 - percent_full)
     return percent_full
 
 
