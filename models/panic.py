@@ -13,7 +13,7 @@ DEBUG = False  # turns debugging code on or off
 DEBUG2 = False  # turns deeper debugging code on or off
 
 DEF_DIM = 10
-OFFSET = 15
+OFFSET = 25
 DEF_NUM_PEOPLE = DEF_DIM*DEF_DIM
 DEF_NUM_PANIC = int(.3 * DEF_NUM_PEOPLE)
 DEF_NUM_CALM = int(.7 * DEF_NUM_PEOPLE)
