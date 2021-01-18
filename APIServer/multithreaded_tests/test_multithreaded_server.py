@@ -22,7 +22,8 @@ async def get_model_props(model_id):
         print(f"An error ocurred: {err}")
     response_json = await response.json()
     exec_key = response_json.get('exec_key').get('val')
-    print(f'Model props fetch:  Exec key {exec_key} | Status - {response.status}')
+    print(
+        f'Model props fetch:  Exec key {exec_key} | Status - {response.status}')
     return response_json
 
 
@@ -42,8 +43,9 @@ async def put_model_props(model_id, props):
         print(f"An error ocurred: {err}")
     response_json = await response.json()
     exec_key = props.get('exec_key').get('val')
-    print(f'Model props put status: Exec key {exec_key} | Status - {response.status}')
-    return response_json
+    if response.status == 500:
+        print(f'Put props for exec key - {exec_key} was 500.')
+    return response_json, response.status
 
 
 async def run_model(model_id, model):
@@ -57,7 +59,8 @@ async def run_model(model_id, model):
     except Exception as err:
         print(f"An error ocurred: {err}")
     exec_key = model.get('exec_key')
-    print(f'Model run status: Exec key {exec_key} | Status - {response.status}')
+    print(
+        f'Model run status: Exec key {exec_key} | Status - {response.status}')
     response_json = await response.json()
     return response_json
 
@@ -66,9 +69,10 @@ async def run_test(model_id):
     """Wrapper for running program in an asynchronous manner"""
     try:
         response_get_props = await get_model_props(model_id)
-        response_put_props = await put_model_props(model_id,
-                                                   response_get_props)
-        response_run_model = await run_model(model_id, response_put_props)
+        (response_put_props, status) = await put_model_props(model_id,
+                                                             response_get_props)
+        if status != 500:
+            response_run_model = await run_model(model_id, response_get_props)
     except Exception as err:
         print(f"Exception occured: {err}")
         pass
