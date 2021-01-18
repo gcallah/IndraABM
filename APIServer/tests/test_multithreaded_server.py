@@ -16,12 +16,13 @@ async def get_model_props(model_id):
         async with ClientSession() as session:
             response = await session.get(url=url)
             response.raise_for_status()
-            print(f'Model props fetch status: {response.status}')
     except HTTPError as http_err:
         print(f"HTTP error occurred while fetching props: {http_err}")
     except Exception as err:
         print(f"An error ocurred: {err}")
     response_json = await response.json()
+    exec_key = response_json.get('exec_key').get('val')
+    print(f'Model props fetch:  Exec key {exec_key} | Status - {response.status}')
     return response_json
 
 
@@ -30,17 +31,33 @@ async def put_model_props(model_id, props):
     try:
         for key in props:
             prop = props[key]
-            if key != 'execution_key' and prop['atype'] == 'INT' and prop[
-                'hival'] and prop['lowval']:
-                prop['val'] = random.randint(prop['lowval'],
-                                             int(prop['hival'] / 2))
+            if key != 'execution_key' and prop['atype'] == 'INT':
+                if key == 'grid_height' or key == 'grid_width':
+                    prop['val'] = 10
         async with ClientSession() as session:
             response = await session.put(url=url, json=props)
-        print(f'Model props put status: {response.status}')
     except HTTPError as http_err:
         print(f"HTTP error occurred while putting props: {http_err}")
     except Exception as err:
         print(f"An error ocurred: {err}")
+    response_json = await response.json()
+    exec_key = props.get('exec_key').get('val')
+    print(f'Model props put status: Exec key {exec_key} | Status - {response.status}')
+    return response_json
+
+
+async def run_model(model_id, model):
+    count = random.randint(1, 50)
+    url = f'{BASE_URL}/models/run/{count}'
+    try:
+        async with ClientSession() as session:
+            response = await session.put(url=url, json=model)
+    except HTTPError as http_err:
+        print(f"HTTP error occurred while running model: {http_err}")
+    except Exception as err:
+        print(f"An error ocurred: {err}")
+    exec_key = model.get('exec_key')
+    print(f'Model run status: Exec key {exec_key} | Status - {response.status}')
     response_json = await response.json()
     return response_json
 
@@ -49,7 +66,9 @@ async def run_test(model_id):
     """Wrapper for running program in an asynchronous manner"""
     try:
         response_get_props = await get_model_props(model_id)
-        response = await put_model_props(model_id, response_get_props)
+        response_put_props = await put_model_props(model_id,
+                                                   response_get_props)
+        response_run_model = await run_model(model_id, response_put_props)
     except Exception as err:
         print(f"Exception occured: {err}")
         pass

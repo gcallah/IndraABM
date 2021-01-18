@@ -90,6 +90,7 @@ class Props(Resource):
             HIVAL: None,
             LOWVAL: None
         }
+        registry.save_reg(exec_key)
         return props
 
     @api.expect(props)
@@ -99,6 +100,8 @@ class Props(Resource):
         back to the server.
         This should return a new model with the revised props.
         """
+        exec_key = api.payload['exec_key'].get('val')
+        registry.save_reg(exec_key)
         return json_converter(create_model(model_id, api.payload, indra_dir))
 
     @api.expect(props)
@@ -142,9 +145,11 @@ class RunModel(Resource):
         """
         Put a model env to the server and run it `run_time` periods.
         """
+        exec_key = api.payload['exec_key']
         model = run_model(api.payload, run_time, indra_dir)
         if model is None:
             return err_return("Model not found: " + api.payload["module"])
+        registry.save_reg(exec_key)
         return json_converter(model)
 
 
