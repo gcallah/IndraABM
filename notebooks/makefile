@@ -10,10 +10,19 @@ NBFILES = $(shell ls $(MODELS_DIR)/*.py | sed -e 's/.py/.ipynb/' | sed 's/\.\.\/
 
 FORCE:
 
+prod: tests
+	-git commit -a
+	git push origin master
+
 lint: $(patsubst %.py,%.pylint,$(PYTHONFILES))
 
 %.pylint:
 	$(PYLINT) $(PYLINTFLAGS) $*.py
+
+pytests: FORCE
+	./pytests.sh capture
+
+tests: pytests lint
 
 notebooks: $(NBFILES)
 
