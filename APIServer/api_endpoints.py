@@ -5,14 +5,13 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
 from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
-from registry.registry import registry
+from registry.registry import registry, get_agent
 from registry.model_db import get_models
 from APIServer.api_utils import err_return
 from APIServer.api_utils import json_converter
 from APIServer.props_api import get_props
 from APIServer.model_api import run_model, create_model
-# from models.basic import create_model as cm
-import json
+from lib.user import APIUser
 
 app = Flask(__name__)
 CORS(app)
@@ -90,6 +89,7 @@ class Props(Resource):
             HIVAL: None,
             LOWVAL: None
         }
+        registry.save_reg(exec_key)
         return props
 
     @api.expect(props)
@@ -99,31 +99,21 @@ class Props(Resource):
         back to the server.
         This should return a new model with the revised props.
         """
+        exec_key = api.payload['exec_key'].get('val')
+        registry.save_reg(exec_key)
+        APIUser("API_USER", exec_key=exec_key)
         return json_converter(create_model(model_id, api.payload, indra_dir))
-
-    @api.expect(props)
-    def post(self, model_id):
-        """
-        The endpoint created for testing purposes.
-        """
-        test_path = "test_data" + "/" + "basic_model.json"
-        basic_path = indra_dir + "/" + "APIServer" + "/" + test_path
-        with open(basic_path) as file:
-            basic_model = json.loads(file.read())
-        return basic_model
 
 
 @api.route('/models/menu/<int:execution_id>')
 class ModelMenu(Resource):
-    # ModelMenu is used by the Frontend
-    '''
+
     def get(self, execution_id):
         """
         This returns the menu with which a model interacts with a user.
         """
-        user = get_agent("Dennis")
+        user = get_agent("API_USER", exec_key=execution_id)
         return user()
-    '''
 
 
 env = api.model("env", {
@@ -142,9 +132,11 @@ class RunModel(Resource):
         """
         Put a model env to the server and run it `run_time` periods.
         """
+        exec_key = api.payload['exec_key']
         model = run_model(api.payload, run_time, indra_dir)
         if model is None:
             return err_return("Model not found: " + api.payload["module"])
+        registry.save_reg(exec_key)
         return json_converter(model)
 
 

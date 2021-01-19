@@ -226,6 +226,7 @@ class Registry(object):
         return True
 
     def save_reg(self, key):
+        print(f'Saving registry to disk {key}-reg.json')
         file_path = self.__get_reg_file_name(key)
         serial_object = json.dumps(self[key], cls=AgentEncoder,
                                    indent=4)
