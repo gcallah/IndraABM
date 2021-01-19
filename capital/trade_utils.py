@@ -331,6 +331,10 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
     for my_good in rand_goods:
         # adjust my_amt if "divisibility" is one of the attributes
         my_amt = amt_adjust(trader2, my_good)
+        print("bidder's lowest on giving up", my_good, ": ",
+              get_lowest(counterparty, their_good, my_good))
+        print("reciever's lowest on getting ", their_good, ": ",
+              get_lowest(trader2, my_good, their_good, False))
         # don't bother trading identical goods AND we must have some
         # of any good we will trade
         if my_good != their_good and trader2["goods"][my_good][AMT_AVAIL] > 0:
@@ -356,7 +360,6 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
                     print("RESULT:", trader2.name, "rejects the offer\n")
                     return REJECT
             else:
-                print("RESULT: offer is inadequate\n")
                 return INADEQ
     if DEBUG:
         print(f"{trader2} is rejecting all offers of {their_good}")
@@ -401,6 +404,26 @@ def adjust_dura(trader, good, val):
                     (trader["goods"][good]["age"]/5))
     else:
         return val
+
+
+def get_lowest(agent, my_good, their_good, sender=True):
+    if sender is True:
+        # agent is bidder and is getting "my_good"
+        util = utility_delta(agent, my_good, amt_adjust(agent, my_good))
+        # agent is losing "their_good"
+        change_amt = -amt_adjust(agent, their_good)
+    else:
+        # agent is reciever and is losing the good
+        util = utility_delta(agent, my_good, -amt_adjust(agent, my_good))
+        # agent is getting "their_good"
+        change_amt = amt_adjust(agent, their_good)
+    # Exhaustive method to find lowest (inefficient and to be changed)
+    change = change_amt
+    while change < agent["goods"][their_good][AMT_AVAIL]:
+        if abs(utility_delta(agent, their_good, change)) >= util:
+            return abs(change)
+        change += change_amt
+    return 0
 
 
 def utility_delta(agent, good, change):
