@@ -292,7 +292,7 @@ def negotiate(trader1, trader2, comp=False, amt=1):
     rand_goods = rand_goods_list(trader1["goods"])
     for this_good in rand_goods:
         amt = amt_adjust(trader1, this_good)
-        incr = amt
+        # incr = amt
         while trader1["goods"][this_good][AMT_AVAIL] >= amt:
             # we want to offer "divisibility" amount extra each loop
             ans = send_offer(trader2, this_good, amt, trader1, comp=comp)
@@ -301,15 +301,29 @@ def negotiate(trader1, trader2, comp=False, amt=1):
                 break
             # TODO
             # new_amt is calculated based on negotiation
-            # new_amt = (ans[1]+amt)/2
-            # if get_lowest(trader1, ans[2], this_good) != 0:
-            #     amt = min(get_lowest(trader1, ans[2], this_good), new_amt)
-            #     print("NEW AMT APPLIED:", trader1, "is bidding with",
-            #           amt, "of", this_good)
-            # else:
-            #     print("Bidder stop the trade")
-            #     break
-            amt += incr
+            new_amt = (ans[1] + amt)/4
+            prev_amt = amt
+            if get_lowest(trader1, ans[2], this_good) != 0:
+                amt = min(get_lowest(trader1, ans[2], this_good), new_amt)
+                if prev_amt == amt:
+                    # it means get_lowest() is not accepted by the reciever
+                    # bidder's max cannot satisfy reciever
+                    # no trade could happen
+                    print("RESULT:", trader1, "halt the trade;",
+                          "the max bidder can supply cannot be accpetted by",
+                          trader2)
+                    break
+                # TODO
+                # is it a correct way to select the new amt?
+                print("NEW AMT APPLIED:", trader1, "is bidding with",
+                      amt, "of", this_good)
+            else:
+                print("RESULT:", trader1, "halt the trade;",
+                      "the max bidder can supply is 0")
+                break
+            # THIS IS PREV WAY OF INCR AMT
+            # CAN BE DELETED IF NEW WAY WORKS
+            # amt += incr
 
 
 def seek_a_trade(agent, comp=False, **kwargs):
@@ -372,7 +386,7 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
                     print("RESULT:", trader2.name, "rejects the offer\n")
                     return (REJECT, 0)
             else:
-                return (INADEQ, 2 *
+                return (INADEQ, 1.5 *
                         get_lowest(trader2, my_good, their_good, False),
                         my_good)
     if DEBUG:
@@ -422,6 +436,10 @@ def adjust_dura(trader, good, val):
 
 
 def get_lowest(agent, my_good, their_good, bidder=True):
+    """
+    This function will get the max a bidder want to give up or
+    the min a reciever want to accept.
+    """
     if bidder is True:
         # agent is bidder and is getting "my_good"
         util = utility_delta(agent, my_good, amt_adjust(agent, my_good))
