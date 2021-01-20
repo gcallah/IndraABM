@@ -151,7 +151,7 @@ def output_code_cell(nb, code):
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: PROG [input file]")
+        print(f"Usage: {sys.argv[0]} [input file]")
         exit(1)
 
     mdl_path = sys.argv[1]
