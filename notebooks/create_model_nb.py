@@ -8,6 +8,16 @@ import sys
 import nbformat as nbf
 
 
+USERTYPE_TXT = "Set ENV user_type to properly run the model in the notebook"
+
+
+def set_user_type(curr_line, mdl_lines):
+    content = ''
+    content += 'import os\n'
+    content += 'os.environ["user_type"] = "terminal"'
+    return (curr_line, content.strip())
+
+
 DOCSTRING_TXT = "A short description about this model."
 
 
@@ -129,6 +139,7 @@ def read_run(curr_line, mdl_lines):
 
 
 NB_STRUCT = [
+    {"text": USERTYPE_TXT, "func": set_user_type},
     {"text": DOCSTRING_TXT, "func": read_docstring},
     {"text": IMPORT_TXT, "func": read_imports},
     {"text": CONSTANT_TXT, "func": read_constants},
@@ -151,7 +162,7 @@ def output_code_cell(nb, code):
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: PROG [input file]")
+        print(f"Usage: {sys.argv[0]} [input file]")
         exit(1)
 
     mdl_path = sys.argv[1]

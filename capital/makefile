@@ -28,7 +28,7 @@ pytests: FORCE
 	nosetests tests.test_$* --nocapture
 
 %.pylint:
-	$(PYLINT) $(PYLINTFLAGS) $*.py --exclude=edgeworthbox.py
+	$(PYLINT) $(PYLINTFLAGS) $*.py
 
 nocrud:
 	-rm *~

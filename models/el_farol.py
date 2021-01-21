@@ -1,7 +1,7 @@
 """
 This is a minimal model that inherits from model.py
 and just sets up a couple of agents in two groups that
-do nothing except move around randomly.
+do   nothing except move around randomly.
 """
 
 import random
@@ -34,13 +34,38 @@ def get_decision(agent):
     return random.random() <= agent[MOTIV]
 
 
+def add_up_to(n):
+    """
+    Given an integer n, returns the sum
+    from 0 to n.
+    """
+    if n <= 0:
+        return 0
+    return add_up_to(n-1) + n
+
+
+def weighted_sum(arr):
+    """
+    Given an array representing agent
+    memories, return a weighted sum.
+    Recent memories weight more.
+    """
+    total = 0
+    for i in range(len(arr)):
+        total += arr[i] * (i + 1)
+    return total
+
+
 def memory_check(agent):
     """
     Return percentage of capacity the bar was at
     based on last attendances.
     """
     mem_attendance = agent[MEMORY]
-    percent_full = sum(mem_attendance) / len(mem_attendance)
+    w_sum = weighted_sum(mem_attendance)
+    total = add_up_to(len(mem_attendance))
+    percent_full = w_sum / total
+    print(1 - percent_full)
     return percent_full
 
 

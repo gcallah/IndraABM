@@ -8,3 +8,5 @@ flask_restplus
 flask-cors
 propargs
 seaborn
+asyncio
+aiohttp

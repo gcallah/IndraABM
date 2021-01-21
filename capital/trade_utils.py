@@ -292,14 +292,38 @@ def negotiate(trader1, trader2, comp=False, amt=1):
     rand_goods = rand_goods_list(trader1["goods"])
     for this_good in rand_goods:
         amt = amt_adjust(trader1, this_good)
-        incr = amt
+        # incr = amt
         while trader1["goods"][this_good][AMT_AVAIL] >= amt:
             # we want to offer "divisibility" amount extra each loop
             ans = send_offer(trader2, this_good, amt, trader1, comp=comp)
             # Besides acceptance or rejection, the offer can be inadequate!
-            if ans == ACCEPT or ans == REJECT:
+            if ans[0] == ACCEPT or ans[0] == REJECT:
                 break
-            amt += incr
+            # TODO
+            # new_amt is calculated based on negotiation
+            new_amt = (ans[1] + amt)/4
+            prev_amt = amt
+            if get_lowest(trader1, ans[2], this_good) != 0:
+                amt = min(get_lowest(trader1, ans[2], this_good), new_amt)
+                if prev_amt == amt:
+                    # it means get_lowest() is not accepted by the reciever
+                    # bidder's max cannot satisfy reciever
+                    # no trade could happen
+                    print("RESULT:", trader1, "halt the trade;",
+                          "the max bidder can supply cannot be accpetted by",
+                          trader2)
+                    break
+                # TODO
+                # is it a correct way to select the new amt?
+                print("NEW AMT APPLIED:", trader1, "is bidding with",
+                      amt, "of", this_good)
+            else:
+                print("RESULT:", trader1, "halt the trade;",
+                      "the max bidder can supply is 0")
+                break
+            # THIS IS PREV WAY OF INCR AMT
+            # CAN BE DELETED IF NEW WAY WORKS
+            # amt += incr
 
 
 def seek_a_trade(agent, comp=False, **kwargs):
@@ -331,6 +355,12 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
     for my_good in rand_goods:
         # adjust my_amt if "divisibility" is one of the attributes
         my_amt = amt_adjust(trader2, my_good)
+        # print("Bidder ", counterparty, "is willing to accept 1 unit of",
+        #       my_good, "by giving up at most",
+        #       get_lowest(counterparty, my_good, their_good), their_good)
+        # print("Reciever ", trader2, "is willing to give up 1 unit of",
+        #       my_good, "by accepting at least",
+        #       get_lowest(trader2, my_good, their_good, False), their_good)
         # don't bother trading identical goods AND we must have some
         # of any good we will trade
         if my_good != their_good and trader2["goods"][my_good][AMT_AVAIL] > 0:
@@ -342,7 +372,7 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
                         their_amt, gain, loss)
             if gain > loss:
                 if send_reply(counterparty, their_good,
-                              their_amt, my_good, my_amt, comp=comp):
+                              their_amt, my_good, my_amt, comp=comp)[0]:
                     trade(trader2, my_good, my_amt,
                           counterparty, their_good, their_amt, comp=comp)
                     # both goods' trade_count will be increased in sender's dic
@@ -351,16 +381,17 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
                         counterparty["goods"][my_good]["trade_count"] += 1
                         counterparty["goods"][their_good]["trade_count"] += 1
                     print("RESULT:", trader2.name, "accepts the offer\n")
-                    return ACCEPT
+                    return (ACCEPT, 0)
                 else:
                     print("RESULT:", trader2.name, "rejects the offer\n")
-                    return REJECT
+                    return (REJECT, 0)
             else:
-                print("RESULT: offer is inadequate\n")
-                return INADEQ
+                return (INADEQ, 1.5 *
+                        get_lowest(trader2, my_good, their_good, False),
+                        my_good)
     if DEBUG:
         print(f"{trader2} is rejecting all offers of {their_good}")
-    return REJECT
+    return (REJECT, 0)
 
 
 def send_reply(trader1, my_good, my_amt, their_good, their_amt, comp=False):
@@ -376,10 +407,11 @@ def send_reply(trader1, my_good, my_amt, their_good, their_amt, comp=False):
         gain += trader1[GOODS][their_good]["incr"]
         loss -= trader1[GOODS][my_good]["incr"]
     if gain > abs(loss):
-        return ACCEPT
+        return (ACCEPT, 0)
     else:
         # this will call a halt to negotiations on this good:
-        return INADEQ
+        # I THINK THIS INADEQ DOESN'T MATTER? (NOT QUITE SURE)
+        return (INADEQ, 0)
 
 
 def trade(agent, my_good, my_amt, counterparty,
@@ -401,6 +433,44 @@ def adjust_dura(trader, good, val):
                     (trader["goods"][good]["age"]/5))
     else:
         return val
+
+
+def get_lowest(agent, my_good, their_good, bidder=True):
+    """
+    This function will get the max a bidder want to give up or
+    the min a reciever want to accept.
+    """
+    if bidder is True:
+        # agent is bidder and is getting "my_good"
+        util = utility_delta(agent, my_good, amt_adjust(agent, my_good))
+        # print("     Bidder will get utility of", util)
+        # agent is losing "their_good"
+        change_amt = -amt_adjust(agent, their_good)
+    else:
+        # agent is reciever and is losing "my_good"
+        util = utility_delta(agent, my_good, -amt_adjust(agent, my_good))
+        # print("     Reciever will get utility of", util)
+        # agent is getting "their_good"
+        change_amt = amt_adjust(agent, their_good)
+    # Exhaustive method to find lowest (inefficient and to be changed)
+    change = change_amt
+    # u_delta(gain) must >=  u_delta(loss)
+    if bidder is True:
+        # print("Bidder",their_good, agent["goods"][their_good][AMT_AVAIL])
+        while abs(change) < agent["goods"][their_good][AMT_AVAIL]:
+            # print("B     current amt is", change, "utility is",
+            #       abs(utility_delta(agent, their_good, change)))
+            if abs(utility_delta(agent, their_good, change)) >= abs(util):
+                return abs(change-change_amt)
+            change += change_amt
+    else:
+        while True:
+            # print("R     current amt is", change, "utility is",
+            #       abs(utility_delta(agent, their_good, change)))
+            if abs(utility_delta(agent, their_good, change)) >= abs(util):
+                return abs(change)
+            change += change_amt
+    return 0
 
 
 def utility_delta(agent, good, change):
