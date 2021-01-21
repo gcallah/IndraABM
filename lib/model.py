@@ -206,7 +206,11 @@ class Model():
         self.env = Env(self.module, members=self.groups,
                        exec_key=self.exec_key, width=self.width,
                        height=self.height, action=env_action)
+        self.create_pop_hist()
         return self.env
+
+    def create_pop_hist(self):
+        self.env.create_pop_hist()
 
     def create_groups(self):
         """
@@ -270,11 +274,14 @@ class Model():
             self.user.tell(census_rpt)
             # these things need to be done before action loop:
             self.handle_switches()
-            self.handle_pop_hist()
+            self.update_pop_hist()
             # self.handle_womb()
         return num_acts
 
-    def handle_pop_hist(self):
+    def update_pop_hist(self):
+        """
+        This method records our populations each period.
+        """
         self.env.handle_pop_hist()
 
     def rpt_census(self, acts, moves):

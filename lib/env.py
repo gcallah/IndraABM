@@ -106,15 +106,20 @@ class Env(Space):
         else:
             self.construct_anew(exclude_member)
 
-    def construct_anew(self, exclude_member=None):
+    def create_pop_hist(self):
+        """
+        This is an entry point to the class where one can customize what
+        occurs with tracking history.
+        """
         self.pop_hist = PopHist()  # this will record pops across time
         # Make sure varieties are present in the history
-        if self.pop_hist_setup is not None:
-            self.pop_hist_setup(self.pop_hist)
-        else:
-            for mbr in self.members:
-                self.pop_hist.record_pop(mbr, self.pop_count(mbr))
+        for mbr in self.members:
+            self.pop_hist.record_pop(mbr, self.pop_count(mbr))
 
+    def construct_anew(self, exclude_member=None):
+        """
+        What we do to create a new env.
+        """
         self.plot_title = self.name
         # these funcs will be stored as attrs...
         # but only if they're really funcs!

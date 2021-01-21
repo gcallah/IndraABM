@@ -8,6 +8,7 @@ from lib.agent import Agent, MOVE
 from lib.display_methods import GREEN
 from lib.model import Model, MBR_CREATOR, NUM_MBRS, MBR_ACTION  # , GRP_ACTION
 from lib.model import NUM_MBRS_PROP, COLOR
+from lib.env import PopHist
 # import capital.trade_utils as tu
 from capital.trade_utils import seek_a_trade, GEN_UTIL_FUNC
 from capital.trade_utils import AMT_AVAIL, endow, UTIL_FUNC  # , trader_debug
@@ -24,6 +25,9 @@ GOODS = "goods"
 DEF_NUM_TRADERS = 4
 MONEY_MAX_UTIL = 100
 INIT_COUNT = 0  # a starting point for trade_count
+
+START_GOOD_AMT = 100
+EQUILIBRIUM_DECLARED = 10
 
 # a counter for counting number of continuous periods with no trade
 eq_count = 0
@@ -42,35 +46,35 @@ prev_trade = {'cow': 0,
 natures_goods = {
     # add initial value to this data?
     # color choice isn't working yet, but we want to build it in
-    "cow": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
+    "cow": {AMT_AVAIL: START_GOOD_AMT, UTIL_FUNC: GEN_UTIL_FUNC,
             INCR: 0, DUR: 0.8, DIVISIBILITY: 1.0,
             TRADE_COUNT: 0, IS_ALLOC: False,
             AGE: 1, },
-    "cheese": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
+    "cheese": {AMT_AVAIL: START_GOOD_AMT, UTIL_FUNC: GEN_UTIL_FUNC,
                INCR: 0, DUR: 0.5, DIVISIBILITY: 0.4,
                TRADE_COUNT: 0, IS_ALLOC: False,
                AGE: 1, },
-    "gold": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
+    "gold": {AMT_AVAIL: START_GOOD_AMT, UTIL_FUNC: GEN_UTIL_FUNC,
              INCR: 0, DUR: 1.0, DIVISIBILITY: 0.05,
              TRADE_COUNT: 0, IS_ALLOC: False,
              AGE: 1, },
-    "banana": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
+    "banana": {AMT_AVAIL: START_GOOD_AMT, UTIL_FUNC: GEN_UTIL_FUNC,
                INCR: 0, DUR: 0.2, DIVISIBILITY: 0.2,
                TRADE_COUNT: 0, IS_ALLOC: False,
                AGE: 1, },
-    "diamond": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
+    "diamond": {AMT_AVAIL: START_GOOD_AMT, UTIL_FUNC: GEN_UTIL_FUNC,
                 INCR: 0, DUR: 1.0, DIVISIBILITY: 0.8,
                 TRADE_COUNT: 0, IS_ALLOC: False,
                 AGE: 1, },
-    "avocado": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
+    "avocado": {AMT_AVAIL: START_GOOD_AMT, UTIL_FUNC: GEN_UTIL_FUNC,
                 INCR: 0, DUR: 0.3, DIVISIBILITY: 0.5,
                 TRADE_COUNT: 0, IS_ALLOC: False,
                 AGE: 1, "color": GREEN},
-    "stone": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
+    "stone": {AMT_AVAIL: START_GOOD_AMT, UTIL_FUNC: GEN_UTIL_FUNC,
               INCR: 0, DUR: 1.0, DIVISIBILITY: 1.0,
               TRADE_COUNT: 0, IS_ALLOC: False,
               AGE: 1, },
-    "milk": {AMT_AVAIL: 100, UTIL_FUNC: GEN_UTIL_FUNC,
+    "milk": {AMT_AVAIL: START_GOOD_AMT, UTIL_FUNC: GEN_UTIL_FUNC,
              INCR: 0, DUR: 0.2, DIVISIBILITY: 0.15,
              TRADE_COUNT: 0, IS_ALLOC: False,
              AGE: 1, },
@@ -154,6 +158,17 @@ class Money(Model):
     """
     The model class for the Menger money model.
     """
+    def __init__(self, model_nm="money", props=None,
+                 grp_struct=money_grps,
+                 env_action=None,
+                 serial_obj=None, exec_key=None):
+        super().__init__(model_nm=model_nm, props=props,
+                         grp_struct=grp_struct,
+                         serial_obj=serial_obj,
+                         exec_key=exec_key)
+        self.prev_trades = 0
+        self.no_trade_periods = 0
+
     def handle_props(self, props, model_dir=None):
         super().handle_props(props, model_dir='capital')
 
@@ -161,6 +176,35 @@ class Money(Model):
         grps = super().create_groups()
         nature_to_traders(grps[TRADER_GRP], natures_goods)
         return grps
+
+    def create_pop_hist(self):
+        """
+        Set up our pop hist object to record amount traded per period.
+        Directly accessing self.env.pop_hist breaks encapsulation.
+        But that's OK since we plan to move pop_hist into model.
+        """
+        self.env.pop_hist = PopHist()  # this will record pops across time
+        for good in natures_goods:
+            if natures_goods[good]["is_allocated"] is True:
+                self.env.pop_hist.record_pop(good, INIT_COUNT)
+
+    def update_pop_hist(self):
+        """
+        This is our hook into the env to record the number of trades each
+        period.
+        Directly accessing self.env.pop_hist breaks encapsulation.
+        But that's OK since we plan to move pop_hist into model.
+        """
+        for good in natures_goods:
+            if natures_goods[good]["is_allocated"] is True:
+                self.env.pop_hist.record_pop(good,
+                                             natures_goods[good][TRADE_COUNT])
+
+    def rpt_census(self, acts, moves):
+        """
+        This is where we override the default census report.
+        """
+        pass
 
 
 def create_model(serial_obj=None, props=None):
