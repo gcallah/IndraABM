@@ -183,6 +183,7 @@ class Model():
         """
         This will create a user of the correct type.
         """
+        self.user = None
         self.user_type = os.getenv("user_type", API)
         try:
             if self.user_type == TERMINAL:
@@ -190,7 +191,7 @@ class Model():
                 self.user.tell("Welcome to Indra, " + str(self.user) + "!")
             elif self.user_type == TEST:
                 self.user = TestUser(model=self, exec_key=self.exec_key)
-            elif self.user_type == API:
+            else:  # right now API is the only other possibility
                 self.user = APIUser(model=self, name="API",
                                     exec_key=self.exec_key)
             return self.user
