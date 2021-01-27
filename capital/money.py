@@ -204,7 +204,21 @@ class Money(Model):
         """
         This is where we override the default census report.
         """
-        pass
+        global prev_trade, eq_count
+        # get_env(execution_key=execution_key)
+        trade_count_dic = {x: natures_goods[x]["trade_count"]
+                           for x in natures_goods}
+        if trade_count_dic == prev_trade:
+            eq_count += 1
+        else:
+            eq_count = 0
+        # EQUILIBRIUM_DECLARED may be changed
+        if eq_count >= EQUILIBRIUM_DECLARED:
+            print("No trade between agents for", eq_count,
+                  "periods. Equilibrium may have been reached.")
+        prev_trade = trade_count_dic
+        return "Number of trades last period: " + "\n" \
+            + str(trade_count_dic) + "\n"
 
 
 def create_model(serial_obj=None, props=None):
