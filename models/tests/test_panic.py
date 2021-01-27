@@ -10,7 +10,7 @@ from models.panic import Panic, main, MODEL_NAME, panic_grps, agent_action
 
 class PanicTestCase(TestCase):
     def setUp(self):
-        self.panic = Panic(MODEL_NAME, grp_struct=panic_grps)
+        self.panic = Panic(MODEL_NAME, grp_struct=panic_grps, random_placing=False)
         self.calm_agent = Agent(name="calm",
                                      exec_key=self.panic.exec_key)
         self.panic_agent = Agent(name="panic",

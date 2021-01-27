@@ -12,7 +12,7 @@ from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
 from registry import registry
 
-DEBUG = False  # turns debugging code on or off
+DEBUG = True  # turns debugging code on or off
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
@@ -97,7 +97,7 @@ class Model():
     It should also make the notebook generator much simpler,
     since the class methods will necessarily be present.
     """
-
+    # NOTE: random_placing needs to be handled on the API side
     def __init__(self, model_nm="BaseModel", props=None,
                  grp_struct=DEF_GRP_STRUCT,
                  env_action=None, random_placing=True,
