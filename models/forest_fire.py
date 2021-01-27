@@ -134,7 +134,8 @@ def create_model(serial_obj=None, props=None):
     if serial_obj is not None:
         return ForestFire(serial_obj=serial_obj)
     else:
-        return ForestFire(MODEL_NAME, grp_struct=ff_grps, props=props)
+        return ForestFire(MODEL_NAME, grp_struct=ff_grps,
+                          props=props, random_placing=False)
 
 
 def main():
