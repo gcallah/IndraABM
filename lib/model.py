@@ -12,7 +12,7 @@ from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
 from registry import registry
 
-DEBUG = False  # turns debugging code on or off
+DEBUG = True  # turns debugging code on or off
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
@@ -97,18 +97,20 @@ class Model():
     It should also make the notebook generator much simpler,
     since the class methods will necessarily be present.
     """
-
+    # NOTE: random_placing needs to be handled on the API side
     def __init__(self, model_nm="BaseModel", props=None,
                  grp_struct=DEF_GRP_STRUCT,
-                 env_action=None,
+                 env_action=None, random_placing=True,
                  serial_obj=None, exec_key=None):
         self.num_switches = 0
         if serial_obj is None:
-            self.create_anew(model_nm, props, grp_struct, exec_key, env_action)
+            self.create_anew(model_nm, props, grp_struct, exec_key,
+                             env_action, random_placing)
         else:
             self.create_from_serial_obj(serial_obj)
 
-    def create_anew(self, model_nm, props, grp_struct, exec_key, env_action):
+    def create_anew(self, model_nm, props, grp_struct, exec_key,
+                    env_action, random_placing):
         """
         Create the model for the first time.
         """
@@ -125,7 +127,8 @@ class Model():
         self.create_user()
         registry.reg_model(self, self.exec_key)
         self.groups = self.create_groups()
-        self.env = self.create_env(env_action=env_action)
+        self.env = self.create_env(env_action=env_action,
+                                   random_placing=random_placing)
         self.switches = []  # for agents waiting to switch groups
         self.period = 0
 
@@ -198,15 +201,18 @@ class Model():
         except ValueError:
             raise ValueError("User type was not specified.")
 
-    def create_env(self, env_action=None):
+    def create_env(self, env_action=None, random_placing=True):
         """
         Override this method to create a unique env...
         but this one will already set the model name and add
         the groups.
         """
+        # NOTE: WE DEFAULT TO RANDOM PLACING ALL THE TIME
+        # EVEN FOR MODELS LIKE FOREST FIRE
         self.env = Env(self.module, members=self.groups,
                        exec_key=self.exec_key, width=self.width,
-                       height=self.height, action=env_action)
+                       height=self.height, action=env_action,
+                       random_placing=random_placing)
         self.create_pop_hist()
         return self.env
 
