@@ -198,6 +198,9 @@ class Registry(object):
             registry_files = [file for file in listdir(self.db_dir) if
                               isfile(join(self.db_dir, file))]
             for file in registry_files:
+                # only check files which are json
+                if file[-4:] != 'json':
+                    continue
                 try:
                     if int(file.split("-")[0]) == key:
                         self.load_reg(key)
@@ -295,10 +298,12 @@ class Registry(object):
         """
         Remove an execution environment from the registry.
         """
-        self.__does_key_exists(key)
-        if DEBUG:
-            print("Clearing exec env {} from registry".format(key))
-        del self[key]
+        if self.__does_key_exists(key):
+            if DEBUG:
+                print("Clearing exec env {} from registry".format(key))
+            del self.registries[key]
+            if isfile(self.__get_reg_file_name(key)):
+                os.remove(self.__get_reg_file_name(key))
 
 
 registry = Registry()

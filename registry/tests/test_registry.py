@@ -89,8 +89,11 @@ class RegisteryTestCase(TestCase):
         self.assertTrue("name" in loaded_object)
         self.assertTrue("Abhinav" == loaded_object["name"])
 
-    def test_del_exec_env(self):
+    @patch('pickle.dump')
+    @patch('pickle.load')
+    def test_del_exec_env(self, dump, load):
         registry[self.exec_key]["name"] = "Abhinav"
+        registry.save_reg(self.exec_key)
         registry.del_exec_env(self.exec_key)
         self.already_cleared = True
         self.assertRaises(KeyError, registry.del_exec_env, self.exec_key)
