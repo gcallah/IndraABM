@@ -191,7 +191,6 @@ class Registry(object):
     NOTE: This might be a potential use for generators to lazy load
     the dictionary from file.
     '''
-
     def __contains__(self, key):
         if key in self.registries.keys():
             return True
@@ -201,6 +200,7 @@ class Registry(object):
             for file in registry_files:
                 try:
                     if int(file.split("-")[0]) == key:
+                        self.load_reg(key)
                         return True
                 except ValueError:
                     # ignore files that don't start with an int!
