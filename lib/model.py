@@ -12,7 +12,7 @@ from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
 from registry import registry
 
-DEBUG = True  # turns debugging code on or off
+DEBUG = False  # turns debugging code on or off
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
