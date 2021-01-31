@@ -34,7 +34,8 @@ def agent_action(agent, **kwargs):
     """
     This is what agents do each turn of the model.
     """
-    print("The agent is called", agent)
+    if DEBUG2:
+        print("The agent is called", agent)
     global first_period
     if first_period:
         start_panic(agent.exec_key)
@@ -85,8 +86,9 @@ class Panic(Model):
         grid_height = self.props.get("grid_height")
         grid_width = self.props.get("grid_width")
         num_agents = (grid_height * grid_width)
-        print("The grid dimencions are", grid_height * grid_width)
-        print("The number of agents is", num_agents)
+        if DEBUG2:
+            print("The grid dimencions are", grid_height * grid_width)
+            print("The number of agents is", num_agents)
         ratio_panic = self.props.get("pct_panic") / 100
         self.num_panic = math.floor(ratio_panic * num_agents)
         self.grp_struct[CALM][NUM_MBRS] = int(num_agents)
