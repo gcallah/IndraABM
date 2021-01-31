@@ -203,7 +203,7 @@ class Registry(object):
                     continue
                 try:
                     if int(file.split("-")[0]) == key:
-                        self.load_reg(key)
+                        self.registries[key] = self.load_reg(key)
                         return True
                 except ValueError:
                     # ignore files that don't start with an int!
