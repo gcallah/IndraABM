@@ -301,10 +301,14 @@ def negotiate(trader1, trader2, comp=False, amt=1):
                 break
             # TODO
             # new_amt is calculated based on negotiation
-            new_amt = (ans[1] + amt)/4
+            new_amt = (ans[1] + amt)/2
             prev_amt = amt
             if get_lowest(trader1, ans[2], this_good) != 0:
-                amt = min(get_lowest(trader1, ans[2], this_good), new_amt)
+                # min(split difference, max_bid)
+                print("!!Split difference:", new_amt, " max_bid:",
+                      get_lowest(trader1, ans[2], this_good))
+                amt = min(get_lowest(trader1, ans[2], this_good),
+                          new_amt, ans[1])
                 if prev_amt == amt:
                     # it means get_lowest() is not accepted by the reciever
                     # bidder's max cannot satisfy reciever
@@ -386,7 +390,7 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
                     print("RESULT:", trader2.name, "rejects the offer\n")
                     return (REJECT, 0)
             else:
-                return (INADEQ, 1.5 *
+                return (INADEQ, 2 *
                         get_lowest(trader2, my_good, their_good, False),
                         my_good)
     if DEBUG:
