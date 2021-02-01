@@ -61,8 +61,8 @@ def tree_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    # print("The agent is", agent)
-    # print("The agent's group is", agent.group_name())
+    if DEBUG:
+        print("Agent", str(agent), "is acting.")
     model = get_model(agent.exec_key)
     old_group = agent.group_name()
     if old_group == HEALTHY:
@@ -135,7 +135,7 @@ def create_model(serial_obj=None, props=None):
         return ForestFire(serial_obj=serial_obj)
     else:
         return ForestFire(MODEL_NAME, grp_struct=ff_grps,
-                          props=props, random_placing=False)
+                          props=props)
 
 
 def main():

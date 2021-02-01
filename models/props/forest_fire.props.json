@@ -24,7 +24,7 @@
     "val": 0.44,
     "question": "What density of trees in the forest would you like?",
     "atype": "DBL",
-    "hival": 1,
+    "hival": 0.8,
     "lowval": 0
   }
 }
