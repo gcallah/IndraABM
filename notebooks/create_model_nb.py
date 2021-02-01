@@ -125,10 +125,10 @@ def read_main(curr_line, mdl_lines):
     return (curr_line, content.strip())
 
 
-RUN_TXT = "Here's how we run the model."
+CALLMAIN_TXT = "Now just call main!"
 
 
-def read_run(curr_line, mdl_lines):
+def call_main(curr_line, mdl_lines):
     content = ""
 
     while curr_line < len(mdl_lines):
@@ -148,7 +148,7 @@ NB_STRUCT = [
     {"text": MODEL_CLASS_TXT, "func": read_model_class},
     {"text": CREATE_MODEL_TXT, "func": read_create_model},
     {"text": MAIN_TXT, "func": read_main},
-    {"text": RUN_TXT, "func": read_run},
+    {"text": CALLMAIN_TXT, "func": call_main},
 ]
 
 
