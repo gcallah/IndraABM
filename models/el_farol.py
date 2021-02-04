@@ -65,7 +65,8 @@ def memory_check(agent):
     w_sum = weighted_sum(mem_attendance)
     total = add_up_to(len(mem_attendance))
     percent_full = w_sum / total
-    print(1 - percent_full)
+    if DEBUG:
+        print("Percent empty:", 1 - percent_full)
     return percent_full
 
 

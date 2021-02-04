@@ -25,6 +25,6 @@
     "question": "How dense are the trees in the forest?",
     "atype": "DBL",
     "hival": 0.8,
-    "lowval": 0
+    "lowval": 0.1
   }
 }
