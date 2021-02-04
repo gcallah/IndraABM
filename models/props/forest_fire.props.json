@@ -15,14 +15,14 @@
   },
   "new_fire": {
     "val": 0.01,
-    "question": "What is the probability a tree will catch on fire on its own?",
+    "question": "What is the probability a tree will catch fire on its own?",
     "atype": "DBL",
     "hival": 0.5,
     "lowval": 0.0001
   },
   "density": {
     "val": 0.44,
-    "question": "What density of trees in the forest would you like?",
+    "question": "How dense are the trees in the forest?",
     "atype": "DBL",
     "hival": 0.8,
     "lowval": 0
