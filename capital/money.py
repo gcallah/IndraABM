@@ -3,6 +3,8 @@ This is a minimal model that inherits from model.py
 and just sets up a couple of agents in two groups that
 do nothing except move around randomly.
 """
+# import cProfile
+
 
 from lib.agent import Agent, MOVE
 from lib.display_methods import GREEN
@@ -114,6 +116,8 @@ def trader_action(agent, **kwargs):
     A simple default agent action.
     """
     seek_a_trade(agent, **kwargs)
+    # outcome = seek_a_trade(agent, **kwargs)
+    # if outcome == ACCEPT
     for good in natures_goods:
         if good not in natures_goods:
             raise(KeyError(f"{good} not in nature."))
@@ -238,4 +242,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # cProfile.run('main')
     main()
