@@ -99,7 +99,7 @@
         "module": "panic"
     },
     {
-        "active": true,
+        "active": false,
         "doc": "The implementation of Conway's Game of Life",
         "graph": "scatter",
         "modelID": 11,
