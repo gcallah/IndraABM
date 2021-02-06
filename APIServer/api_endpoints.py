@@ -63,7 +63,7 @@ class Models(Resource):
         """
         Get a list of pre-existing models available through the API.
         """
-        if active_only == "True":
+        if active_only == "True" or active_only == "true":
             return get_models(indra_dir, active_only=True)
         return get_models(indra_dir)
 
