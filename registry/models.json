@@ -45,7 +45,7 @@
         "module": "wolfsheep"
     },
     {
-        "active": true,
+        "active": false,
         "doc": "Examine how fires spread in a forest.",
         "graph": "scatter",
         "modelID": 5,
@@ -63,7 +63,7 @@
         "module": "segregation"
     },
     {
-        "active": true,
+        "active": false,
         "doc": "Everyone loves the El Farol Bar... until it is too crowded.",
         "graph": "line",
         "modelID": 7,
@@ -81,7 +81,7 @@
         "module": "complementary"
     },
     {
-        "active": true,
+        "active": false,
         "doc": "Test Carl Menger's theory of how money emerges",
         "graph": "line",
         "modelID": 9,
@@ -90,7 +90,7 @@
         "module": "money"
     },
     {
-        "active": true,
+        "active": false,
         "doc": "A model which simulates the spread of panic",
         "graph": "scatter",
         "modelID": 10,
