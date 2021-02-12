@@ -19,6 +19,10 @@ DEF_CHEESE_MBRS = 1
 DEF_NUM_CHEESE = 4
 DEF_NUM_WINE = 4
 
+UTIL = "util"
+PRE_TRADE_UTIL = "pre_trade_util"
+TRADE_WITH = "trades_with"
+
 GOODS = "goods"
 INCR = "incr"
 
@@ -36,9 +40,9 @@ def create_wine(name, i, action=None, **kwargs):
                                 "cheese": {AMT_AVAIL: 0,
                                            UTIL_FUNC: GEN_UTIL_FUNC,
                                            INCR: 0}},
-                        "util": 0,
-                        "pre_trade_util": 0,
-                        "trades_with": "Cheese holders"},
+                        UTIL: 0,
+                        PRE_TRADE_UTIL: 0,
+                        TRADE_WITH: "Cheese holders"},
                  **kwargs)
 
 
@@ -55,9 +59,9 @@ def create_cheese(name, i, action=None, **kwargs):
                                 "wine": {AMT_AVAIL: 0,
                                          UTIL_FUNC: GEN_UTIL_FUNC,
                                          INCR: 0}},
-                        "util": 0,
-                        "pre_trade_util": 0,
-                        "trades_with": "Wine holders"},
+                        UTIL: 0,
+                        PRE_TRADE_UTIL: 0,
+                        TRADE_WITH: "Wine holders"},
                  **kwargs)
 
 
