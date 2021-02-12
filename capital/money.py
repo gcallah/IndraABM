@@ -221,7 +221,7 @@ class Money(Model):
             print("No trade between agents for", eq_count,
                   "periods. Equilibrium may have been reached.")
         prev_trade = trade_count_dic
-        return "Number of trades last period: " + "\n" \
+        return "Number of trades last period: \n" \
             + str(trade_count_dic) + "\n"
 
 

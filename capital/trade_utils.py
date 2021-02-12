@@ -6,7 +6,7 @@ import random
 import copy
 import math
 
-DEBUG = True
+DEBUG = False
 
 ACCEPT = 1
 INADEQ = 0
@@ -166,7 +166,6 @@ def get_rand_good(goods_dict, nonzero=False):
     """
     What should this do with empty dict?
     """
-    # print("Calling get_rand_good()")
     if goods_dict is None or not len(goods_dict):
         return None
     else:
@@ -286,8 +285,9 @@ def rand_goods_list(goods):
 
 def negotiate(trader1, trader2, comp=False, amt=1):
     # this_good is a dict
-    print(f"   {trader1.name} is entering negotiations with" +
-          f"{trader2.name}")
+    if DEBUG:
+        print(f"   {trader1.name} is entering negotiations with" +
+              f"{trader2.name}")
     # we randomize to eliminate bias towards earlier goods in list
     rand_goods = rand_goods_list(trader1["goods"])
     for this_good in rand_goods:
@@ -305,25 +305,29 @@ def negotiate(trader1, trader2, comp=False, amt=1):
             prev_amt = amt
             if get_lowest(trader1, ans[2], this_good) != 0:
                 # min(split difference, max_bid)
-                print("!!Split difference:", new_amt, " max_bid:",
-                      get_lowest(trader1, ans[2], this_good))
+                if DEBUG:
+                    print("!!Split difference:", new_amt, " max_bid:",
+                          get_lowest(trader1, ans[2], this_good))
                 amt = min(get_lowest(trader1, ans[2], this_good),
                           new_amt, ans[1])
                 if prev_amt == amt:
                     # it means get_lowest() is not accepted by the reciever
                     # bidder's max cannot satisfy reciever
                     # no trade could happen
-                    print("RESULT:", trader1, "halt the trade;",
-                          "the max bidder can supply cannot be accpetted by",
-                          trader2)
+                    if DEBUG:
+                        print("RESULT:", trader1, "halt the trade;",
+                              "the max bidder can supply is not accepted by",
+                              trader2)
                     break
                 # TODO
                 # is it a correct way to select the new amt?
-                print("NEW AMT APPLIED:", trader1, "is bidding with",
-                      amt, "of", this_good)
+                if DEBUG:
+                    print("NEW AMT APPLIED:", trader1, "is bidding with",
+                          amt, "of", this_good)
             else:
-                print("RESULT:", trader1, "halt the trade;",
-                      "the max bidder can supply is 0")
+                if DEBUG:
+                    print("RESULT:", trader1, "is halting the trade;",
+                          "the max bidder can supply is 0")
                 break
             # THIS IS PREV WAY OF INCR AMT
             # CAN BE DELETED IF NEW WAY WORKS
@@ -384,10 +388,12 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
                     if "trade_count" in trader2["goods"][item]:
                         counterparty["goods"][my_good]["trade_count"] += 1
                         counterparty["goods"][their_good]["trade_count"] += 1
-                    print("RESULT:", trader2.name, "accepts the offer\n")
+                    if DEBUG:
+                        print("RESULT:", trader2.name, "accepts the offer\n")
                     return (ACCEPT, 0)
                 else:
-                    print("RESULT:", trader2.name, "rejects the offer\n")
+                    if DEBUG:
+                        print("RESULT:", trader2.name, "rejects the offer\n")
                     return (REJECT, 0)
             else:
                 return (INADEQ, 2 *
@@ -405,8 +411,9 @@ def send_reply(trader1, my_good, my_amt, their_good, their_amt, comp=False):
     # offer_debug(trader1, their_good, their_amt)
     gain = utility_delta(trader1, their_good, their_amt)
     loss = utility_delta(trader1, my_good, -my_amt)
-    print(f"       {trader1.name} is evaluating the offer with gain: " +
-          f"{round(gain, 2)}, loss: {round(loss, 2)}")
+    if DEBUG:
+        print(f"       {trader1.name} is evaluating the offer with gain: " +
+              f"{round(gain, 2)}, loss: {round(loss, 2)}")
     if comp:
         gain += trader1[GOODS][their_good]["incr"]
         loss -= trader1[GOODS][my_good]["incr"]

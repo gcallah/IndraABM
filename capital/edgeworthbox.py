@@ -8,6 +8,7 @@ do nothing except move around randomly.
 from lib.agent import Agent
 from lib.display_methods import RED, BLUE
 from lib.model import Model, NUM_MBRS, MBR_CREATOR, MBR_ACTION, COLOR
+from registry.registry import get_agent
 from capital.trade_utils import GEN_UTIL_FUNC, UTIL_FUNC, AMT_AVAIL
 from capital.trade_utils import seek_a_trade
 
@@ -26,13 +27,16 @@ TRADE_WITH = "trades_with"
 GOODS = "goods"
 INCR = "incr"
 
+WINE_AGENT = "Wine agent"
+CHEESE_AGENT = "Cheese agent"
+
 
 def create_wine(name, i, action=None, **kwargs):
     start_wine = DEF_NUM_WINE
     # if props is not None:
     #     start_wine = props.get('start_wine',
     #                            DEF_NUM_WINE)
-    return Agent(name + str(i),
+    return Agent(WINE_AGENT,
                  action=seek_a_trade,
                  attrs={GOODS: {"wine": {AMT_AVAIL: start_wine,
                                          UTIL_FUNC: GEN_UTIL_FUNC,
@@ -51,7 +55,7 @@ def create_cheese(name, i, action=None, **kwargs):
     # if props is not None:
     #     start_cheese = props.get('start_cheese',
     #                              DEF_NUM_CHEESE)
-    return Agent(name + str(i),
+    return Agent(CHEESE_AGENT,
                  action=seek_a_trade,
                  attrs={GOODS: {"cheese": {AMT_AVAIL: start_cheese,
                                            UTIL_FUNC: GEN_UTIL_FUNC,
@@ -91,9 +95,13 @@ class EdgeworthBox(Model):
     def handle_props(self, props, model_dir=None):
         super().handle_props(props, model_dir='capital')
 
-    def create_groups(self):
-        grps = super().create_groups()
-        return grps
+    def rpt_census(self, acts, moves):
+        """
+        This is where we override the default census report.
+        """
+        cheesey = get_agent(CHEESE_AGENT, exec_key=self.exec_key)
+        winey = get_agent(WINE_AGENT, exec_key=self.exec_key)
+        return (f"Wine and cheese holdings\n{cheesey}\n{winey}")
 
 
 def create_model(serial_obj=None, props=None):
