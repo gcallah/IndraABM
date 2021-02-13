@@ -188,7 +188,7 @@ class Agent(object):
             self.exec_key = exec_key
             self._construct_anew(name, attrs=attrs, action=action,
                                  duration=duration, prim_group=prim_group)
-        reg_agent(self.name, self, self.exec_key)
+            reg_agent(self.name, self, self.exec_key)
 
     def _construct_anew(self, name, attrs=None, action=None,
                         duration=INF, prim_group=None):

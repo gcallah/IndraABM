@@ -12,7 +12,7 @@ from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
 from registry import registry
 
-DEBUG = False  # turns debugging code on or off
+DEBUG = True  # turns debugging code on or off
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
@@ -121,7 +121,6 @@ class Model():
             self.exec_key = exec_key
         elif self.props.get("exec_key", None) is not None:
             self.exec_key = self.props.get("exec_key")
-            print(f"exec_key = {self.exec_key}")
         else:
             self.exec_key = registry.create_exec_env()
         self.create_user()
@@ -160,7 +159,7 @@ class Model():
         # self.user = jrep["user"]
         # But for the moment we will hard code this:
         self.user = APIUser(model=self, name="API",
-                            exec_key=self.exec_key)
+                            exec_key=self.exec_key, serial_obj=jrep["user"])
         self.user_type = jrep["user_type"]
         self.props = jrep["props"]
         self.env = Env(self.module, serial_obj=jrep["env"],
@@ -179,7 +178,7 @@ class Model():
         jrep["user_type"] = self.user_type
         jrep["props"] = self.props
         jrep["env"] = self.env.to_json()
-        jrep["type"] = type(self).__name__
+        jrep["type"] = "Model"
         return jrep
 
     def create_user(self):
@@ -325,6 +324,7 @@ class Model():
         """
         This will actually process the pending switches.
         """
+        print(self.switches)
         if self.switches is not None:
             for (agent_nm, from_grp_nm, to_grp_nm) in self.switches:
                 switch(agent_nm, from_grp_nm, to_grp_nm, self.exec_key)

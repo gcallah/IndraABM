@@ -5,7 +5,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
 from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
-from registry.registry import registry, get_agent
+from registry.registry import registry, get_agent, create_exec_env
 from registry.model_db import get_models
 from APIServer.api_utils import err_return
 from APIServer.api_utils import json_converter
@@ -82,7 +82,7 @@ class Props(Resource):
         Get the list of properties (parameters) for a model.
         """
         props = get_props(model_id, indra_dir)
-        exec_key = registry.create_exec_env(save_on_register=True)
+        exec_key = create_exec_env(save_on_register=True)
         props["exec_key"] = {
             VALUE: exec_key,
             ATYPE: INT,
@@ -100,9 +100,10 @@ class Props(Resource):
         This should return a new model with the revised props.
         """
         exec_key = api.payload['exec_key'].get('val')
-        registry.save_reg(exec_key)
         APIUser("API_USER", exec_key=exec_key)
-        return json_converter(create_model(model_id, api.payload, indra_dir))
+        model = json_converter(create_model(model_id, api.payload, indra_dir))
+        registry.save_reg(exec_key)
+        return model
 
 
 @api.route('/models/menu/<int:execution_id>')
@@ -133,6 +134,7 @@ class RunModel(Resource):
         Put a model env to the server and run it `run_time` periods.
         """
         exec_key = api.payload['exec_key']
+        print(f'Executing for key {exec_key}')
         model = run_model(api.payload, run_time, indra_dir)
         if model is None:
             return err_return("Model not found: " + api.payload["module"])

@@ -8,7 +8,7 @@ from lib.agent import Agent
 from lib.env import Env
 from lib.model import Model, DEF_GRP, GRP_ACTION, COLOR, MBR_CREATOR
 from registry.registry import registry, get_agent, reg_agent
-from registry.registry import get_env, del_agent, reg_model, get_model
+from registry.registry import get_env, del_agent, reg_model, get_model, create_exec_env
 from unittest.mock import patch
 from lib.display_methods import RED, BLUE
 
