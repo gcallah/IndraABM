@@ -293,11 +293,13 @@ def negotiate(trader1, trader2, comp=False, amt=1):
     for this_good in rand_goods:
         amt = amt_adjust(trader1, this_good)
         # incr = amt
+        this_ans = (None, None)
         while trader1["goods"][this_good][AMT_AVAIL] >= amt:
             # we want to offer "divisibility" amount extra each loop
             ans = send_offer(trader2, this_good, amt, trader1, comp=comp)
             # Besides acceptance or rejection, the offer can be inadequate!
             if ans[0] == ACCEPT or ans[0] == REJECT:
+                this_ans = ans
                 break
             # TODO
             # new_amt is calculated based on negotiation
@@ -332,6 +334,11 @@ def negotiate(trader1, trader2, comp=False, amt=1):
             # THIS IS PREV WAY OF INCR AMT
             # CAN BE DELETED IF NEW WAY WORKS
             # amt += incr
+        # return the traded good and amt
+        if this_ans[0] == ACCEPT:
+            return (ACCEPT, this_ans[1], this_good)
+    # no trade ever happened, return 0
+    return None
 
 
 def seek_a_trade(agent, comp=False, **kwargs):
@@ -390,11 +397,11 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
                         counterparty["goods"][their_good]["trade_count"] += 1
                     if DEBUG:
                         print("RESULT:", trader2.name, "accepts the offer\n")
-                    return (ACCEPT, 0)
+                    return (ACCEPT, my_good)
                 else:
                     if DEBUG:
                         print("RESULT:", trader2.name, "rejects the offer\n")
-                    return (REJECT, 0)
+                    return (REJECT, my_good)
             else:
                 return (INADEQ, 2 *
                         get_lowest(trader2, my_good, their_good, False),
