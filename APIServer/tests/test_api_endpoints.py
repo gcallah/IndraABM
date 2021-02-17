@@ -51,7 +51,8 @@ class Test(TestCase):
         """
         See if we can get models.
         """
-        api_ret = self.model.get()
+        with app.test_request_context():
+            api_ret = self.model.get()
         for model in api_ret:
             self.assertIn(MODEL_ID, model)
 

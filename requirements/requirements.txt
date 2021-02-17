@@ -10,3 +10,4 @@ propargs
 seaborn
 asyncio
 aiohttp
+requests
