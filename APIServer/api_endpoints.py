@@ -58,17 +58,17 @@ create_model_spec = api.model("model_specification", {
 })
 
 
-@api.route('/models/active_only')
+@api.route('/models/')
 class Models(Resource):
-    @api.doc(params={'active_only': 'Show only active models'})
-    def get(self, active_only=False):
+    @api.doc(params={'active': 'Show only active models'})
+    def get(self, active=False):
         """
         Get a list of pre-existing models available through the API.
         """
-        if request.args.get('active_only') is not None:
-            active_only = request.args.get('active_only')
-        if active_only == "True" or active_only == "true":
-            return get_models(indra_dir, active_only=True)
+        if request.args.get('active') is not None:
+            active = request.args.get('active_only')
+        if active == "True" or active == "true":
+            return get_models(indra_dir, active=True)
         return get_models(indra_dir)
 
 
