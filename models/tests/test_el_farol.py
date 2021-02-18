@@ -2,38 +2,42 @@
 This is the test suite for el_farol.py.
 """
 
-from unittest import TestCase, main,skip
+from unittest import TestCase, main, skip
 
-from lib.agent import Agent,MOVE,DONT_MOVE
+from lib.agent import MOVE
 import models.el_farol as el_farol
-from models.el_farol import AT_BAR, AT_HOME, MOTIV, MODEL_NAME
+from models.el_farol import MODEL_NAME
 from models.el_farol import ElFarol, el_farol_grps, drinker_action
 from models.el_farol import create_drinker
+
 
 def header(s):
     print("\n==================")
     print(s)
     print("==================")
 
+
 class ElFarolTestCase(TestCase):
-    
+
     def setUp(self):
         header("Setting up")
-        #create an evirement for testing and get exect key
+        # Create an evirement for testing and get exect key.
         self.ef = ElFarol(MODEL_NAME, grp_struct=el_farol_grps)
-        self.drinker = create_drinker("drinker", 0, exec_key = self.ef.exec_key)
-        
+        self.drinker = create_drinker("drinker", 0, exec_key=self.ef.exec_key)
+
     def tearDown(self):
         """
         This should undo what setup() does!
         """
         header("Tearing Down")
         self.bob = None
+
     def test_drinker_action(self):
-            """
-            Test drinker action
-            """
-            return self.assertEqual(MOVE,drinker_action(self.drinker))
+        """
+        Test drinker action
+        """
+        return self.assertEqual(MOVE,
+                                drinker_action(self.drinker))
 
     @skip("Not implimented yet")
     def test_discourage(self):
@@ -43,5 +47,6 @@ class ElFarolTestCase(TestCase):
     def test_main(self):
         self.assertEqual(el_farol.main(), 0)
 
-    if __name__ == '__main__':
-        main()
+
+if __name__ == '__main__':
+    main()
