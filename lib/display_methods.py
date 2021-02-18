@@ -9,7 +9,7 @@ import logging
 import os
 from functools import wraps
 
-from lib.user import TERMINAL, API
+from lib.user import API, TERMINAL
 
 DEBUG = False  # turns debugging code on or off
 
@@ -19,13 +19,14 @@ plt_present_error_message = ""
 user_type = os.getenv("user_type", TERMINAL)
 if user_type != API:
     try:
+        import sys
+
+        import matplotlib
         import matplotlib.pyplot as plt
         # import matplotlib.animation as animation
         import numpy as np
         import pandas as pd
         import seaborn as sns
-        import matplotlib
-        import sys
         if sys.platform == "linux":
             matplotlib.use('TKAgg')
         sns.set(style="darkgrid")
@@ -288,7 +289,7 @@ class LineGraph():
         global anim_func
 
         plt.close()
-        self.legend = ["Type"]
+        self.legend = []
         self.title = title
         self.anim = anim
         self.data_func = data_func
@@ -417,7 +418,7 @@ class ScatterPlot():
 
     @expects_plt
     def draw_graph(self, title, width, height, varieties, attrs):
-        self.legend = ["Type"]
+        self.legend = []
         legend_pos = "upper left"
 
         fig, ax = plt.subplots()
