@@ -66,9 +66,9 @@ class Models(Resource):
         Get a list of pre-existing models available through the API.
         """
         if request.args.get('active') is not None:
-            active = request.args.get('active_only')
+            active = request.args.get('active')
         if active == "True" or active == "true":
-            return get_models(indra_dir, active=True)
+            return get_models(indra_dir, active)
         return get_models(indra_dir)
 
 
