@@ -2,8 +2,10 @@
 This module contains the code for the base class of all Indra models.
 """
 import os
+import json
+
 from lib.utils import init_props
-from lib.agent import Agent, DONT_MOVE, switch
+from lib.agent import Agent, DONT_MOVE, switch, AgentEncoder
 from lib.group import Group
 from lib.env import Env
 from lib.space import DEF_WIDTH, DEF_HEIGHT
@@ -182,6 +184,12 @@ class Model():
         jrep["type"] = type(self).__name__
         return jrep
 
+    def __str__(self):
+        return self.module
+
+    def __repr__(self):
+        return json.dumps(self.to_json(), cls=AgentEncoder, indent=4)
+
     def create_user(self):
         """
         This will create a user of the correct type.
@@ -238,8 +246,6 @@ class Model():
                                      mbr_creator=grp_val(grp, MBR_CREATOR),
                                      mbr_action=grp_val(grp, MBR_ACTION),
                                      exec_key=self.exec_key))
-        if DEBUG:
-            print("In model, grps = ", self.groups)
         return self.groups
 
     def run(self, periods=None):
