@@ -5,15 +5,14 @@ do nothing except move around randomly.
 """
 # import cProfile
 
-
 from lib.agent import Agent, MOVE
 from lib.display_methods import GREEN
-from lib.model import Model, MBR_CREATOR, NUM_MBRS, MBR_ACTION  # , GRP_ACTION
+from lib.model import Model, MBR_CREATOR, NUM_MBRS, MBR_ACTION
 from lib.model import NUM_MBRS_PROP, COLOR
 from lib.env import PopHist
 # import capital.trade_utils as tu
 from capital.trade_utils import seek_a_trade, GEN_UTIL_FUNC, ACCEPT
-from capital.trade_utils import AMT_AVAIL, endow, UTIL_FUNC  # , trader_debug
+from capital.trade_utils import AMT_AVAIL, endow, UTIL_FUNC, TRADE_STATUS
 
 MODEL_NAME = "money"
 DUR = "durability"
@@ -115,12 +114,13 @@ def trader_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    # seek_a_trade(agent, **kwargs)
     outcome = seek_a_trade(agent, **kwargs)
+    # outcome = cProfile.runctx('capital.trade_utils.seek_a_trade(agent)',
+    #                           {}, {'agent': agent})
     # debug print
     # print("outcome is: ", outcome)
     if outcome is not None:
-        if outcome[0] is ACCEPT:
+        if outcome[TRADE_STATUS] is ACCEPT:
             # update current period's trade count in natures_good
             natures_goods[outcome[1]][TRADE_COUNT] += \
                 agent[GOODS][outcome[1]][TRADE_COUNT]
@@ -132,18 +132,6 @@ def trader_action(agent, **kwargs):
             # increment every good's age by one each period
             agent[GOODS][outcome[1]][AGE] += 1
             agent[GOODS][outcome[2]][AGE] += 1
-    # ORIGINAL CODE
-    # for good in natures_goods:
-    #     if good not in natures_goods:
-    #         raise(KeyError(f"{good} not in nature."))
-    #     if good not in agent[GOODS]:
-    #         raise(KeyError(f"{good} not in {repr(agent)}."))
-    #     # update current period's trade count in natures_good
-    #     natures_goods[good][TRADE_COUNT] += agent[GOODS][good][TRADE_COUNT]
-    #     # return agent's trade_count to 0
-    #     agent[GOODS][good][TRADE_COUNT] = 0
-    #     # increment every good's age by one each period
-    #     agent[GOODS][good][AGE] += 1
     return MOVE
 
 

@@ -27,7 +27,7 @@ pytests: FORCE
 	$(PYLINT) $(PYLINTFLAGS) $*.py
 
 profile:
-	python -m cProfile -s time -m money | more
+	python -m cProfile -s calls $(MOD).py | more
 
 nocrud:
 	-rm *~
