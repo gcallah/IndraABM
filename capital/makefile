@@ -16,11 +16,7 @@ lint: $(patsubst %.py,%.pylint,$(PYTHONFILES))
 tests: pytests lint
 
 pytests: FORCE
-	# for now, just money!
-	# nosetests tests.test_money.py --with-coverage
-	# nosetests --exe --with-coverage --cover-package=capital
-	nosetests tests/test_money.py
-	nosetests tests/test_trade_utils.py
+	nosetests --exe --with-coverage --cover-package=capital
 
 # test a python file:
 %.py: FORCE
@@ -29,6 +25,10 @@ pytests: FORCE
 
 %.pylint:
 	$(PYLINT) $(PYLINTFLAGS) $*.py
+
+profile:
+	# python -m cProfile -s calls $(MOD).py | more
+	python3 money.py
 
 nocrud:
 	-rm *~

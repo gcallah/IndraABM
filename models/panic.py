@@ -40,12 +40,13 @@ def agent_action(agent, **kwargs):
     if first_period:
         start_panic(agent.exec_key)
     first_period = False
-    ratio = neighbor_ratio(agent, lambda agent: agent.group_name() == PANIC)
-    if ratio > THRESHHOLD:
-        if DEBUG2:
-            print("Changing the agent's group to panic!")
-        agent.has_acted = True
-        if agent.group_name() == CALM:
+    if agent.group_name() == CALM:
+        ratio = neighbor_ratio(agent,
+                               lambda agent: agent.group_name() == PANIC)
+        if ratio > THRESHHOLD:
+            if DEBUG2:
+                print("Changing the agent's group to panic!")
+            agent.has_acted = True
             get_model(agent.exec_key).add_switch(str(agent), CALM, PANIC)
     return DONT_MOVE
 

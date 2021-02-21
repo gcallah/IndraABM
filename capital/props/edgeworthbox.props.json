@@ -24,14 +24,14 @@
     "lowval": 1
   },
   "start_wine": {
-    "val": 4,
+    "val": 8,
     "question": "How many wine do you want your wine holder start with?",
     "atype": "INT",
     "hival": 200,
     "lowval": 1
   },
   "start_cheese": {
-    "val": 4,
+    "val": 8,
     "question": "How many cheese do you want your cheese holder start with?",
     "atype": "INT",
     "hival": 200,

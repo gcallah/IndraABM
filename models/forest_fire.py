@@ -11,7 +11,7 @@ from lib.space import exists_neighbor
 from registry.registry import get_model
 
 MODEL_NAME = "forest_fire"
-DEBUG = False  # turns debugging code on or off
+DEBUG = True  # turns debugging code on or off
 DEBUG2 = False  # turns deeper debugging code on or off
 
 DEF_NUM_TREES = 10
@@ -61,14 +61,13 @@ def tree_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    if DEBUG:
-        print("Agent", str(agent), "is acting.")
     model = get_model(agent.exec_key)
+    if model is None:
+        print("ERROR: get_model() returned None.")
+        return DONT_MOVE
     old_group = agent.group_name()
     if old_group == HEALTHY:
         if exists_neighbor(agent, lambda agent: agent.group_name() == ON_FIRE):
-            if DEBUG2:
-                print("Setting nearby tree on fire!")
             agent.set_prim_group(NEW_FIRE)
 
     # if we didn't catch on fire above, do probabilistic transition:
@@ -78,11 +77,13 @@ def tree_action(agent, **kwargs):
         # JSON only allows strings as dict keys
         agent.set_prim_group(GROUP_MAP[str(prob_state_trans(int(curr_state),
                                                             state_trans))])
-        if DEBUG2:
+        if DEBUG:
             if agent.group_name == NEW_FIRE:
                 print("Tree spontaneously catching fire.")
 
     if old_group != agent.group_name():
+        if DEBUG:
+            print(f"Add switch from {old_group} to {agent.group_name()}")
         model.add_switch(str(agent),
                          old_group,
                          agent.group_name())
