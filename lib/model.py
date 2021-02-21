@@ -12,7 +12,7 @@ from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
 from registry import registry
 
-DEBUG = True  # turns debugging code on or off
+DEBUG = False  # turns debugging code on or off
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
@@ -97,6 +97,7 @@ class Model():
     It should also make the notebook generator much simpler,
     since the class methods will necessarily be present.
     """
+
     # NOTE: random_placing needs to be handled on the API side
     def __init__(self, model_nm="BaseModel", props=None,
                  grp_struct=DEF_GRP_STRUCT,
@@ -164,6 +165,9 @@ class Model():
         self.props = jrep["props"]
         self.env = Env(self.module, serial_obj=jrep["env"],
                        exec_key=self.exec_key)
+        # since self.groups is a list and self.env.members is an OrderedDict
+        self.groups = [self.env.members[group_nm] for group_nm in
+                       self.env.members]
 
     def to_json(self):
         """
@@ -324,10 +328,10 @@ class Model():
         """
         This will actually process the pending switches.
         """
-        print(self.switches)
         if self.switches is not None:
             for (agent_nm, from_grp_nm, to_grp_nm) in self.switches:
                 switch(agent_nm, from_grp_nm, to_grp_nm, self.exec_key)
+
                 self.num_switches += 1
             self.switches.clear()
         pass

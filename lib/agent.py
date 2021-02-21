@@ -464,8 +464,7 @@ class Agent(object):
             return False
 
     def add_group(self, group):
-        if not self.prim_group:
-            self.prim_group = str(group)
+        self.prim_group = str(group)
         return True
 
     def switch_groups(self, g1, g2):

@@ -259,6 +259,7 @@ class Group(Agent):
         """
         if str(member) in self.members:
             del self.members[str(member)]
+            # maybe this test should be using == instead of `is`
             if member.primary_group() is self:
                 member.set_prim_group(None)
         else:

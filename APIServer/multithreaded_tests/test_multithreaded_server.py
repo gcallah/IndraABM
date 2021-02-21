@@ -2,18 +2,11 @@ import asyncio
 import random
 from aiohttp import ClientSession
 from aiohttp.web_exceptions import HTTPError
-import os
 
 BASE_URL = 'http://localhost:5000'
 # BASE_URL = 'https://indraabm.pythonanywhere.com/'
 
-MODEL_IDS = [7] * 5
-
-# print("Cleaning db directory")
-# for file in os.listdir(os.path.join('../', '../', 'registry', 'db')):
-#     if file[0] == '.gitkeep' or file[0] == '.':
-#         continue
-#     os.remove(file)
+MODEL_IDS = [7] * 10
 
 keys = set()
 number_of_runs = 0

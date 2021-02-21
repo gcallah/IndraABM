@@ -23,9 +23,6 @@ import json
 import types
 from lib.agent import Agent
 from lib.env import Env
-# import uwsgidecorators
-
-# from lib.model import Model
 
 DEBUG = False
 
@@ -39,8 +36,30 @@ MODEL_NM = 'model'
 registry = None
 
 
-# @uwsgidecorators.lock
+def wrap_func_with_lock(func):
+    def wrapper(*args, **kwargs):
+        try:
+            import uwsgidecorators
+            locked_fn = uwsgidecorators.lock(func)
+            return locked_fn(*args, **kwargs)
+        except ImportError or ModuleNotFoundError or RuntimeError:
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
+@wrap_func_with_lock
 def create_exec_env(save_on_register=True):
+    """
+    :param save_on_register: boolean
+    :return: New registry for storing data for execution
+
+    Need to lock this function so registry generation can be serialized.
+    Since two threads could potentially come up with the same exec_key and try
+    to write them to the disk there is a race condition for the disk resource.
+    If not resolved one thread will overwrite the registry of the other thread
+    and corrupt the run time calls of the model.
+    """
     return registry.create_exec_env(save_on_register=save_on_register)
 
 
@@ -102,8 +121,8 @@ def get_agent(name, exec_key=None, **kwargs):
     else:
         registry.load_reg(exec_key)
         if name not in registry[exec_key]:
-            raise ValueError(
-                f'Did not find {name} in registry for key {exec_key}')
+            print(f'ERROR: Did not find {name} in registry for key {exec_key}')
+            return None
         return registry[exec_key][name]
 
 
@@ -132,6 +151,26 @@ def get_func_name(f):
         return f.__name__
     else:
         return ""
+
+
+def sync_api_restored_model_with_registry(api_restored_model, exec_key):
+    """
+    This method synchronizes the registry with the model created from the
+    api response. We need to do this because we rely on the api response to
+    restore the model rather on using the registry. We cannot have two distinct
+    model entities(with same data) exist while the model is running because
+    calls like get_model, get_agent, model.env should resolve to the same
+    entity.
+    NOTE: Might not need this if we only use the registry to deserialize
+    the model at run time.
+    """
+    registry[exec_key][MODEL_NM] = api_restored_model
+    for group_nm in api_restored_model.env.members:
+        registry[exec_key][group_nm] = api_restored_model.env.members[group_nm]
+        for member_nm in api_restored_model.env.members[group_nm].members:
+            registry[exec_key][member_nm] = \
+                api_restored_model.env.members[group_nm].members[member_nm]
+    registry[exec_key][ENV_NM] = api_restored_model.env
 
 
 class AgentEncoder(json.JSONEncoder):
@@ -223,8 +262,8 @@ class Registry(object):
         key = random.randint(1, BILLION)
         '''
         Try to get a key that is not already being used.
-        This means that key should not be in the registry for the current thread
-        and also not saved on the disk by some other thread
+        This means that key should not be in the registry for the current
+        thread and also not saved on the disk by some other thread.
         '''
         while key in self.registries.keys() or os.path.isfile(
                 self.__get_reg_file_name(key)):
@@ -252,7 +291,7 @@ class Registry(object):
         file_path = self.__get_reg_file_name(key)
         with open(file_path, 'r') as file:
             registry_as_str = file.read()
-
+        self.registries[key] = {}
         obj = self.__json_to_object(json.loads(registry_as_str), key)
         self.registries[key] = obj
 
@@ -289,11 +328,21 @@ class Registry(object):
                                                    name=serial_obj[obj_name][
                                                        'name'])
                     restored_groups.append(restored_obj[obj_name])
+                elif serial_obj[obj_name]["type"] == "Env":
+                    restored_obj[obj_name] = Env(exec_key=exec_key,
+                                                 serial_obj=serial_obj[
+                                                     obj_name],
+                                                 name=serial_obj[obj_name][
+                                                     'name'])
             else:
                 restored_obj[obj_name] = serial_obj[obj_name]
 
+            self.registries[exec_key][obj_name] = restored_obj[obj_name]
+
         if model_deserialized:
             restored_obj['model'].groups = restored_groups
+            restored_obj['model'].env = restored_obj['env']
+            self.registries[exec_key]['model'] = restored_obj['model']
         return restored_obj
 
     def create_exec_env(self, save_on_register=True):
