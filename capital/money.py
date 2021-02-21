@@ -3,7 +3,7 @@ This is a minimal model that inherits from model.py
 and just sets up a couple of agents in two groups that
 do nothing except move around randomly.
 """
-# import cProfile
+import os
 
 from lib.agent import Agent, MOVE
 from lib.display_methods import GREEN
@@ -245,5 +245,9 @@ def main():
 
 
 if __name__ == "__main__":
-    # cProfile.run('main')
+    if os.environ["user_type"] == "test":
+        os.environ["user_type"] = "terminal"
+        import cProfile
+        cProfile.run('main()')
+        exit()
     main()
