@@ -8,7 +8,7 @@ from lib.agent import Agent
 from lib.env import Env
 from lib.model import Model, DEF_GRP, GRP_ACTION, COLOR, MBR_CREATOR
 from registry.registry import registry, get_agent, reg_agent
-from registry.registry import get_env, del_agent, reg_model, get_model
+from registry.registry import get_env, del_agent, reg_model, get_model, create_exec_env
 from unittest.mock import patch
 from lib.display_methods import RED, BLUE
 
@@ -49,9 +49,7 @@ class RegisteryTestCase(TestCase):
         """
         See if we get an env we have registered back as the env.
         """
-        env_to_reg = Env(TEST_ENV_NM, exec_key=self.exec_key)
-        reg_agent(TEST_ENV_NM, env_to_reg, self.exec_key)
-        self.assertEquals(env_to_reg, get_env(exec_key=self.exec_key))
+        self.assertEquals(self.model.env, get_env(exec_key=self.exec_key))
 
     def test_del_agent(self):
         """
@@ -85,9 +83,8 @@ class RegisteryTestCase(TestCase):
     def test_registry_fetch_from_disk(self, dump, load):
         registry[self.exec_key]["name"] = "Abhinav"
         registry.save_reg(self.exec_key)
-        loaded_object = registry.load_reg(self.exec_key)
-        self.assertTrue("name" in loaded_object)
-        self.assertTrue("Abhinav" == loaded_object["name"])
+        loaded_object_name = get_agent("name", self.exec_key)
+        self.assertTrue("Abhinav" == loaded_object_name)
 
     @patch('pickle.dump')
     @patch('pickle.load')
@@ -118,8 +115,8 @@ class RegisteryTestCase(TestCase):
     @patch('pickle.load')
     def test_agent_load_from_disk(self, dump, load):
         registry.save_reg(self.exec_key)
-        loaded_object = registry.load_reg(self.exec_key)
-        loaded_agent = loaded_object[TEST_AGENT_NM]
+        registry.load_reg(self.exec_key)
+        loaded_agent = get_agent(TEST_AGENT_NM, self.exec_key)
         (acted, moved) = loaded_agent()
         self.assertTrue(acted)
         self.assertTrue(not moved)
@@ -168,12 +165,13 @@ class RegisteryTestCase(TestCase):
         complexModel = Model(grp_struct=GRP_STRUCT, model_nm="Basic")
         complexModel.run(5)
         registry.save_reg(key=complexModel.exec_key)
-        loaded_object = registry.load_reg(complexModel.exec_key)
-        self.assertTrue("model" in loaded_object)
-        self.assertTrue("Basic" == loaded_object['model'].module)
+        registry.load_reg(complexModel.exec_key)
+        loaded_object = get_model(complexModel.exec_key)
+        self.assertTrue(type(loaded_object) == Model)
+        self.assertTrue("Basic" == loaded_object.module)
         all_red_members_have_attribute_5 = True
         all_blue_memebrs_have_attribute_10 = True
-        deserialized_model = loaded_object['model']
+        deserialized_model = loaded_object
         deserialized_model.run(5)
         for grp in deserialized_model.groups:
             for member in grp.members:

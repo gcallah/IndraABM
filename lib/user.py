@@ -101,7 +101,8 @@ class User(Agent):
         self.debug_msg = ''
         self.error_message = {}
         self.model = model
-        # here we should register this user
+        if 'serial_obj' in kwargs:
+            self.from_json(kwargs['serial_obj'])
 
     def __call__(self):
         """
@@ -114,11 +115,13 @@ class User(Agent):
                 "debug": self.debug_msg,
                 "name": self.name}
 
-    def from_json(self):
+    def from_json(self, serial_obj):
         """
         This must be written!
         """
-        pass
+        self.user_msgs = serial_obj['user_msgs']
+        self.name = serial_obj['name']
+        self.debug_msg = serial_obj['debug']
 
     def exclude_menu_item(self, to_exclude):
         """
@@ -273,6 +276,8 @@ class APIUser(User):
     """
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
+        if 'serial_obj' in kwargs is not None:
+            self.from_json(kwargs['serial_obj'])
 
     def tell(self, msg, end='\n'):
         """
@@ -317,3 +322,8 @@ class APIUser(User):
                 "name": self.name,
                 "debug": self.debug_msg
                 }
+
+    def from_json(self, serial_obj):
+        self.user_msgs = serial_obj['user_msgs']
+        self.name = serial_obj['name']
+        self.debug_msg = serial_obj['debug']

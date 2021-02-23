@@ -99,6 +99,7 @@ class Model():
     It should also make the notebook generator much simpler,
     since the class methods will necessarily be present.
     """
+
     # NOTE: random_placing needs to be handled on the API side
     def __init__(self, model_nm="BaseModel", props=None,
                  grp_struct=DEF_GRP_STRUCT,
@@ -123,7 +124,6 @@ class Model():
             self.exec_key = exec_key
         elif self.props.get("exec_key", None) is not None:
             self.exec_key = self.props.get("exec_key")
-            print(f"exec_key = {self.exec_key}")
         else:
             self.exec_key = registry.create_exec_env()
         self.create_user()
@@ -162,11 +162,14 @@ class Model():
         # self.user = jrep["user"]
         # But for the moment we will hard code this:
         self.user = APIUser(model=self, name="API",
-                            exec_key=self.exec_key)
+                            exec_key=self.exec_key, serial_obj=jrep["user"])
         self.user_type = jrep["user_type"]
         self.props = jrep["props"]
         self.env = Env(self.module, serial_obj=jrep["env"],
                        exec_key=self.exec_key)
+        # since self.groups is a list and self.env.members is an OrderedDict
+        self.groups = [self.env.members[group_nm] for group_nm in
+                       self.env.members]
 
     def to_json(self):
         """
@@ -181,7 +184,7 @@ class Model():
         jrep["user_type"] = self.user_type
         jrep["props"] = self.props
         jrep["env"] = self.env.to_json()
-        jrep["type"] = type(self).__name__
+        jrep["type"] = "Model"
         return jrep
 
     def __str__(self):
@@ -334,6 +337,7 @@ class Model():
         if self.switches is not None:
             for (agent_nm, from_grp_nm, to_grp_nm) in self.switches:
                 switch(agent_nm, from_grp_nm, to_grp_nm, self.exec_key)
+
                 self.num_switches += 1
             self.switches.clear()
         pass

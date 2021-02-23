@@ -21,7 +21,6 @@ from os import listdir
 from os.path import isfile, join
 import json
 import types
-
 from lib.agent import Agent
 from lib.env import Env
 
@@ -37,8 +36,31 @@ MODEL_NM = 'model'
 registry = None
 
 
-def create_exec_env():
-    return registry.create_exec_env()
+def wrap_func_with_lock(func):
+    def wrapper(*args, **kwargs):
+        try:
+            import uwsgidecorators
+            locked_fn = uwsgidecorators.lock(func)
+            return locked_fn(*args, **kwargs)
+        except ImportError or ModuleNotFoundError or RuntimeError:
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
+@wrap_func_with_lock
+def create_exec_env(save_on_register=True):
+    """
+    :param save_on_register: boolean
+    :return: New registry for storing data for execution
+
+    Need to lock this function so registry generation can be serialized.
+    Since two threads could potentially come up with the same exec_key and try
+    to write them to the disk there is a race condition for the disk resource.
+    If not resolved one thread will overwrite the registry of the other thread
+    and corrupt the run time calls of the model.
+    """
+    return registry.create_exec_env(save_on_register=save_on_register)
 
 
 def get_exec_key(**kwargs):
@@ -59,7 +81,7 @@ def get_env(exec_key=None, **kwargs):
     """
     if exec_key is None:
         exec_key = get_exec_key(**kwargs)
-    return get_agent(ENV_NM, exec_key)
+    return get_model(exec_key).env
 
 
 def reg_model(model, exec_key):
@@ -97,7 +119,11 @@ def get_agent(name, exec_key=None, **kwargs):
     if name in registry[exec_key]:
         return registry[exec_key][name]
     else:
-        return None
+        registry.load_reg(exec_key)
+        if name not in registry[exec_key]:
+            print(f'ERROR: Did not find {name} in registry for key {exec_key}')
+            return None
+        return registry[exec_key][name]
 
 
 def del_agent(name, exec_key=None, **kwargs):
@@ -125,6 +151,26 @@ def get_func_name(f):
         return f.__name__
     else:
         return ""
+
+
+def sync_api_restored_model_with_registry(api_restored_model, exec_key):
+    """
+    This method synchronizes the registry with the model created from the
+    api response. We need to do this because we rely on the api response to
+    restore the model rather on using the registry. We cannot have two distinct
+    model entities(with same data) exist while the model is running because
+    calls like get_model, get_agent, model.env should resolve to the same
+    entity.
+    NOTE: Might not need this if we only use the registry to deserialize
+    the model at run time.
+    """
+    registry[exec_key][MODEL_NM] = api_restored_model
+    for group_nm in api_restored_model.env.members:
+        registry[exec_key][group_nm] = api_restored_model.env.members[group_nm]
+        for member_nm in api_restored_model.env.members[group_nm].members:
+            registry[exec_key][member_nm] = \
+                api_restored_model.env.members[group_nm].members[member_nm]
+    registry[exec_key][ENV_NM] = api_restored_model.env
 
 
 class AgentEncoder(json.JSONEncoder):
@@ -165,8 +211,6 @@ class Registry(object):
 
     def __setitem__(self, key, value):
         self.registries[key] = value
-        if self.registries[key]['save_on_register']:
-            self.save_reg(key)
 
     '''
     Always fetch the items from the file for now.
@@ -179,9 +223,9 @@ class Registry(object):
             notice that this is only accessed by a thread that did not
             create this key.
             '''
-            self.registries[key] = self.load_reg(key)
+            print(f'key not found {key}')
+            self.load_reg(key)
             return self.registries[key]
-
         return self.registries[key]
 
     '''
@@ -191,6 +235,7 @@ class Registry(object):
     NOTE: This might be a potential use for generators to lazy load
     the dictionary from file.
     '''
+
     def __contains__(self, key):
         if key in self.registries.keys():
             return True
@@ -203,7 +248,7 @@ class Registry(object):
                     continue
                 try:
                     if int(file.split("-")[0]) == key:
-                        self.registries[key] = self.load_reg(key)
+                        self.load_reg(key)
                         return True
                 except ValueError:
                     # ignore files that don't start with an int!
@@ -215,7 +260,13 @@ class Registry(object):
 
     def __get_unique_key(self):
         key = random.randint(1, BILLION)
-        while key in self.registries.keys():
+        '''
+        Try to get a key that is not already being used.
+        This means that key should not be in the registry for the current
+        thread and also not saved on the disk by some other thread.
+        '''
+        while key in self.registries.keys() or os.path.isfile(
+                self.__get_reg_file_name(key)):
             key = random.randint(1, BILLION)
         return key
 
@@ -229,7 +280,6 @@ class Registry(object):
         return True
 
     def save_reg(self, key):
-        print(f'Saving registry to disk {key}-reg.json')
         file_path = self.__get_reg_file_name(key)
         serial_object = json.dumps(self[key], cls=AgentEncoder,
                                    indent=4)
@@ -237,11 +287,13 @@ class Registry(object):
             file.write(serial_object)
 
     def load_reg(self, key):
+        print(f'loading reg for key {key}')
         file_path = self.__get_reg_file_name(key)
         with open(file_path, 'r') as file:
             registry_as_str = file.read()
-
-        return self.__json_to_object(json.loads(registry_as_str), key)
+        self.registries[key] = {}
+        obj = self.__json_to_object(json.loads(registry_as_str), key)
+        self.registries[key] = obj
 
     '''
     restores the json object to python object
@@ -263,6 +315,7 @@ class Registry(object):
                                                    exec_key=exec_key)
                 elif serial_obj[obj_name]["type"] == "Model":
                     from lib.model import Model
+                    print(f'restoring model for key {exec_key}')
                     restored_obj[obj_name] = Model(exec_key=exec_key,
                                                    serial_obj=serial_obj[
                                                        obj_name])
@@ -275,11 +328,21 @@ class Registry(object):
                                                    name=serial_obj[obj_name][
                                                        'name'])
                     restored_groups.append(restored_obj[obj_name])
+                elif serial_obj[obj_name]["type"] == "Env":
+                    restored_obj[obj_name] = Env(exec_key=exec_key,
+                                                 serial_obj=serial_obj[
+                                                     obj_name],
+                                                 name=serial_obj[obj_name][
+                                                     'name'])
             else:
                 restored_obj[obj_name] = serial_obj[obj_name]
 
+            self.registries[exec_key][obj_name] = restored_obj[obj_name]
+
         if model_deserialized:
             restored_obj['model'].groups = restored_groups
+            restored_obj['model'].env = restored_obj['env']
+            self.registries[exec_key]['model'] = restored_obj['model']
         return restored_obj
 
     def create_exec_env(self, save_on_register=True):
@@ -292,6 +355,11 @@ class Registry(object):
         self.registries[key] = {'save_on_register': save_on_register}
         # stores the file paths of pickled functions
         self.registries[key]['functions']: {str: str} = {}
+        '''
+        Need to do this so that some other thread which creates a new registry
+        doesnt end up using the same exec_key value
+        '''
+        self.save_reg(key)
         return key
 
     def del_exec_env(self, key):
