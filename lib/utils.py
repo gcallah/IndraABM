@@ -12,6 +12,8 @@ INDRA_HOME_VAR = "INDRA_HOME"
 PA_INDRA_HOME = "/home/IndraABM/IndraABM"
 
 INDRA_DEBUG_VAR = "INDRA_DEBUG"
+INDRA_DEBUG2_VAR = "INDRA_DEBUG2"
+INDRA_DEBUG3_VAR = "INDRA_DEBUG3"
 
 
 def agent_by_name(agent):
@@ -69,12 +71,31 @@ class Debug:
     """
     Reads the environment variable to decide on enabling debug outputs
     """
-    @property
-    def debug(self):
-        env_debug = os.getenv(INDRA_DEBUG_VAR)
-
+    def get_env_var(self, var_name):
+        env_var = os.getenv(var_name)
         # Accept different styles of writing true
-        if env_debug.lower() == 'true' or env_debug == '1':
+        if env_var.lower() == 'true' or env_var == '1':
             return True
         else:
             return False
+
+    @property
+    def debug(self):
+        """
+        Simple debugging level
+        """
+        return self.get_env_var(INDRA_DEBUG_VAR)
+
+    @property
+    def debug2(self):
+        """
+        Deeper debugging level
+        """
+        return self.get_env_var(INDRA_DEBUG2_VAR)
+
+    @property
+    def debug3(self):
+        """
+        Deepest debugging level
+        """
+        return self.get_env_var(INDRA_DEBUG3_VAR)
