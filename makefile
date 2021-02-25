@@ -51,6 +51,11 @@ dev_env: FORCE
 	git submodule init $(UTILS_DIR)
 	git submodule update $(UTILS_DIR)
 
+	@echo "   "
+	# To enable debugging statements while running the models, set INDRA_DEBUG 
+	# environment variable to True. Deeper levels of debugging statements can be 
+	# enabled with INDRA_DEBUG2 and INDRA_DEBUG3 environment variables.
+
 setup_react: FORCE
 	cd $(REACT_TOP); npm install
 
