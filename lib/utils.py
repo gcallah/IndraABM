@@ -11,6 +11,8 @@ DEF_MODEL_DIR = "models"
 INDRA_HOME_VAR = "INDRA_HOME"
 PA_INDRA_HOME = "/home/IndraABM/IndraABM"
 
+INDRA_DEBUG_VAR = "INDRA_DEBUG"
+
 
 def agent_by_name(agent):
     return agent if isinstance(agent, str) else agent.name
@@ -61,3 +63,18 @@ def init_props(model_nm, props=None, model_dir=None,
                                    skip_user_questions=skip_user_questions)
 
     return pa
+
+
+class Debug:
+    """
+    Reads the environment variable to decide on enabling debug outputs
+    """
+    @property
+    def debug(self):
+        env_debug = os.getenv(INDRA_DEBUG_VAR)
+
+        # Accept different styles of writing true
+        if env_debug.lower() == 'true' or env_debug == '1':
+            return True
+        else:
+            return False
