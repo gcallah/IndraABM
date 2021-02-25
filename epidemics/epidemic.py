@@ -13,16 +13,16 @@ from registry.execution_registry import CLI_EXEC_KEY, \
     EXEC_KEY, get_exec_key
 from registry.registry import get_env, get_prop, set_env_attr
 from registry.registry import user_log_err, run_notice, user_log_notif
-from indra.utils import init_props
+from indra.utils import init_props, Debug, Debug2, Debug3
 from indra.space import CircularRegion, exists_neighbor
 from indra.space import distance, get_move_angle
 from random import random
 from math import log
 
 MODEL_NAME = "epidemic"
-DEBUG = False  # turns debugging code on or off
-DEBUG2 = False  # turns deeper debugging code on or off
-DEBUGSPEED = False  # turns off extra print statements to speed up modeling.
+# Debug turns debugging code on or off
+# Debug2 turns deeper debugging code on or off
+# Debug3 turns off extra print statements to speed up modeling.
 
 # Constants that are re-analyzed in setup
 DEF_CON_DUR = 4
@@ -137,7 +137,7 @@ def epidemic_report(env, execution_key=CLI_EXEC_KEY):
         R0 = R0_old
     get_env(execution_key=execution_key).set_attr("R0", R0)
     result = "Current period: " + str(periods - 1) + "\n"
-    if DEBUGSPEED is False:
+    if not Debug().debug3:
         result += "New cases: " + str(curr_infected) + "\n"
 
         if curr_infected > 0:
@@ -190,7 +190,7 @@ def person_action(agent, **kwargs):
                                           execution_key=execution_key)
         agent_list = sub_reg.get_agents(exclude_self=True)
         if (agent_list is not None and (len(agent_list) > 0)):
-            if DEBUG2:
+            if Debug().debug2:
                 user_log_notif("Exposing nearby people!")
             agent[STATE] = EX
         else:

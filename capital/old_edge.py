@@ -15,8 +15,6 @@ from capital.trade_utils import seek_a_trade, AMT_AVAIL
 from capital.trade_utils import GEN_UTIL_FUNC, UTIL_FUNC
 
 MODEL_NAME = "edgeworthbox"
-DEBUG = True  # turns debugging code on or off
-DEBUG2 = False  # turns deeper debugging code on or off
 
 DEF_NUM_CAGENTS = 1
 DEF_NUM_WAGENTS = 1

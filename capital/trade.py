@@ -10,14 +10,12 @@ from indra.display_methods import BLUE
 from indra.env import Env
 from registry.registry import get_env, get_prop, user_log_notif
 from indra.space import DEF_HEIGHT, DEF_WIDTH
-from indra.utils import init_props
+from indra.utils import init_props, Debug
 from capital.trade_utils import seek_a_trade
 from capital.trade_utils import UTIL_FUNC, GEN_UTIL_FUNC, AMT_AVAIL
 import capital.trade_utils as tu
 
 MODEL_NAME = "trade"
-DEBUG = True  # turns debugging code on or off
-DEBUG2 = False  # turns deeper debugging code on or off
 DEF_NUM_TRADER = 4
 DEF_NUM_RESOURCES = 20
 DEF_NUM_RESOURCES_TYPE = 4
@@ -90,7 +88,7 @@ def main():
 
     (trader_group, max_utility) = set_up()
 
-    if DEBUG2:
+    if Debug().debug2:
         user_log_notif(get_env().__repr__())
 
     get_env()()

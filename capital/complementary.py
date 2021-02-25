@@ -17,10 +17,9 @@ from capital.trade_utils import seek_a_trade_w_comp
 from capital.trade_utils import UTIL_FUNC, AMT_AVAIL
 import capital.good_structure as gs
 import capital.trade_utils as tu
+from lib.utils import Debug
 
 MODEL_NAME = "complementary"
-DEBUG = True  # turns debugging code on or off
-DEBUG2 = False  # turns deeper debugging code on or off
 DEF_NUM_TRADER = 2
 
 DEF_NUM_RESOURCES = 1
@@ -167,7 +166,7 @@ def set_up(props=None):
 def main():
     set_up()
 
-    if DEBUG2:
+    if Debug().debug:
         get_env().user.tell(get_env().__repr__())
 
     get_env()()
