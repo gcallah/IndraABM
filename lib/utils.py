@@ -73,6 +73,11 @@ class Debug:
     """
     def get_env_var(self, var_name):
         env_var = os.getenv(var_name)
+
+        # Return false if the environment variable is not set at all
+        if env_var is None:
+            return False
+
         # Accept different styles of writing true
         if env_var.lower() == 'true' or env_var == '1':
             return True
