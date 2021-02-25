@@ -9,8 +9,7 @@ from lib.model import COLOR, MBR_ACTION
 from lib.space import get_num_of_neighbors
 from registry.registry import get_agent
 from lib.agent import X, Y
-
-DEBUG = False
+from lib.utils import Debug
 
 MODEL_NAME = "game_of_life"
 
@@ -34,7 +33,7 @@ def game_agent_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    if DEBUG:
+    if Debug().debug:
         print("GofL agent {} is acting".format(agent.name))
     return DONT_MOVE
 
@@ -79,7 +78,7 @@ def live_or_die(agent):
 
 class GameOfLife(Model):
     def run(self):
-        if DEBUG:
+        if Debug().debug:
             print("My groups are:", self.groups)
         return super().run()
 

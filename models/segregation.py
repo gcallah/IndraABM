@@ -7,9 +7,8 @@ from lib.space import neighbor_ratio
 from lib.display_methods import RED, BLUE
 from lib.model import Model, MBR_ACTION, NUM_MBRS
 from lib.model import COLOR, GRP_ACTION, NUM_MBRS_PROP
+
 MODEL_NAME = "segregation"
-DEBUG = False  # Turns debugging code on or off
-DEBUG2 = False  # Turns deeper debugging code on or off
 
 NUM_RED = 250
 NUM_BLUE = 250

@@ -8,8 +8,7 @@ do nothing except move around randomly.
 from lib.agent import MOVE
 from lib.display_methods import RED, BLUE
 from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
-
-DEBUG = False
+from lib.utils import Debug
 
 MODEL_NAME = "basic"
 DEF_RED_MBRS = 2
@@ -21,7 +20,7 @@ def basic_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    if DEBUG:
+    if Debug().debug:
         print("Agent {} is located at {}".format(agent.name,
                                                  agent.get_pos()))
     return MOVE
