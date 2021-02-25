@@ -14,6 +14,8 @@ PA_INDRA_HOME = "/home/IndraABM/IndraABM"
 INDRA_DEBUG_VAR = "INDRA_DEBUG"
 INDRA_DEBUG2_VAR = "INDRA_DEBUG2"
 INDRA_DEBUG3_VAR = "INDRA_DEBUG3"
+INDRA_DEBUG_LIB_VAR = "INDRA_DEBUG_LIB"
+INDRA_DEBUG2_LIB_VAR = "INDRA_DEBUG2_LIB"
 
 
 def agent_by_name(agent):
@@ -104,3 +106,17 @@ class Debug:
         Deepest debugging level
         """
         return self.get_env_var(INDRA_DEBUG3_VAR)
+
+    @property
+    def debug_lib(self):
+        """
+        Switches debugging for the library modules
+        """
+        return self.get_env_var(INDRA_DEBUG_LIB_VAR)
+
+    @property
+    def debug2_lib(self):
+        """
+        Switches debugging for the library modules
+        """
+        return self.get_env_var(INDRA_DEBUG2_LIB_VAR)

@@ -13,8 +13,6 @@ from lib.user import TEST, TestUser
 from lib.user import TermUser, TERMINAL, API
 from lib.utils import agent_by_name
 
-DEBUG = False
-DEBUG2 = False
 DEF_USER = "User"
 
 UNLIMITED = 1000
