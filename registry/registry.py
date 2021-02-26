@@ -44,7 +44,6 @@ def wrap_func_with_lock(func):
             return locked_fn(*args, **kwargs)
         except ImportError or ModuleNotFoundError or RuntimeError:
             return func(*args, **kwargs)
-
     return wrapper
 
 
@@ -64,6 +63,9 @@ def create_exec_env(save_on_register=True):
 
 
 def get_exec_key(**kwargs):
+    """
+    Pluck an exec key out of keyword arguments.
+    """
     exec_key = kwargs.get(EXEC_KEY, None)
     if exec_key is None:
         raise ValueError("Cannot find exec key:", exec_key)
@@ -71,6 +73,9 @@ def get_exec_key(**kwargs):
 
 
 def get_model(exec_key):
+    """
+    The model is a special singleton member of the registry.
+    """
     return get_agent(MODEL_NM, exec_key)
 
 
@@ -85,6 +90,9 @@ def get_env(exec_key=None, **kwargs):
 
 
 def reg_model(model, exec_key):
+    """
+    The model is a special singleton member of the registry.
+    """
     registry[exec_key][MODEL_NM] = model
 
 
@@ -295,11 +303,21 @@ class Registry(object):
         obj = self.__json_to_object(json.loads(registry_as_str), key)
         self.registries[key] = obj
 
-    '''
-    restores the json object to python object
-    '''
+    def to_json(self):
+        """
+        Writes out the registry as a JSON object, perhaps to be served by API
+        server.
+        I think we should *not* send back the whole model or env, because they
+        will contain all of the other agents. Also, groups should just send
+        back the group members names.
+        Only individual agents should be fully represented in the returned
+        JSON.
+        """
 
     def __json_to_object(self, serial_obj, exec_key):
+        """
+        Takes a serial JSON object back into a live Python object.
+        """
         restored_obj = dict()
         restored_groups = []
         model_deserialized = False

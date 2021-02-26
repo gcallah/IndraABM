@@ -226,7 +226,6 @@ class BarGraph():
         """
         Draw all elements of the graph.
         """
-
         self.fig, self.ax = plt.subplots()
         x = np.arange(0, data_points)
         self.create_bars(x, self.ax, varieties)

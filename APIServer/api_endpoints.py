@@ -129,7 +129,7 @@ env = api.model("env", {
 @api.route('/models/run/<int:run_time>')
 class RunModel(Resource):
     """
-    This endpoint runs the model.
+    This endpoint runs the model `run_time` periods.
     """
 
     @api.expect(env)
@@ -146,8 +146,20 @@ class RunModel(Resource):
         return json_converter(model)
 
 
+@api.route('/registry/get/<int:exec_key>')
+class GetRegistry(Resource):
+    """
+    This returns a JSON version of the registry for
+    session `exec_key` to the client.
+    """
+
+
 @api.route('/registry/clear/<int:exec_key>')
 class ClearRegistry(Resource):
+    """
+    This clears the entries for one `exec_key` out of the registry.
+    Q: What is this for?
+    """
     def get(self, exec_key):
         print("Clearing registry for key - {}".format(exec_key))
         try:

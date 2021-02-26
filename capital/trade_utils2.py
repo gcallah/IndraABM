@@ -6,8 +6,7 @@ import copy
 # import math
 
 from registry.registry import get_env
-
-DEBUG = True
+from lib.utils import Debug
 
 TRADE_STATUS = 0
 
@@ -89,7 +88,7 @@ def get_util_func(fname):
 
 
 def trade_debug(agent1, agent2, good1, good2, amt1, amt2, gain, loss):
-    if DEBUG:
+    if Debug().debug:
         print(f"       {agent1.name} is offering {amt1} of {good1} to "
               + f"{agent2.name} for {amt2} of {good2} with a "
               + f"gain of {round(gain, 2)} and "
@@ -97,12 +96,12 @@ def trade_debug(agent1, agent2, good1, good2, amt1, amt2, gain, loss):
 
 
 def trader_debug(agent):
-    if DEBUG:
+    if Debug().debug:
         print(f"{agent.name} has {goods_to_str(agent[GOODS])}")
 
 
 def offer_debug(agent, their_good, their_amt, counterparty=None):
-    if DEBUG:
+    if Debug().debug:
         if counterparty is None:
             counterparty = "Unknown"
         print(f"       {agent.name} has received an offer of {their_amt} "
@@ -303,7 +302,7 @@ class TradeState():
 
 def negotiate(trade_state):
     # return None  # just to see the effect!
-    if DEBUG:
+    if Debug().debug:
         print(f"   {trade_state.trader1.name} is entering "
               + "negotiations with " +
               f"{trade_state.trader2.name}")
@@ -415,18 +414,18 @@ def send_offer(trader2, their_good, their_amt, counterparty, comp=False):
                     if "trade_count" in trader2["goods"][item]:
                         counterparty["goods"][my_good]["trade_count"] += 1
                         counterparty["goods"][their_good]["trade_count"] += 1
-                    if DEBUG:
+                    if Debug().debug:
                         print("RESULT:", trader2.name, "accepts the offer\n")
                     return (ACCEPT, my_good)
                 else:
-                    if DEBUG:
+                    if Debug().debug:
                         print("RESULT:", trader2.name, "rejects the offer\n")
                     return (REJECT, my_good)
             else:
                 return (INADEQ, 2 *
                         get_lowest(trader2, my_good, their_good, False),
                         my_good)
-    if DEBUG:
+    if Debug().debug:
         print(f"{trader2} is rejecting all offers of {their_good}")
     return (REJECT, 0)
 
@@ -438,7 +437,7 @@ def send_reply(trader1, my_good, my_amt, their_good, their_amt, comp=False):
     # offer_debug(trader1, their_good, their_amt)
     gain = utility_delta(trader1, their_good, their_amt)
     loss = utility_delta(trader1, my_good, -my_amt)
-    if DEBUG:
+    if Debug().debug:
         print(f"       {trader1.name} is evaluating the offer with gain: " +
               f"{round(gain, 2)}, loss: {round(loss, 2)}")
     if comp:

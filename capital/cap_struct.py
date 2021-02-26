@@ -11,8 +11,6 @@ from lib.model import Model, MBR_CREATOR, NUM_MBRS, MBR_ACTION
 from lib.model import NUM_MBRS_PROP, COLOR
 
 MODEL_NAME = "capital"
-DEBUG = False  # turns debugging code on or off
-DEBUG2 = False  # turns deeper debugging code on or off
 
 DEF_NUM_ENTR = 10
 DEF_NUM_RHOLDER = 10

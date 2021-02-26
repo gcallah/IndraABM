@@ -5,10 +5,9 @@ This is the Adam Smith fashion model.
 # from lib.agent import MOVE
 from lib.display_methods import BLUE, DARKRED, NAVY, RED
 from lib.model import COLOR, MBR_ACTION, NUM_MBRS, NUM_MBRS_PROP, Model
+from lib.utils import Debug
 
 # from registry.registry import get_model
-
-DEBUG = False
 
 MODEL_NAME = "fashion"
 DEF_NUM_TSETTERS = 5
@@ -19,7 +18,7 @@ def fashion_action(agent, **kwargs):
     """
     A simple default agent action
     """
-    if DEBUG:
+    if Debug().debug:
         print("Agent", str(agent), "is acting.")
 
     # model = get_model(agent.exec_key)
