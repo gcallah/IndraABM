@@ -324,6 +324,31 @@ def negotiate(trade_state):
         if trade_state.status == REJECT:
             break
     """
+    while trade_state.status == INADEQ:
+        # if trade is accpetable for both sides
+        trade1_gain = utility_delta(trade_state.trader1,
+                                    trade_state.good2, trade_state.amt2)
+        trade1_loss = utility_delta(trade_state.trader1,
+                                    trade_state.good1, -trade_state.amt1)
+
+        trade2_gain = utility_delta(trade_state.trader2,
+                                    trade_state.good1, trade_state.amt1)
+        trade2_loss = utility_delta(trade_state.trader2,
+                                    trade_state.good2, -trade_state.amt2)
+
+        trade1_tamt = trade_state.trader1[GOODS][trade_state.good1][AMT_AVAIL]
+
+        if trade1_gain >= trade1_loss and trade2_gain > trade2_loss:
+            trade_state.status = ACCEPT
+        elif (trade_state.amt1 + 1) < trade1_tamt:
+            trade_state.amt1 += 1
+            trade_state.swap_traders()
+            negotiate(trade_state)
+            trade_state.swap_traders()
+        else:
+            trade_state.status = REJECT
+        if trade_state.status == REJECT:
+            break
 
     return trade_state
 
@@ -331,7 +356,16 @@ def negotiate(trade_state):
 def seek_a_trade(agent, comp=False):
     nearby_agent = get_env(exec_key=agent.exec_key).get_closest_agent(agent)
     if nearby_agent is not None:
-        return negotiate(TradeState(agent, nearby_agent))
+        cur_trade = TradeState(agent, nearby_agent)
+        cur_trade.good1 = random.choice([good for good in
+                                         list(cur_trade.trader1["goods"]) if
+                                         cur_trade.trader1
+                                         [GOODS][good][AMT_AVAIL] != 0])
+        cur_trade.good2 = random.choice([good for good in
+                                         list(cur_trade.trader2["goods"]) if
+                                         cur_trade.trader2
+                                         [GOODS][good][AMT_AVAIL] != 0])
+        return negotiate(cur_trade)
     else:
         return NO_TRADER
 
