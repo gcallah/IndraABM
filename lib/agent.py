@@ -183,6 +183,8 @@ class Agent(object):
                  prim_group=None, serial_obj=None, exec_key=None, **kwargs):
         from registry.registry import reg_agent
         if serial_obj is not None:
+            # We've moved the registering of restored objects into the registry
+            # itself.
             self.restore(serial_obj)
         else:  # or build it anew:
             self.exec_key = exec_key
