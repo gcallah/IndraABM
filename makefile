@@ -6,6 +6,7 @@ BOX_DIR = bigbox
 BOX_DATA = $(BOX_DIR)/data
 BOXPLOTS = $(shell ls $(BOX_DATA)/plot*.pdf)
 DOCKER_DIR = docker
+DOCUMENTATION_DIR = docs
 REQ_DIR = $(DOCKER_DIR)
 REPO = IndraABM
 MODELS_DIR = models
@@ -111,6 +112,21 @@ prod_container: $(DOCKER_DIR)/Deployable $(DOCKER_DIR)/requirements.txt
 deploy_container: prod_container
 	docker push gcallah/$(REPO):latest
 
+# extract docstrings from the library, exclude tests
+docs:
+	# Clean the documentation library
+	mkdir -p $(DOCUMENTATION_DIR)
+	cd $(DOCUMENTATION_DIR) ;\
+	rm -rf * ;\
+	mkdir lib models
+
+	# Generate documentation for the library
+	cd $(DOCUMENTATION_DIR)/lib ;\
+	pydoc3 -w `find ../../$(LIB_DIR) -name '*.py' -not -name '__init__.py' | grep -v tests`
+
+	# Generate documentation for models
+	cd $(DOCUMENTATION_DIR)/models ;\
+	pydoc3 -w `find ../../$(MODELS_DIR) -name '*.py' -not -name '__init__.py' | grep -v tests`
 
 nocrud:
 	-rm *~
@@ -119,3 +135,5 @@ nocrud:
 	-rm .*swp
 	-rm *.csv
 	-rm models/.coverage
+
+.PHONY: pydoc
