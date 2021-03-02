@@ -47,12 +47,14 @@ $(MODEL_REGISTRY)/%_model.json: $(MODELS_DIR)/%.py
 models.json: $(MODELJSON_FILES)
 	python3 json_combiner.py $? --models_fp $(JSON_DESTINATION)
 
-prod_env: FORCE
+prod_pkgs: FORCE
 	pip3 install -r $(REQ_DIR)/requirements.txt
 
-dev_env: FORCE
-	./setup.sh .bashrc  # change to .bash_profile for Mac!
+dev_pkgs: FORCE
 	pip3 install -r $(REQ_DIR)/requirements-dev.txt
+
+dev_env: dev_pkgs
+	./setup.sh .bashrc  # change to .bash_profile for Mac!
 	git submodule init $(UTILS_DIR)
 	git submodule update $(UTILS_DIR)
 
