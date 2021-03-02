@@ -4,7 +4,7 @@ This module contains the code for the base class of all Indra models.
 import os
 import json
 
-from lib.utils import init_props
+from lib.utils import init_props, Debug
 from lib.agent import Agent, DONT_MOVE, switch, AgentEncoder
 from lib.group import Group
 from lib.env import Env
@@ -14,7 +14,6 @@ from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
 from registry import registry
 
-DEBUG = False  # turns debugging code on or off
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
@@ -36,7 +35,7 @@ def def_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    if DEBUG:
+    if Debug().debug_lib:
         print("Agent {} is acting".format(agent.name))
     return DONT_MOVE
 
@@ -281,11 +280,11 @@ class Model():
             self.period += 1
 
             # now we call upon the env to act:
-            if DEBUG:
+            if Debug().debug_lib:
                 print("From model, calling env to act.")
             (num_acts, num_moves) = self.env()
             census_rpt = self.rpt_census(num_acts, num_moves)
-            if DEBUG:
+            if Debug().debug_lib:
                 print(census_rpt)
             self.user.tell(census_rpt)
             # these things need to be done before action loop:

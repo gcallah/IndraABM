@@ -23,8 +23,7 @@ import json
 import types
 from lib.agent import Agent
 from lib.env import Env
-
-DEBUG = False
+from lib.utils import Debug
 
 BILLION = 10 ** 9
 
@@ -385,7 +384,7 @@ class Registry(object):
         Remove an execution environment from the registry.
         """
         if self.__does_key_exists(key):
-            if DEBUG:
+            if Debug().debug_lib:
                 print("Clearing exec env {} from registry".format(key))
             del self.registries[key]
             if isfile(self.__get_reg_file_name(key)):
