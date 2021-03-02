@@ -73,6 +73,7 @@ submods:
 # add notebooks back in as target once debugged!
 prod: local pytests github
 
+# how do we trigger heroku reload of requirements?
 heroku:
 	git push heroku master
 
