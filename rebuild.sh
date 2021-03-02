@@ -9,7 +9,7 @@ git pull origin master
 # activate our virtual env:
 source /home/IndraABM/.virtualenvs/indra-virtualenv/bin/activate
 # install all of our packages:
-pip install -r requirements.txt
+make prod_env
 echo "Going to reboot the webserver"
 API_TOKEN=1bd1d39b21de527564c04430402fe8eae3b2825b $RELOAD IndraABM.pythonanywhere.com
 touch reboot
