@@ -7,7 +7,7 @@ BOX_DATA = $(BOX_DIR)/data
 BOXPLOTS = $(shell ls $(BOX_DATA)/plot*.pdf)
 DOCKER_DIR = docker
 DOCUMENTATION_DIR = docs
-REQ_DIR = $(DOCKER_DIR)
+REQ_DIR = .
 REPO = IndraABM
 MODELS_DIR = models
 NB_DIR = notebooks
@@ -49,6 +49,7 @@ models.json: $(MODELJSON_FILES)
 
 dev_env: FORCE
 	./setup.sh .bashrc  # change to .bash_profile for Mac!
+	pip3 install -r $(REQ_DIR)/requirements-dev.txt
 	git submodule init $(UTILS_DIR)
 	git submodule update $(UTILS_DIR)
 
@@ -99,11 +100,11 @@ lint: $(patsubst %.py,%.pylint,$(PYTHONFILES))
 	$(PYLINT) $(PYLINTFLAGS) $*.py
 
 # dev container has dev tools
-dev_container: $(DOCKER_DIR)/Dockerfile $(DOCKER_DIR)/requirements.txt $(DOCKER_DIR)/requirements-dev.txt
+dev_container: $(DOCKER_DIR)/Dockerfile $(REQ_DIR)/requirements.txt $(REQ_DIR)/requirements-dev.txt
 	docker build -t gcallah/$(REPO)-dev docker
 
 # prod container has only what's needed to run
-prod_container: $(DOCKER_DIR)/Deployable $(DOCKER_DIR)/requirements.txt
+prod_container: $(DOCKER_DIR)/Deployable $(REQ_DIR)/requirements.txt
 	docker system prune -f
 	docker build -t gcallah/$(REPO) docker --no-cache --build-arg repo=$(REPO) -f $(DOCKER_DIR)/Deployable
 

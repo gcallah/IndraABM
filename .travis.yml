@@ -7,7 +7,7 @@ services:
     - docker
 
 install:
-    - pip install -r requirements/requirements-dev.txt
+    - pip install -r requirements-dev.txt
     - sudo apt-get update
     - sudo apt-get install sshpass
 
