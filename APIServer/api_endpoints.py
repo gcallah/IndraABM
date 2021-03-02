@@ -14,6 +14,8 @@ from APIServer.props_api import get_props
 from APIServer.model_api import run_model, create_model
 from lib.user import APIUser
 
+HEROKU_PORT = 1643
+
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
@@ -172,4 +174,4 @@ class ClearRegistry(Resource):
 
 if __name__ == "__main__":
     logging.warning("Warning: you should use api.sh to run the server.")
-    app.run(host="127.0.0.1", port=8000, debug=True)
+    app.run(port=HEROKU_PORT, debug=True)

@@ -135,18 +135,6 @@ class ElFarol(Model):
     The El Farol bar: a great place to be, unless everyone else goes there
     also!
     """
-    # def handle_props(self, props):
-    #     """
-    #     overidding pop_hist
-    #     """
-    #     super().handle_props(props)
-    #     num_mbrs = self.props.get("population")
-    #     at_bar = num_mbrs // 2
-    #     at_home = num_mbrs - at_bar
-    #     self.grp_struct[AT_BAR]["num_mbrs"] = at_bar
-    #     self.grp_struct[AT_HOME]["num_mbrs"] = at_home
-    #     global mem_capacity
-    #     mem_capacity = self.props.get("memory", DEF_MEM_CAPACITY)
 
 
 def create_model(serial_obj=None, props=None):
