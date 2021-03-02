@@ -72,9 +72,8 @@ submods:
 # add notebooks back in as target once debugged!
 prod: local pytests github
 
-# run tests then push just what is already committed:
-prod1: tests
-	git push origin master
+heroku:
+	git push heroku master
 
 tests: pytests 
 
