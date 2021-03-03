@@ -24,9 +24,9 @@ after_success:
     - ./deploy.sh
 
 deploy:
-    provider: heroku:git
-    # ⋮
-    edge: true
+    - provider: heroku:git
+      api_key⋮ $HEROKU_API_KEY
+      edge: true
 
 notifications:
   slack: indras-net:QlnWeHMOpmEHCGJfG3SndDTr
