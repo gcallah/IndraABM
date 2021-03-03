@@ -24,7 +24,7 @@ after_success:
     - ./deploy.sh
 
 deploy:
-    provider: HEROKU
+    provider: heroku:git
     # ⋮
     edge: true
 
