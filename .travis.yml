@@ -27,6 +27,7 @@ after_success:
 deploy:
     - provider: heroku
       api_key: $HEROKU_API_KEY
+      app: indraabm
 
 notifications:
     slack: indras-net:QlnWeHMOpmEHCGJfG3SndDTr
