@@ -24,9 +24,8 @@ after_success:
     - ./deploy.sh
 
 deploy:
-    provider: heroku:git
-    api_key⋮
-        secure: $HEROKU_API_KEY
+    - provider: heroku
+      api_key⋮ $HEROKU_API_KEY
 
 notifications:
   slack: indras-net:QlnWeHMOpmEHCGJfG3SndDTr
