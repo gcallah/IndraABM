@@ -23,5 +23,10 @@ script:
 after_success:
     - ./deploy.sh
 
+deploy:
+    provider: HEROKU
+    # ⋮
+    edge: true
+
 notifications:
   slack: indras-net:QlnWeHMOpmEHCGJfG3SndDTr
