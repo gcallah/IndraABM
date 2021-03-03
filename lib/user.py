@@ -77,14 +77,18 @@ def bar_graph(user, update=False):
     return get_model(user.exec_key).bar_graph()
 
 
+def view_model(user, update=False):
+    from registry.registry import get_model
+    return user.debug(repr(get_model(user.exec_key)))
+
+
 menu_functions = {
     "run": run,
     "leave": leave,
     "scatter_plot": scatter_plot,
     "line_graph": line_graph,
     "bar_graph": bar_graph,
-    # "debug": debug,
-    # "logs": not_impl,
+    "view_model": view_model,
 }
 
 
@@ -243,6 +247,7 @@ class TermUser(User):
                         elif item["func"] == "scatter_plot":
                             self.show_scatter_plot = True
                             self.show_line_graph = False
+                            self.show_bar_graph = False
                         elif item["func"] == "bar_graph":
                             self.show_bar_graph = True
                             self.show_line_graph = False
@@ -314,8 +319,6 @@ class APIUser(User):
         menu = get_menu_json()
         if menu_id is None:
             return menu
-        # else:
-        #     return menu_functions[menu[menu_id]["func"]](self)
 
     def to_json(self):
         return {"user_msgs": self.user_msgs,

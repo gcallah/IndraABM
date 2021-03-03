@@ -22,18 +22,13 @@
         },
         {
             "id": 5,
-            "func": "debug",
+            "func": "view_model",
             "question": "Examine model data"
         },
         {
             "id": 6,
             "func": "source",
             "question": "View the source code"
-        },
-        {
-            "id": 7,
-            "func": "logs",
-            "question": "View log"
         },
         {
             "id": 0,
