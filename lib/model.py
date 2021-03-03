@@ -290,8 +290,21 @@ class Model():
             # these things need to be done before action loop:
             self.handle_switches()
             self.update_pop_hist()
-            # self.handle_womb()
+            self.handle_womb()
         return num_acts
+
+    def handle_womb(self):
+        """
+        This method adds new agents from the womb.
+        """
+        self.env.handle_womb()
+
+    def add_child(self, group):
+        """
+        Put a child agent in the womb.
+        group: which group will add new agent
+        """
+        self.env.add_child(group)
 
     def update_pop_hist(self):
         """
