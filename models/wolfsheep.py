@@ -3,7 +3,7 @@ from lib.display_methods import TAN, GRAY
 from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
 from lib.utils import Debug
 from lib.space import get_num_of_neighbors, get_neighbor
-from registry.registry import get_model, get_exec_key
+from registry.registry import get_model
 
 MODEL_NAME = "wolfsheep"
 
