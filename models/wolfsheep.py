@@ -3,6 +3,7 @@ from lib.display_methods import TAN, GRAY
 from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
 from lib.utils import Debug
 from lib.space import get_num_of_neighbors, get_neighbor
+from registry.registry import get_model, get_exec_key
 
 MODEL_NAME = "wolfsheep"
 
@@ -21,6 +22,9 @@ WOLF_REPRO_PERIOD = 2
 SHEEP_LIFESPAN = 8
 SHEEP_REPRO_PERIOD = 2
 
+TIME_TO_REPRODUCE = "time_to_repr"
+TIME_TO_REPRODUCE_DEFAULT_VAL = 10
+
 
 def sheep_action(agent, **kwargs):
 
@@ -30,20 +34,27 @@ def sheep_action(agent, **kwargs):
         return DONT_MOVE
 
     # Initialize the attribute
-    if agent.get_attr("ttr") is None:
-        agent.set_attr("ttr", 10)
+    if agent.get_attr(TIME_TO_REPRODUCE) is None:
+        agent.set_attr(TIME_TO_REPRODUCE, TIME_TO_REPRODUCE_DEFAULT_VAL)
 
     # Decrease ttr
-    agent.set_attr("ttr", agent.get_attr("ttr") - 1)
+    agent.set_attr(TIME_TO_REPRODUCE, agent.get_attr(TIME_TO_REPRODUCE) - 1)
 
     # Check neighbor count
     if get_num_of_neighbors(agent, size=10) > TOO_CROWDED:
         agent.duration -= CROWDING_EFFECT
 
     # Check if it is time to produce
-    if agent.get_attr("ttr") == 0:
+    if agent.get_attr(TIME_TO_REPRODUCE) == 0:
         # reproduce function
-        print("Time to produce!")
+        if Debug().debug:
+            print(str(agent.name) + " is having a baby!")
+
+        # Create babies
+        get_model(agent.exec_key).add_child("sheep_")
+
+        # Reset ttr
+        agent.set_attr(TIME_TO_REPRODUCE, TIME_TO_REPRODUCE_DEFAULT_VAL)
 
     return MOVE
 
@@ -68,16 +79,23 @@ def wolf_action(agent, **kwargs):
         return DONT_MOVE
 
     # Initialize the attribute
-    if agent.get_attr("ttr") is None:
-        agent.set_attr("ttr", 10)
+    if agent.get_attr(TIME_TO_REPRODUCE) is None:
+        agent.set_attr(TIME_TO_REPRODUCE, TIME_TO_REPRODUCE_DEFAULT_VAL)
 
     # Decrease ttr
-    agent.set_attr("ttr", agent.get_attr("ttr") - 1)
+    agent.set_attr(TIME_TO_REPRODUCE, agent.get_attr(TIME_TO_REPRODUCE) - 1)
 
     # Check if it is time to produce
-    if agent.get_attr("ttr") == 0:
+    if agent.get_attr(TIME_TO_REPRODUCE) == 0:
         # reproduce function
-        print("Time to produce!")
+        if Debug().debug:
+            print(str(agent.name) + " is having a baby!")
+
+        # Create babies
+        get_model(agent.exec_key).add_child("wolf_")
+
+        # Reset ttr
+        agent.set_attr(TIME_TO_REPRODUCE, TIME_TO_REPRODUCE_DEFAULT_VAL)
 
 
 basic_grps = {
