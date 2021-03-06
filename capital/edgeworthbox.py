@@ -85,18 +85,11 @@ class EdgeworthBox(Model):
     the system as a whole is working.
     It turns out that so far, we don't really need to subclass anything!
     """
-
     def handle_props(self, props, model_dir=None):
         super().handle_props(props, model_dir='capital')
         wine_goods["wine"][AMT_AVAIL] = self.props.get(START_WINE)
         cheese_goods["cheese"][AMT_AVAIL] = self.props.get(START_CHEESE)
-        # here the key is not registered yet, so cannot initialize the
-        # amount of cheese and wine from user input?
-        # print("here in handle_props:", self.__dict__.keys())
-        # cheesey = get_agent(CHEESE_AGENT, exec_key=self.exec_key)
-        # winey = get_agent(WINE_AGENT, exec_key=self.exec_key)
-        # cheesey[GOODS]['cheese'][AMT_AVAIL] = start_cheese
-        # winey[GOODS]['wine'][AMT_AVAIL] = start_wine
+        self.last_cheese_amt = cheese_goods["cheese"][AMT_AVAIL]
 
     def create_pop_hist(self):
         """
@@ -122,6 +115,10 @@ class EdgeworthBox(Model):
                                      cheesey[GOODS]['cheese'][AMT_AVAIL])
         self.env.pop_hist.record_pop("wine",
                                      cheesey[GOODS]['wine'][AMT_AVAIL])
+        if self.last_cheese_amt == cheesey[GOODS]['cheese'][AMT_AVAIL]:
+            print("At equilibrium")
+        else:
+            self.last_cheese_amt = cheesey[GOODS]['cheese'][AMT_AVAIL]
 
     def rpt_census(self, acts, moves):
         """
