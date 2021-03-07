@@ -141,17 +141,19 @@ def consumer_action(consumer, **kwargs):
     item_needed = consumer["item needed"]
     shop_at = get_neighbor(consumer, pred=sells_good)
     if shop_at is None:
-        return False
+        return MOVE
 
+    """
     max_util = 0.0
     curr_store_util = get_util(shop_at)
     if curr_store_util > max_util:
         max_util = curr_store_util
+    """
     transaction(shop_at, consumer)
     if DEBUG:
         print("     someone shopped at ",   shop_at)
     consumer["item needed"] = get_rand_good()
-    return False
+    return MOVE
 
 
 def transaction(store, consumer):

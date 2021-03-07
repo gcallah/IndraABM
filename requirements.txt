@@ -1,3 +1,4 @@
+gunicorn
 ipython
 matplotlib
 scipy
@@ -6,7 +7,7 @@ flask
 werkzeug==0.16.1
 flask_restplus
 flask-cors
-propargs
+propargs==0.0.16
 seaborn
 asyncio
 aiohttp

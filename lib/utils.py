@@ -11,6 +11,12 @@ DEF_MODEL_DIR = "models"
 INDRA_HOME_VAR = "INDRA_HOME"
 PA_INDRA_HOME = "/home/IndraABM/IndraABM"
 
+INDRA_DEBUG_VAR = "INDRA_DEBUG"
+INDRA_DEBUG2_VAR = "INDRA_DEBUG2"
+INDRA_DEBUG3_VAR = "INDRA_DEBUG3"
+INDRA_DEBUG_LIB_VAR = "INDRA_DEBUG_LIB"
+INDRA_DEBUG2_LIB_VAR = "INDRA_DEBUG2_LIB"
+
 
 def agent_by_name(agent):
     return agent if isinstance(agent, str) else agent.name
@@ -61,3 +67,56 @@ def init_props(model_nm, props=None, model_dir=None,
                                    skip_user_questions=skip_user_questions)
 
     return pa
+
+
+class Debug:
+    """
+    Reads the environment variable to decide on enabling debug outputs
+    """
+    def get_env_var(self, var_name):
+        env_var = os.getenv(var_name)
+
+        # Return false if the environment variable is not set at all
+        if env_var is None:
+            return False
+
+        # Accept different styles of writing true
+        if env_var.lower() == 'true' or env_var == '1':
+            return True
+        else:
+            return False
+
+    @property
+    def debug(self):
+        """
+        Simple debugging level
+        """
+        return self.get_env_var(INDRA_DEBUG_VAR)
+
+    @property
+    def debug2(self):
+        """
+        Deeper debugging level
+        """
+        return self.get_env_var(INDRA_DEBUG2_VAR)
+
+    @property
+    def debug3(self):
+        """
+        Deepest debugging level
+        """
+        return self.get_env_var(INDRA_DEBUG3_VAR)
+
+    @property
+    def debug_lib(self):
+        """
+        Switches debugging for the library modules
+        """
+        return self.get_env_var(INDRA_DEBUG_LIB_VAR)
+
+    @property
+    def debug2_lib(self):
+        """
+        Switches debugging for the library modules
+        """
+        return self.get_env_var(INDRA_DEBUG2_LIB_VAR)

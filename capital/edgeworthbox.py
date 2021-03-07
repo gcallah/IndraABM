@@ -10,11 +10,9 @@ from lib.display_methods import RED, BLUE
 from lib.model import Model, NUM_MBRS, MBR_CREATOR, MBR_ACTION, COLOR
 from lib.env import PopHist
 from registry.registry import get_agent
-from capital.trade_utils import GEN_UTIL_FUNC, UTIL_FUNC, AMT_AVAIL
-from capital.trade_utils import seek_a_trade
-
-DEBUG = True
-DEBUG2 = False
+from capital.trade_utils2 import GEN_UTIL_FUNC, UTIL_FUNC, AMT_AVAIL
+from capital.trade_utils2 import seek_a_trade
+from lib.utils import Debug
 
 MODEL_NAME = "edgeworthbox"
 DEF_WINE_MBRS = 1
@@ -87,18 +85,11 @@ class EdgeworthBox(Model):
     the system as a whole is working.
     It turns out that so far, we don't really need to subclass anything!
     """
-
     def handle_props(self, props, model_dir=None):
         super().handle_props(props, model_dir='capital')
         wine_goods["wine"][AMT_AVAIL] = self.props.get(START_WINE)
         cheese_goods["cheese"][AMT_AVAIL] = self.props.get(START_CHEESE)
-        # here the key is not registered yet, so cannot initialize the
-        # amount of cheese and wine from user input?
-        # print("here in handle_props:", self.__dict__.keys())
-        # cheesey = get_agent(CHEESE_AGENT, exec_key=self.exec_key)
-        # winey = get_agent(WINE_AGENT, exec_key=self.exec_key)
-        # cheesey[GOODS]['cheese'][AMT_AVAIL] = start_cheese
-        # winey[GOODS]['wine'][AMT_AVAIL] = start_wine
+        self.last_cheese_amt = cheese_goods["cheese"][AMT_AVAIL]
 
     def create_pop_hist(self):
         """
@@ -117,13 +108,17 @@ class EdgeworthBox(Model):
         Directly accessing self.env.pop_hist breaks encapsulation.
         But that's OK since we plan to move pop_hist into model.
         """
-        if DEBUG2:
+        if Debug().debug2:
             print(repr(self))
         cheesey = get_agent(CHEESE_AGENT, exec_key=self.exec_key)
         self.env.pop_hist.record_pop("cheese",
                                      cheesey[GOODS]['cheese'][AMT_AVAIL])
         self.env.pop_hist.record_pop("wine",
                                      cheesey[GOODS]['wine'][AMT_AVAIL])
+        if self.last_cheese_amt == cheesey[GOODS]['cheese'][AMT_AVAIL]:
+            print("At equilibrium")
+        else:
+            self.last_cheese_amt = cheesey[GOODS]['cheese'][AMT_AVAIL]
 
     def rpt_census(self, acts, moves):
         """

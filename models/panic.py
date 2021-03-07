@@ -8,11 +8,10 @@ from lib.display_methods import RED, GREEN
 from lib.model import Model, MBR_ACTION, NUM_MBRS, COLOR, GRP_ACTION
 from registry.registry import get_model, get_agent
 import random as rand
+from lib.utils import Debug
 
 MODEL_NAME = "panic"
 PANICKED = "panicked"
-DEBUG = False  # turns debugging code on or off
-DEBUG2 = False  # turns deeper debugging code on or off
 
 DEF_DIM = 10
 WIDTH = "width"
@@ -34,7 +33,7 @@ def agent_action(agent, **kwargs):
     """
     This is what agents do each turn of the model.
     """
-    if DEBUG2:
+    if Debug().debug:
         print("The agent is called", agent)
     global first_period
     if first_period:
@@ -44,7 +43,7 @@ def agent_action(agent, **kwargs):
         ratio = neighbor_ratio(agent,
                                lambda agent: agent.group_name() == PANIC)
         if ratio > THRESHHOLD:
-            if DEBUG2:
+            if Debug().debug:
                 print("Changing the agent's group to panic!")
             agent.has_acted = True
             get_model(agent.exec_key).add_switch(str(agent), CALM, PANIC)
@@ -87,7 +86,7 @@ class Panic(Model):
         grid_height = self.props.get("grid_height")
         grid_width = self.props.get("grid_width")
         num_agents = (grid_height * grid_width)
-        if DEBUG2:
+        if Debug().debug:
             print("The grid dimencions are", grid_height * grid_width)
             print("The number of agents is", num_agents)
         ratio_panic = self.props.get("pct_panic") / 100

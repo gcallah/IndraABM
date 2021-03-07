@@ -13,10 +13,7 @@ import pickle
 import numpy as np
 # from typing import Callable
 
-from lib.utils import get_func_name
-
-DEBUG = False  # turns debugging code on or off
-DEBUG2 = False  # turns deeper debugging code on or off
+from lib.utils import get_func_name, Debug
 
 # x and y indices
 X = 0
@@ -133,22 +130,22 @@ def switch(agent_nm, grp1_nm, grp2_nm, exec_key):
     from registry.registry import get_agent
     agent = get_agent(agent_nm, exec_key)
     if agent is None:
-        if DEBUG:
+        if Debug().debug_lib:
             print("In switch; could not find agent: " + str(agent))
         return
     grp1 = get_agent(grp1_nm, exec_key)
     if grp1 is None:
-        if DEBUG:
+        if Debug().debug_lib:
             print("In switch; could not find from group: " + str(grp1))
         return
     grp2 = get_agent(grp2_nm, exec_key)
     if grp2 is None:
-        if DEBUG:
+        if Debug().debug_lib:
             print("In switch; could not find to group: " + str(grp2))
         return
     split_em = split(grp1, agent)
     joined_em = join(grp2, agent)
-    if DEBUG and split_em and joined_em:
+    if Debug().debug_lib and split_em and joined_em:
         print("Switched agent " + str(agent)
               + " from grp " + grp1_nm
               + "(id: " + str(id(grp1)) + ")"
@@ -183,6 +180,8 @@ class Agent(object):
                  prim_group=None, serial_obj=None, exec_key=None, **kwargs):
         from registry.registry import reg_agent
         if serial_obj is not None:
+            # We've moved the registering of restored objects into the registry
+            # itself.
             self.restore(serial_obj)
         else:  # or build it anew:
             self.exec_key = exec_key
@@ -226,7 +225,7 @@ class Agent(object):
         self.from_json(serial_obj)
 
     def __pickle_func(self, pickle_file: str, func):
-        if DEBUG:
+        if Debug().debug_lib:
             print("Pickling to: {}".format(pickle_file))
         with open(pickle_file, 'wb') as file:
             pickle.dump(func, file)
@@ -396,7 +395,7 @@ class Agent(object):
                         angle = self["angle"]
                     self.move(max_move=max_move, angle=angle)
                     moved = True
-            elif DEBUG2:
+            elif Debug().debug2_lib:
                 print("I'm " + self.name
                       + " and I have no action!")
         else:

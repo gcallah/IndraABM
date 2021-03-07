@@ -10,8 +10,7 @@ import os
 from functools import wraps
 
 from lib.user import API, TERMINAL
-
-DEBUG = False  # turns debugging code on or off
+from lib.utils import Debug
 
 plt_present = True
 plt_present_error_message = ""
@@ -190,7 +189,7 @@ def draw_graph(graph, title, hierarchy=False, root=None):
 def get_color(var, i):
     if "color" in var:
         # Make sure it's a valid color
-        if DEBUG:
+        if Debug().debug_lib:
             print("Checking to see if {} is in {}".format(var["color"],
                                                           colors))
         if var["color"] in colors:
@@ -226,7 +225,6 @@ class BarGraph():
         """
         Draw all elements of the graph.
         """
-
         self.fig, self.ax = plt.subplots()
         x = np.arange(0, data_points)
         self.create_bars(x, self.ax, varieties)
@@ -483,7 +481,7 @@ class ScatterPlot():
     def create_scats(self, varieties):
         self.scats = pd.DataFrame(columns=["x", "y", "color", "marker", "var"])
         for i, var in enumerate(varieties):
-            if DEBUG:
+            if Debug().debug_lib:
                 print("Appending {} to legend".format(var))
             self.legend.append(var)
             (x_array, y_array) = self.get_arrays(varieties, var)

@@ -10,6 +10,8 @@ from lib.display_methods import RED, BLUE
 from lib.model import Model, NUM_MBRS, MBR_ACTION
 from lib.model import COLOR, MBR_CREATOR
 from registry.registry import get_model
+from lib.utils import Debug
+
 AT_HOME = "At home"
 AT_BAR = "At bar"
 
@@ -20,7 +22,6 @@ DEF_MOTIV = 0.6
 MOTIV = "motivation"
 BAR_ATTEND = "bar attendees"
 HALF_FULL = .5
-DEBUG = False
 OPT_OCUPANCY = 0.6
 MEMORY = 'memory'
 DEF_MEM_CAPACITY = 7  # Must be an integer
@@ -65,7 +66,7 @@ def memory_check(agent):
     w_sum = weighted_sum(mem_attendance)
     total = add_up_to(len(mem_attendance))
     percent_full = w_sum / total
-    if DEBUG:
+    if Debug().debug:
         print("Percent empty:", 1 - percent_full)
     return percent_full
 
@@ -76,7 +77,7 @@ def drinker_action(agent, **kwargs):
     The decision is based on the agent's memory of how crowded the
     bar has been recently (a parameter).
     """
-    if DEBUG:
+    if Debug().debug:
         print("Alcoholic {} is located at {}".format(agent.name,
                                                      agent.get_pos()))
     bar = get_model(agent.exec_key)
@@ -134,18 +135,6 @@ class ElFarol(Model):
     The El Farol bar: a great place to be, unless everyone else goes there
     also!
     """
-    # def handle_props(self, props):
-    #     """
-    #     overidding pop_hist
-    #     """
-    #     super().handle_props(props)
-    #     num_mbrs = self.props.get("population")
-    #     at_bar = num_mbrs // 2
-    #     at_home = num_mbrs - at_bar
-    #     self.grp_struct[AT_BAR]["num_mbrs"] = at_bar
-    #     self.grp_struct[AT_HOME]["num_mbrs"] = at_home
-    #     global mem_capacity
-    #     mem_capacity = self.props.get("memory", DEF_MEM_CAPACITY)
 
 
 def create_model(serial_obj=None, props=None):

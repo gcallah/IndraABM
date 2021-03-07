@@ -6,7 +6,8 @@ BOX_DIR = bigbox
 BOX_DATA = $(BOX_DIR)/data
 BOXPLOTS = $(shell ls $(BOX_DATA)/plot*.pdf)
 DOCKER_DIR = docker
-REQ_DIR = $(DOCKER_DIR)
+DOCUMENTATION_DIR = docs
+REQ_DIR = .
 REPO = IndraABM
 MODELS_DIR = models
 NB_DIR = notebooks
@@ -46,10 +47,26 @@ $(MODEL_REGISTRY)/%_model.json: $(MODELS_DIR)/%.py
 models.json: $(MODELJSON_FILES)
 	python3 json_combiner.py $? --models_fp $(JSON_DESTINATION)
 
-dev_env: FORCE
-	./setup.sh .bashrc  # change to .bash_profile for Mac!
+prod_pkgs: FORCE
+	pip3 install -r $(REQ_DIR)/requirements.txt
+
+dev_pkgs: FORCE
+	pip3 install -r $(REQ_DIR)/requirements-dev.txt
+
+submod: FORCE
 	git submodule init $(UTILS_DIR)
 	git submodule update $(UTILS_DIR)
+
+mac_dev_env: dev_pkgs submod
+	./setup.sh .bash_profile
+
+linux_dev_env: dev_pkgs submod
+	./setup.sh .bashrc
+
+	@echo "   "
+	# To enable debugging statements while running the models, set INDRA_DEBUG 
+	# environment variable to True. Deeper levels of debugging statements can be 
+	# enabled with INDRA_DEBUG2 and INDRA_DEBUG3 environment variables.
 
 setup_react: FORCE
 	cd $(REACT_TOP); npm install
@@ -66,9 +83,9 @@ submods:
 # add notebooks back in as target once debugged!
 prod: local pytests github
 
-# run tests then push just what is already committed:
-prod1: tests
-	git push origin master
+# how do we trigger heroku reload of requirements?
+heroku:
+	git push heroku master
 
 tests: pytests 
 
@@ -94,11 +111,11 @@ lint: $(patsubst %.py,%.pylint,$(PYTHONFILES))
 	$(PYLINT) $(PYLINTFLAGS) $*.py
 
 # dev container has dev tools
-dev_container: $(DOCKER_DIR)/Dockerfile $(DOCKER_DIR)/requirements.txt $(DOCKER_DIR)/requirements-dev.txt
+dev_container: $(DOCKER_DIR)/Dockerfile $(REQ_DIR)/requirements.txt $(REQ_DIR)/requirements-dev.txt
 	docker build -t gcallah/$(REPO)-dev docker
 
 # prod container has only what's needed to run
-prod_container: $(DOCKER_DIR)/Deployable $(DOCKER_DIR)/requirements.txt
+prod_container: $(DOCKER_DIR)/Deployable $(REQ_DIR)/requirements.txt
 	docker system prune -f
 	docker build -t gcallah/$(REPO) docker --no-cache --build-arg repo=$(REPO) -f $(DOCKER_DIR)/Deployable
 
@@ -106,6 +123,21 @@ prod_container: $(DOCKER_DIR)/Deployable $(DOCKER_DIR)/requirements.txt
 deploy_container: prod_container
 	docker push gcallah/$(REPO):latest
 
+# extract docstrings from the library, exclude tests
+docs:
+	# Clean the documentation library
+	mkdir -p $(DOCUMENTATION_DIR)
+	cd $(DOCUMENTATION_DIR) ;\
+	rm -rf * ;\
+	mkdir lib models
+
+	# Generate documentation for the library
+	cd $(DOCUMENTATION_DIR)/lib ;\
+	pydoc3 -w `find ../../$(LIB_DIR) -name '*.py' -not -name '__init__.py' | grep -v tests`
+
+	# Generate documentation for models
+	cd $(DOCUMENTATION_DIR)/models ;\
+	pydoc3 -w `find ../../$(MODELS_DIR) -name '*.py' -not -name '__init__.py' | grep -v tests`
 
 nocrud:
 	-rm *~
@@ -114,3 +146,5 @@ nocrud:
 	-rm .*swp
 	-rm *.csv
 	-rm models/.coverage
+
+.PHONY: pydoc

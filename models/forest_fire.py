@@ -9,10 +9,9 @@ from lib.model import Model, MBR_ACTION, NUM_MBRS, COLOR
 from lib.agent import prob_state_trans
 from lib.space import exists_neighbor
 from registry.registry import get_model
+from lib.utils import Debug
 
 MODEL_NAME = "forest_fire"
-DEBUG = True  # turns debugging code on or off
-DEBUG2 = False  # turns deeper debugging code on or off
 
 DEF_NUM_TREES = 10
 DEF_DIM = 30
@@ -77,12 +76,12 @@ def tree_action(agent, **kwargs):
         # JSON only allows strings as dict keys
         agent.set_prim_group(GROUP_MAP[str(prob_state_trans(int(curr_state),
                                                             state_trans))])
-        if DEBUG:
+        if Debug().debug:
             if agent.group_name == NEW_FIRE:
                 print("Tree spontaneously catching fire.")
 
     if old_group != agent.group_name():
-        if DEBUG:
+        if Debug().debug:
             print(f"Add switch from {old_group} to {agent.group_name()}")
         model.add_switch(str(agent),
                          old_group,

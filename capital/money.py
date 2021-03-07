@@ -11,8 +11,8 @@ from lib.model import Model, MBR_CREATOR, NUM_MBRS, MBR_ACTION
 from lib.model import NUM_MBRS_PROP, COLOR
 from lib.env import PopHist
 # import capital.trade_utils as tu
-from capital.trade_utils import seek_a_trade, GEN_UTIL_FUNC, ACCEPT
-from capital.trade_utils import AMT_AVAIL, endow, UTIL_FUNC, TRADE_STATUS
+from capital.trade_utils2 import seek_a_trade, GEN_UTIL_FUNC, ACCEPT
+from capital.trade_utils2 import AMT_AVAIL, endow, UTIL_FUNC, TRADER1, TRADER2
 
 MODEL_NAME = "money"
 DUR = "durability"
@@ -115,23 +115,15 @@ def trader_action(agent, **kwargs):
     A simple default agent action.
     """
     outcome = seek_a_trade(agent, **kwargs)
-    # outcome = cProfile.runctx('capital.trade_utils.seek_a_trade(agent)',
-    #                           {}, {'agent': agent})
-    # debug print
-    # print("outcome is: ", outcome)
-    if outcome is not None:
-        if outcome[TRADE_STATUS] is ACCEPT:
-            # update current period's trade count in natures_good
-            natures_goods[outcome[1]][TRADE_COUNT] += \
-                agent[GOODS][outcome[1]][TRADE_COUNT]
-            natures_goods[outcome[2]][TRADE_COUNT] += \
-                agent[GOODS][outcome[2]][TRADE_COUNT]
-            # return agent's trade_count to 0
-            agent[GOODS][outcome[1]][TRADE_COUNT] = 0
-            agent[GOODS][outcome[2]][TRADE_COUNT] = 0
-            # increment every good's age by one each period
-            agent[GOODS][outcome[1]][AGE] += 1
-            agent[GOODS][outcome[2]][AGE] += 1
+    if outcome.status is ACCEPT:
+        good1 = outcome.get_good(TRADER1)
+        good2 = outcome.get_good(TRADER2)
+        # update current period's trade count in natures_good
+        natures_goods[good1][TRADE_COUNT] += 1
+        natures_goods[good2][TRADE_COUNT] += 1
+        # why do goods only age if trade is accepted?
+        agent[GOODS][good1][AGE] += 1
+        agent[GOODS][good2][AGE] += 1
     return MOVE
 
 

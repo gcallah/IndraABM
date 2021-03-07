@@ -16,7 +16,8 @@ have been ported to version 2.
 Developing and Contributing
 ---------------------------
 To configure your system for development, first install Python 3 and git and
-then run `make dev_env`. This will install some dependencies using PIP.
+then run `make linux_dev_env` (on Linux) or `make mac_dev_env` (on MacOS).
+This will set up your login and install some dependencies using `pip`.
 Follow the outputted instructions for setting your environment variables.
 
 To build the Docker container with the development environment, run
@@ -45,6 +46,10 @@ To test the APIServer with the front end locally:
     - To open test coverage of Front End in your browser, `cd` into [webapp](webapp) and run `npm run coverage`.
 
 If `ImportError: bad magic number in 'config': b'\x03\xf3\r\n'` occurs, please try to run `find . -name \*.pyc -delete` .
+
+To enable debugging statements while running the models, set `INDRA_DEBUG` 
+environment variable to `True`. Deeper levels of debugging statements
+can be enabled with `INDRA_DEBUG2` and `INDRA_DEBUG3` environment variables.  
 
 Work in Progress
 ----------------
