@@ -16,7 +16,8 @@ have been ported to version 2.
 Developing and Contributing
 ---------------------------
 To configure your system for development, first install Python 3 and git and
-then run `make dev_env`. This will install some dependencies using PIP.
+then run `make linux_dev_env` (on Linux) or `make mac_dev_env` (on MacOS).
+This will set up your login and install some dependencies using `pip`.
 Follow the outputted instructions for setting your environment variables.
 
 To build the Docker container with the development environment, run

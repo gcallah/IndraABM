@@ -53,10 +53,15 @@ prod_pkgs: FORCE
 dev_pkgs: FORCE
 	pip3 install -r $(REQ_DIR)/requirements-dev.txt
 
-dev_env: dev_pkgs
-	./setup.sh .bashrc  # change to .bash_profile for Mac!
+submod: FORCE
 	git submodule init $(UTILS_DIR)
 	git submodule update $(UTILS_DIR)
+
+mac_dev_env: dev_pkgs submod
+	./setup.sh .bash_profile
+
+linux_dev_env: dev_pkgs submod
+	./setup.sh .bashrc
 
 	@echo "   "
 	# To enable debugging statements while running the models, set INDRA_DEBUG 

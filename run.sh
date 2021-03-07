@@ -7,4 +7,5 @@ then
 fi
 
 export user_type="terminal"
+export INDRA_DEBUG=1
 python3 $@

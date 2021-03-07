@@ -115,32 +115,11 @@ def trader_action(agent, **kwargs):
     A simple default agent action.
     """
     outcome = seek_a_trade(agent, **kwargs)
-    # outcome = cProfile.runctx('capital.trade_utils.seek_a_trade(agent)',
-    #                           {}, {'agent': agent})
-    # debug print
-    # print("outcome is: ", outcome)
-    # if outcome is not None:
-    #     if outcome[TRADE_STATUS] is ACCEPT:
-    #         # update current period's trade count in natures_good
-    #         natures_goods[outcome[1]][TRADE_COUNT] += \
-    #             agent[GOODS][outcome[1]][TRADE_COUNT]
-    #         natures_goods[outcome[2]][TRADE_COUNT] += \
-    #             agent[GOODS][outcome[2]][TRADE_COUNT]
-    #         # return agent's trade_count to 0
-    #         agent[GOODS][outcome[1]][TRADE_COUNT] = 0
-    #         agent[GOODS][outcome[2]][TRADE_COUNT] = 0
-    #         # increment every good's age by one each period
-    #         agent[GOODS][outcome[1]][AGE] += 1
-    #         agent[GOODS][outcome[2]][AGE] += 1
     if outcome.status is ACCEPT:
         print(outcome.good1, outcome.good2, outcome.amt1, outcome.amt2)
         # update current period's trade count in natures_good
         natures_goods[outcome.good1][TRADE_COUNT] += 1
         natures_goods[outcome.good2][TRADE_COUNT] += 1
-        # # return agent's trade_count to 0
-        # agent[GOODS][outcome.good1][TRADE_COUNT] = 0
-        # agent[GOODS][outcome.good2][TRADE_COUNT] = 0
-        # increment every good's age by one each period
         agent[GOODS][outcome.good1][AGE] += 1
         agent[GOODS][outcome.good2][AGE] += 1
     return MOVE
