@@ -37,7 +37,7 @@ class HelloWorld(Resource):
 class NewEndPoint(Resource):
 	def get(self):
 		"""
-		The newly created endpoint just to see if we working
+		The newly created endpoint just to see if we working.
 		"""
 		return {'Yes we' : 'are working'}
 
