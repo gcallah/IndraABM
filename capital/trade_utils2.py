@@ -307,6 +307,9 @@ class TradeState():
                         {"trader": trader2, "good": good2, "amt": amt2},
                        ]
 
+    def get_good(self, which_side):
+        return self.traders[which_side]["good"]
+
     def __str__(self):
         return (f"Trade between {str(self.traders[TRADER1]['trader'])} "
                 + f"and {str(self.traders[TRADER2]['trader'])} "

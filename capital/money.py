@@ -12,7 +12,7 @@ from lib.model import NUM_MBRS_PROP, COLOR
 from lib.env import PopHist
 # import capital.trade_utils as tu
 from capital.trade_utils2 import seek_a_trade, GEN_UTIL_FUNC, ACCEPT
-from capital.trade_utils2 import AMT_AVAIL, endow, UTIL_FUNC
+from capital.trade_utils2 import AMT_AVAIL, endow, UTIL_FUNC, TRADER1, TRADER2
 
 MODEL_NAME = "money"
 DUR = "durability"
@@ -116,12 +116,14 @@ def trader_action(agent, **kwargs):
     """
     outcome = seek_a_trade(agent, **kwargs)
     if outcome.status is ACCEPT:
-        print(outcome.good1, outcome.good2, outcome.amt1, outcome.amt2)
+        good1 = outcome.get_good(TRADER1)
+        good2 = outcome.get_good(TRADER2)
         # update current period's trade count in natures_good
-        natures_goods[outcome.good1][TRADE_COUNT] += 1
-        natures_goods[outcome.good2][TRADE_COUNT] += 1
-        agent[GOODS][outcome.good1][AGE] += 1
-        agent[GOODS][outcome.good2][AGE] += 1
+        natures_goods[good1][TRADE_COUNT] += 1
+        natures_goods[good2][TRADE_COUNT] += 1
+        # why do goods only age if trade is accepted?
+        agent[GOODS][good1][AGE] += 1
+        agent[GOODS][good2][AGE] += 1
     return MOVE
 
 
