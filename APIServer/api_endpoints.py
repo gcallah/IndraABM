@@ -148,6 +148,18 @@ class RunModel(Resource):
         return json_converter(model)
 
 
+@api.route('/models/props/<int:execution_id><string:agent_name>')
+class Agent(Resource):
+    """
+    This endpoint gets an agent given exec id and agent name
+    """
+    def get(self, execution_id, agent_name):
+        """
+        Get agent from registry
+        """
+        return get_agent(agent_name, execution_id)
+
+
 @api.route('/registry/get/<int:exec_key>')
 class GetRegistry(Resource):
     """
