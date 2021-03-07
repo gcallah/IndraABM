@@ -31,6 +31,14 @@ class HelloWorld(Resource):
         """
         return {'hello': 'world'}
 
+@api.route('/newendpoint')
+class NewEndPoint(Resource):
+	def get(self):
+		"""
+		The newly created endpoint just to see if we working
+		"""
+		return {'Yes we' : 'are working'}
+
 
 @api.route('/endpoints')
 class Endpoints(Resource):
