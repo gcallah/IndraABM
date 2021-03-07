@@ -115,7 +115,7 @@ def trader_action(agent, **kwargs):
     A simple default agent action.
     """
     outcome = seek_a_trade(agent, **kwargs)
-    if outcome is ACCEPT:
+    if outcome.status is ACCEPT:
         print(outcome.good1, outcome.good2, outcome.amt1, outcome.amt2)
         # update current period's trade count in natures_good
         natures_goods[outcome.good1][TRADE_COUNT] += 1

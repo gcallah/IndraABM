@@ -407,7 +407,7 @@ def seek_a_trade(agent, comp=False):
         trade = negotiate(trade)
         if trade.status == ACCEPT:
             exec_trade(trade)
-        return trade.status
+        return trade
     else:
         return NO_TRADER
 
