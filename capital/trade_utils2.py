@@ -176,11 +176,12 @@ def transfer(to_goods, from_goods, good_nm, amt=None, comp=False):
 
 
 # a little test data for `get_rand_good()`:
-TEST_GOODS_DICT = {"sugar": {AMT_AVAIL: 10},
-                   "honey": {AMT_AVAIL: 20},
-                   "molasses": {AMT_AVAIL: 30},
-                   "stevia": {AMT_AVAIL: 0},
-                  }
+TEST_GOODS_DICT = {
+    "sugar": {AMT_AVAIL: 10},
+    "honey": {AMT_AVAIL: 20},
+    "molasses": {AMT_AVAIL: 30},
+    "stevia": {AMT_AVAIL: 0},
+}
 
 
 def get_rand_good(goods_dict, nonzero=False):
@@ -335,9 +336,11 @@ def trade_acceptable(trade_state, which_side):
     my_side = trade_state.get_side(which_side)
     other_side = trade_state.get_side(other_side)
     # side 1 gains goods from side 2:
-    my_side_gain = utility_delta(my_side["trader"], other_side["good"], other_side["amt"])
+    my_side_gain = utility_delta(my_side["trader"], other_side["good"],
+                                 other_side["amt"])
     # but gives up some of its own:
-    my_side_loss = utility_delta(my_side["trader"], my_side["good"], my_side["amt"])
+    my_side_loss = utility_delta(my_side["trader"], my_side["good"],
+                                 my_side["amt"])
     if Debug.debug:
         print(f"my gain: {my_side_gain}; my loss: {my_side_loss}")
     if my_side_gain >= my_side_loss:
