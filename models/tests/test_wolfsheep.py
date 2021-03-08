@@ -7,7 +7,8 @@ from lib.agent import Agent
 from models.wolfsheep import WolfSheep, main, MODEL_NAME, wolfsheep_grps
 from models.wolfsheep import AGT_WOLF_NAME, AGT_SHEEP_NAME
 from models.wolfsheep import TIME_TO_REPRODUCE, WOLF_REPRO_PERIOD, SHEEP_REPRO_PERIOD
-from models.wolfsheep import sheep_action, wolf_action
+from models.wolfsheep import TIME_TO_REPRODUCE_DEFAULT_VAL
+from models.wolfsheep import sheep_action, wolf_action, reproduce
 
 
 class WolfSheepTestCase(TestCase):
@@ -68,3 +69,39 @@ class WolfSheepTestCase(TestCase):
             self.assertEqual(self.sheep.get_attr(TIME_TO_REPRODUCE), SHEEP_REPRO_PERIOD)
         else:
             self.assertEqual(self.sheep.get_attr(TIME_TO_REPRODUCE), time_to_repro - 1)
+
+    def test_sheep_reproduce(self):
+        """
+        Check if sheep can reproduce
+        """
+
+        # Run once to initialize the attributes
+        sheep_action(self.sheep)
+
+        # Set TIME_TO_REPRODUCE to 0 for triggering reproduction
+        self.sheep.set_attr(TIME_TO_REPRODUCE, 0)
+
+        # Let sheep reproduce
+        reproduce(self.sheep)
+
+        self.assertEqual(
+            self.sheep.get_attr(TIME_TO_REPRODUCE), TIME_TO_REPRODUCE_DEFAULT_VAL
+        )
+
+    def test_wolf_reproduce(self):
+        """
+        Check if wolf can reproduce
+        """
+
+        # Run once to initialize the attributes
+        wolf_action(self.wolf)
+
+        # Set TIME_TO_REPRODUCE to 0 for triggering reproduction
+        self.wolf.set_attr(TIME_TO_REPRODUCE, 0)
+
+        # Let wolf reproduce
+        reproduce(self.wolf)
+
+        self.assertEqual(
+            self.wolf.get_attr(TIME_TO_REPRODUCE), TIME_TO_REPRODUCE_DEFAULT_VAL
+        )
