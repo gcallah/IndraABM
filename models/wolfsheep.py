@@ -25,6 +25,9 @@ SHEEP_REPRO_PERIOD = 2
 TIME_TO_REPRODUCE = "time_to_repr"
 TIME_TO_REPRODUCE_DEFAULT_VAL = 10
 
+AGT_WOLF_NAME = "wolf_"
+AGT_SHEEP_NAME = "sheep_"
+
 
 def sheep_action(agent, **kwargs):
 
@@ -51,7 +54,7 @@ def sheep_action(agent, **kwargs):
             print(str(agent.name) + " is having a baby!")
 
         # Create babies
-        get_model(agent.exec_key).add_child("sheep_")
+        get_model(agent.exec_key).add_child(AGT_SHEEP_NAME)
 
         # Reset ttr
         agent.set_attr(TIME_TO_REPRODUCE, TIME_TO_REPRODUCE_DEFAULT_VAL)
@@ -92,20 +95,20 @@ def wolf_action(agent, **kwargs):
             print(str(agent.name) + " is having a baby!")
 
         # Create babies
-        get_model(agent.exec_key).add_child("wolf_")
+        get_model(agent.exec_key).add_child(AGT_WOLF_NAME)
 
         # Reset ttr
         agent.set_attr(TIME_TO_REPRODUCE, TIME_TO_REPRODUCE_DEFAULT_VAL)
 
 
-basic_grps = {
-    "sheep_": {
+wolfsheep_grps = {
+    AGT_SHEEP_NAME: {
         MBR_ACTION: sheep_action,
         NUM_MBRS: NUM_SHEEP,
         NUM_MBRS_PROP: "num_sheep",
         COLOR: GRAY,
     },
-    "wolf_": {
+    AGT_WOLF_NAME: {
         MBR_ACTION: wolf_action,
         NUM_MBRS: NUM_WOLVES,
         NUM_MBRS_PROP: "num_wolves",
@@ -130,7 +133,7 @@ def create_model(serial_obj=None, props=None):
     if serial_obj is not None:
         return WolfSheep(serial_obj=serial_obj)
     else:
-        return WolfSheep(MODEL_NAME, grp_struct=basic_grps, props=props)
+        return WolfSheep(MODEL_NAME, grp_struct=wolfsheep_grps, props=props)
 
 
 def main():
