@@ -63,10 +63,14 @@ create_model_spec = api.model("model_specification", {
 
 @api.route('/models')
 class Models(Resource):
+    """
+    This class deals with the database of models.
+    """
     @api.doc(params={'active': 'Show only active models'})
     def get(self, active=False):
         """
-        Get a list of pre-existing models available through the API.
+        Get a list of available models. `active` flag true means only get
+        active models.
         """
         if request.args.get('active') is not None:
             active = request.args.get('active')

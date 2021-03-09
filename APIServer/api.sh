@@ -3,5 +3,5 @@
 # Indra behave properly.
 export repo_loc="https://github.com/gcallah/indras_net/blob/master/"
 export user_type="api"
-#export FLASK_ENV=development
+export FLASK_ENV=development
 FLASK_APP=api_endpoints flask run --host=127.0.0.1 --port=8000
