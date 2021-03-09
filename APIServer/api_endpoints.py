@@ -60,7 +60,7 @@ create_model_spec = api.model("model_specification", {
 })
 
 
-@api.route('/models/')
+@api.route('/models')
 class Models(Resource):
     @api.doc(params={'active': 'Show only active models'})
     def get(self, active=False):
