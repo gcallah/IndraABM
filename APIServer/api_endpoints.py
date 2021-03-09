@@ -1,6 +1,7 @@
 # Indra API server
 import logging
 import os
+from werkzeug.exceptions import NotFound
 from flask import request
 from flask import Flask
 from flask_cors import CORS
@@ -101,8 +102,7 @@ class Props(Resource):
     @api.expect(props)
     def put(self, model_id):
         """
-        Put a revised list of properties (parameters) for a model
-        back to the server.
+        Put a revised list of parameters for a model back to the server.
         This should return a new model with the revised props.
         """
         exec_key = api.payload['exec_key'].get('val')
@@ -114,7 +114,6 @@ class Props(Resource):
 
 @api.route('/models/menu/<int:execution_id>')
 class ModelMenu(Resource):
-
     def get(self, execution_id):
         """
         This returns the menu with which a model interacts with a user.
@@ -148,16 +147,29 @@ class RunModel(Resource):
         return json_converter(model)
 
 
-@api.route('/models/props/<int:execution_id><string:agent_name>')
+@api.route('/agent/get')
 class Agent(Resource):
     """
-    This endpoint gets an agent given exec id and agent name
+    This endpoint gets an agent given exec key and agent name
     """
-    def get(self, execution_id, agent_name):
+    @api.doc(params={'exec_key': 'Indra execution key.',
+                     'name': 'Name of agent to fetch.'})
+    @api.response(200, 'Success')
+    @api.response(404, 'Not Found')
+    def get(self):
         """
-        Get agent from registry
+        Get agent by name from the registry.
         """
-        return get_agent(agent_name, execution_id)
+        name = request.args.get('name')
+        exec_key = request.args.get('exec_key')
+        if name is None:
+            return err_return("You must pass an agent name.")
+        agent = get_agent(name, exec_key)
+        if agent is None:
+            raise(NotFound(f"Agent {name} not found."))
+            # trying out raising an exception so comment dis out:
+            # return err_return(f"Agent {name} not found.")
+        return agent.to_json()
 
 
 @api.route('/registry/get/<int:exec_key>')
