@@ -2,7 +2,7 @@
 A model to simulate the spread of fire in a forest.
 """
 import random
-from lib.agent import DONT_MOVE
+from lib.agent import DONT_MOVE, MOVE
 from lib.space import neighbor_ratio
 from lib.display_methods import RED, BLUE
 from lib.model import Model, MBR_ACTION, NUM_MBRS
@@ -70,7 +70,13 @@ def agent_action(agent, **kwargs):
     ratio_num = neighbor_ratio(agent, # noqa F841
                                lambda agent: agent.group_name() == agent_group,
                                size=1)
-    return DONT_MOVE
+    tol = get_tolerance(DEF_TOLERANCE, DEF_SIGMA)
+    favorable = env_favorable(ratio_num, tol)
+    if favorable:
+        return DONT_MOVE
+    else:
+        agent.move()
+        return MOVE
 
 
 segregation_grps = {
