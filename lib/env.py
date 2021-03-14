@@ -9,8 +9,7 @@ import traceback
 from lib.agent import Agent, AgentEncoder
 import lib.display_methods as disp
 from lib.space import Space
-from lib.user import TEST, TestUser
-from lib.user import TermUser, TERMINAL, API
+from lib.user import TEST, TERMINAL, API
 from lib.utils import agent_by_name
 
 DEF_USER = "User"
@@ -21,7 +20,6 @@ SEP_STR = "==================\n"
 
 X = 0
 Y = 1
-
 
 POP_HIST_HDR = "PopHist for "
 POP_SEP = ", "
@@ -91,12 +89,6 @@ class Env(Space):
         self.type = type(self).__name__
         self.user_type = os.getenv("user_type", TERMINAL)
         self.pop_hist_setup = pop_hist_setup
-
-        # might not need this here since we already create this in model
-        if self.user_type == TERMINAL:
-            self.user = TermUser(**kwargs)
-        elif self.user_type == TEST:
-            self.user = TestUser(**kwargs)
 
         if serial_obj is not None:
             # are we restoring env from json?

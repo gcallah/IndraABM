@@ -13,7 +13,6 @@ from APIServer.api_utils import err_return
 from APIServer.api_utils import json_converter
 from APIServer.props_api import get_props
 from APIServer.model_api import run_model, create_model
-from lib.user import APIUser
 
 HEROKU_PORT = 1643
 
@@ -66,6 +65,7 @@ class Models(Resource):
     """
     This class deals with the database of models.
     """
+
     @api.doc(params={'active': 'Show only active models'})
     def get(self, active=False):
         """
@@ -110,7 +110,6 @@ class Props(Resource):
         This should return a new model with the revised props.
         """
         exec_key = api.payload['exec_key'].get('val')
-        APIUser("API_USER", exec_key=exec_key)
         model = json_converter(create_model(model_id, api.payload, indra_dir))
         registry.save_reg(exec_key)
         return model
@@ -156,6 +155,7 @@ class Agent(Resource):
     """
     This endpoint gets an agent given exec key and agent name
     """
+
     @api.doc(params={'exec_key': 'Indra execution key.',
                      'name': 'Name of agent to fetch.'})
     @api.response(200, 'Success')
@@ -170,7 +170,7 @@ class Agent(Resource):
             return err_return("You must pass an agent name.")
         agent = get_agent(name, exec_key)
         if agent is None:
-            raise(NotFound(f"Agent {name} not found."))
+            raise (NotFound(f"Agent {name} not found."))
             # trying out raising an exception so comment dis out:
             # return err_return(f"Agent {name} not found.")
         return agent.to_json()
@@ -190,6 +190,7 @@ class ClearRegistry(Resource):
     This clears the entries for one `exec_key` out of the registry.
     Q: What is this for?
     """
+
     def get(self, exec_key):
         print("Clearing registry for key - {}".format(exec_key))
         try:
