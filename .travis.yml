@@ -21,9 +21,13 @@ env:
 script:
     - make tests
 
+
+# deploy to Python Anywhere:
 after_success:
     - ./deploy.sh
 
+
+# deploy to heroku
 deploy:
     - provider: heroku
       api_key: $HEROKU_API_KEY

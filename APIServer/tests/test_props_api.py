@@ -25,8 +25,10 @@ class TestPropsAPI(TestCase):
         We will try both the error case and a good case.
         """
         ret = get_props(BAD_MODEL_ID, "nonsense")
+        print("Ret = ", ret)
         self.assertTrue(ERROR in ret)
         ret = get_props(BASIC_MODEL_ID, indra_dir)
+        print("Ret = ", ret)
         self.assertTrue(ERROR not in ret)
 
 if __name__ == "__main__":

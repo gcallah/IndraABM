@@ -27,7 +27,7 @@ DEF_NUM_TRADERS = 4
 MONEY_MAX_UTIL = 100
 INIT_COUNT = 0  # a starting point for trade_count
 
-START_GOOD_AMT = 100
+START_GOOD_AMT = 5
 EQUILIBRIUM_DECLARED = 10
 
 # a counter for counting number of continuous periods with no trade
@@ -138,10 +138,22 @@ money_grps = {
 }
 
 
+def amt_adjust(nature):
+    """
+    A func to adjust good amount with divisibility
+    """
+    for good in nature:
+        nature[good][AMT_AVAIL] = nature[good][AMT_AVAIL] / \
+                                  nature[good][DIVISIBILITY]
+
+
 def nature_to_traders(traders, nature):
     """
     A func to do the initial endowment from nature to all traders
     """
+    # before endowment from nature to trader,
+    # first adjust the good amt by divisibility
+    amt_adjust(nature)
     for trader in traders:
         endow(traders[trader], nature)
         for good in traders[trader][GOODS]:

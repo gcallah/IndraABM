@@ -51,23 +51,23 @@ GEN_UTIL_FUNC = "gen_util_func"
 STEEP_GRADIENT = 20
 
 
-def gen_util_func(qty):
-    return max_util * (DIM_UTIL_BASE ** (-qty))
+def gen_util_func(qty, divisibility):
+    return max_util * ((DIM_UTIL_BASE) ** (-qty/divisibility))
 
 
-def penguin_util_func(qty):
+def penguin_util_func(qty, divisibility=None):
     return 25 * (1 ** (-qty))
 
 
-def cat_util_func(qty):
+def cat_util_func(qty, divisibility=None):
     return 10 * (1 ** (-qty))
 
 
-def bear_util_func(qty):
+def bear_util_func(qty, divisibility=None):
     return 15 * (1 ** (-qty))
 
 
-def steep_util_func(qty):
+def steep_util_func(qty, divisibility=None):
     return 20 * (2 ** (-qty))
 
 
@@ -388,10 +388,18 @@ def negotiate(trade):
             else:
                 trade.status = REJECT
         elif trade.status == INADEQ:
-            side1["amt"] += 1
-            if trade_acceptable(trade, TRADER1):
-                trade.status = OFFER_FROM_1
+            # check whether the incremented amount exceed the AMT_AVAIL
+            trader = side1["trader"]
+            good = side1["good"]
+            amt_incr = side1["amt"] + 1
+            if (amt_incr <= trader[GOODS][good][AMT_AVAIL]):
+                side1["amt"] += 1
+                if trade_acceptable(trade, TRADER1):
+                    trade.status = OFFER_FROM_1
+                else:
+                    trade.status = REJECT
             else:
+                # not enough good to offer
                 trade.status = REJECT
         elif trade.status == OFFER_FROM_1:
             # eval trade from side2 POV:
@@ -485,6 +493,22 @@ def get_lowest(agent, my_good, their_good, bidder=True):
     return 0
 
 
+def check_div(trader, good):
+    """
+    This function will check if divisibility is an attribute of
+    the goods. If so, the function will return divisibility;
+    else, the function will return 1.
+    """
+    item = list(trader["goods"])[0]
+    if "divisibility" in trader["goods"][item]:
+        # if the good is too old, set the avaliable amount to 0
+        # (good is no longer valid for trading)
+        amt = trader["goods"][good]["divisibility"]
+        return amt
+    else:
+        return 1
+
+
 def utility_delta(agent, good, change):
     """
     We are going to determine the utility of goods gained
@@ -494,9 +518,12 @@ def utility_delta(agent, good, change):
     curr_good = agent["goods"][good]
     ufunc_name = curr_good[UTIL_FUNC]
     curr_amt = curr_good[AMT_AVAIL]
-    curr_util = adjust_dura(agent, good, get_util_func(ufunc_name)(curr_amt))
+    curr_div = check_div(agent, good)
+    curr_util = adjust_dura(agent, good,
+                            get_util_func(ufunc_name)(curr_amt, curr_div))
     new_util = adjust_dura(agent, good,
-                           get_util_func(ufunc_name)(curr_amt + change))
+                           get_util_func(ufunc_name)((curr_amt + change),
+                                                     curr_div))
     return ((new_util + curr_util) / 2) * change
 
 
