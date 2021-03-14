@@ -73,6 +73,15 @@ def get_exec_key(**kwargs):
     return exec_key
 
 
+def get_user(exec_key):
+    """
+    Fetch the user assoociated with the model
+    :param exec_key:
+    :return: User registered for the current model
+    """
+    return get_model(exec_key).user
+
+
 def get_model(exec_key):
     """
     The model is a special singleton member of the registry.

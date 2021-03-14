@@ -3,13 +3,12 @@ This file defines an Env, which is a collection
 of agents that share a timeline and a Space.
 """
 import json
-import os
 import traceback
 
 from lib.agent import Agent, AgentEncoder
 import lib.display_methods as disp
 from lib.space import Space
-from lib.user import TEST, TERMINAL, API
+from lib.user import TEST, API
 from lib.utils import agent_by_name
 
 DEF_USER = "User"
@@ -87,7 +86,9 @@ class Env(Space):
                          random_placing=random_placing, serial_obj=serial_obj,
                          members=members, **kwargs)
         self.type = type(self).__name__
-        self.user_type = os.getenv("user_type", TERMINAL)
+        # This will be set by the model. Can also be fetched using get_user
+        self.user = None
+        self.user_type = None
         self.pop_hist_setup = pop_hist_setup
 
         if serial_obj is not None:
