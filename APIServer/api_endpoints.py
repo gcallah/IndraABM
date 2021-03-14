@@ -159,7 +159,7 @@ class RunModel(Resource):
         return json_converter(model)
 
 
-@api.route('/agent/get')
+@api.route('/agent')
 class Agent(Resource):
     """
     This endpoint gets an agent given exec key and agent name
@@ -167,7 +167,7 @@ class Agent(Resource):
     @api.doc(params={'exec_key': 'Indra execution key.',
                      'name': 'Name of agent to fetch.'})
     @api.response(200, 'Success')
-    @api.response(404, 'Not Found')
+    @api.response(404, 'Not Found') # Returns a 404 error when no agent's are found
     def get(self):
         """
         Get agent by name from the registry.
