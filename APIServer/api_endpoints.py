@@ -151,6 +151,12 @@ class RunModel(Resource):
         return json_converter(model)
 
 
+@api.route('/locations/get')
+class Locations(Resource):
+    def get(self):
+        return {'locations': 'locations will be here'}
+
+
 @api.route('/agent/get')
 class Agent(Resource):
     """
