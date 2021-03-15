@@ -13,7 +13,7 @@ prod: tests
 
 lint: $(patsubst %.py,%.pylint,$(PYTHONFILES))
 
-tests: pytests lint
+tests: lint pytests 
 
 pytests: FORCE
 	nosetests --exe --with-coverage --cover-package=capital

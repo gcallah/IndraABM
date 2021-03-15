@@ -346,7 +346,7 @@ def trade_acceptable(trade_state, which_side):
                                  my_side["amt"])
     if Debug.debug:
         print(f"my gain: {my_side_gain}; my loss: {my_side_loss}")
-    if my_side_gain >= my_side_loss:
+    if my_side_gain > my_side_loss:
         return True
 
 
