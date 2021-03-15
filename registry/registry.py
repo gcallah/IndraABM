@@ -23,6 +23,7 @@ import json
 import types
 from lib.agent import Agent
 from lib.env import Env
+from lib.user import APIUser, TermUser
 from lib.utils import Debug
 
 BILLION = 10 ** 9
@@ -43,6 +44,7 @@ def wrap_func_with_lock(func):
             return locked_fn(*args, **kwargs)
         except ImportError or ModuleNotFoundError or RuntimeError:
             return func(*args, **kwargs)
+
     return wrapper
 
 
@@ -69,6 +71,15 @@ def get_exec_key(**kwargs):
     if exec_key is None:
         raise ValueError("Cannot find exec key:", exec_key)
     return exec_key
+
+
+def get_user(exec_key):
+    """
+    Fetch the user assoociated with the model
+    :param exec_key:
+    :return: User registered for the current model
+    """
+    return get_model(exec_key).user
 
 
 def get_model(exec_key):
@@ -325,6 +336,16 @@ class Registry(object):
                                                dict) and "type" in serial_obj[
                                         obj_name]
             if should_restore_object:
+                if serial_obj[obj_name]["type"] == "TestUser":
+                    restored_obj[obj_name] = TermUser(name=obj_name,
+                                                      serial_obj=serial_obj[
+                                                          obj_name],
+                                                      exec_key=exec_key)
+                if serial_obj[obj_name]["type"] == "APIUser":
+                    restored_obj[obj_name] = APIUser(name=obj_name,
+                                                     serial_obj=serial_obj[
+                                                         obj_name],
+                                                     exec_key=exec_key)
                 if serial_obj[obj_name]["type"] == "Agent":
                     restored_obj[obj_name] = Agent(name=obj_name,
                                                    serial_obj=serial_obj[

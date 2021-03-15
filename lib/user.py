@@ -115,14 +115,17 @@ class User(Agent):
         run(self, self.model)
 
     def to_json(self):
-        return {"user_msgs": self.user_msgs,
-                "debug": self.debug_msg,
-                "name": self.name}
+        json_rep = super().to_json()
+        json_rep["user_msgs"] = self.user_msgs
+        json_rep["debug"] = self.debug_msg
+        json_rep["name"] = self.name
+        return json_rep
 
     def from_json(self, serial_obj):
         """
         This must be written!
         """
+        super().from_json(serial_obj)
         self.user_msgs = serial_obj['user_msgs']
         self.name = serial_obj['name']
         self.debug_msg = serial_obj['debug']
@@ -179,6 +182,8 @@ class TermUser(User):
         self.show_line_graph = False
         self.show_scatter_plot = False
         self.show_bar_graph = False
+        if 'serial_obj' in kwargs:
+            self.from_json(kwargs['serial_obj'])
 
     def tell(self, msg, end='\n'):
         """
@@ -218,6 +223,16 @@ class TermUser(User):
             return True
         except ValueError:
             return False
+
+    def to_json(self):
+        json_rep = super().to_json()
+        json_rep["user_msgs"] = self.user_msgs
+        json_rep["debug"] = self.debug_msg
+        json_rep["name"] = self.name
+        return json_rep
+
+    def from_json(self, serial_obj):
+        super().from_json(serial_obj)
 
     def __call__(self):
         self.tell('\n' + self.stars + '\n' + self.menu_title + '\n'
@@ -279,6 +294,7 @@ class APIUser(User):
     frontend.
     This class needs from_json() and to_json() methods.
     """
+
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
         if 'serial_obj' in kwargs is not None:
@@ -321,12 +337,11 @@ class APIUser(User):
             return menu
 
     def to_json(self):
-        return {"user_msgs": self.user_msgs,
-                "name": self.name,
-                "debug": self.debug_msg
-                }
+        json_rep = super().to_json()
+        json_rep["user_msgs"] = self.user_msgs
+        json_rep["debug"] = self.debug_msg
+        json_rep["name"] = self.name
+        return json_rep
 
     def from_json(self, serial_obj):
-        self.user_msgs = serial_obj['user_msgs']
-        self.name = serial_obj['name']
-        self.debug_msg = serial_obj['debug']
+        super().from_json(serial_obj)

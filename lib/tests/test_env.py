@@ -7,10 +7,11 @@ from unittest import TestCase, main, skip
 import lib.display_methods as disp
 from lib.group import Group
 from lib.env import Env, PopHist, POP_HIST_HDR, POP_SEP
+from lib.model import Model
 from lib.space import DEF_HEIGHT, DEF_WIDTH
 from lib.tests.test_agent import create_newton
 from lib.tests.test_group import create_calcguys, create_cambguys
-from lib.user import TEST, API
+from lib.user import TEST, API, TERMINAL
 from lib.tests.test_agent import get_exec_key
 
 travis = False
@@ -35,7 +36,10 @@ class EnvTestCase(TestCase):
         self.calcs = create_calcguys(self.exec_key, [])
         self.cambs = create_cambguys(self.exec_key)
         self.pop_hist = PopHist()
-        self.env = Env("Test env", action=env_action, exec_key=self.exec_key)
+        self.model = Model(exec_key=self.exec_key)
+        self.env = self.model.env
+        self.env.action = env_action
+        # Env("Test env", action=env_action, exec_key=self.exec_key)
 
     def tearDown(self):
         self.exec_key = None
@@ -54,9 +58,10 @@ class EnvTestCase(TestCase):
 
     def test_user_type(self):
         """
-        Make sure our user type is test.
+        Make sure our user type is test. API is the new default user_type
         """
-        self.assertEqual(self.env.user_type, TEST)
+        user_type = os.getenv('user_type', API)
+        self.assertEqual(self.env.user_type, user_type)
 
     @skip("This test awaits new registry.")
     def test_runN(self):

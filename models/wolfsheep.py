@@ -25,8 +25,8 @@ SHEEP_REPRO_PERIOD = 2
 TIME_TO_REPRODUCE = "time_to_repr"
 TIME_TO_REPRODUCE_DEFAULT_VAL = 10
 
-AGT_WOLF_NAME = "wolf_"
-AGT_SHEEP_NAME = "sheep_"
+AGT_WOLF_NAME = "wolf"
+AGT_SHEEP_NAME = "sheep"
 
 
 def is_agent_dead(agent, **kwargs):

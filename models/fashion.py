@@ -13,51 +13,43 @@ MODEL_NAME = "fashion"
 DEF_NUM_TSETTERS = 5
 DEF_NUM_FOLLOWERS = 55
 
+HOOD_SIZE = 4
+
+RED_FOLLOWERS = "Red Followers"
+BLUE_FOLLOWERS = "Blue Followers"
+RED_TSETTERS = "Red Trendsetters"
+BLUE_TSETTERS = "Blue Trendsetters"
+
 
 def fashion_action(agent, **kwargs):
     """
     A simple default agent action
     """
     if Debug().debug:
+        pass
         print("Agent", str(agent), "is acting.")
-
-    # model = get_model(agent.exec_key)
-    # num_others_red = len(others_red.subset(in_hood, agent, HOOD_SIZE))
-    # num_others_blue = len(others_blue.subset(in_hood, agent, HOOD_SIZE))
-    # total_others = num_others_red + num_others_blue
-    # if total_others <= 0:
-    #     return False
-
-    # env_color = ratio_to_sin(num_others_red / total_others)
-
-    # agent[COLOR_PREF] = new_color_pref(agent[COLOR_PREF], env_color)
-    # if env_unfavorable(agent[DISPLAY_COLOR], agent[COLOR_PREF], op1, op2):
-    #     change_color(agent, get_env(execution_key=execution_key), opp_group)
-    #     return True
-    # else:
-    #     return False
 
 
 fashion_grps = {
-    "Blue Trendsetters": {
+    BLUE_TSETTERS: {
         MBR_ACTION: fashion_action,
         NUM_MBRS: DEF_NUM_TSETTERS,
         NUM_MBRS_PROP: "num_tsetters",
         COLOR: NAVY
     },
-    "Red Trendsetters": {
+    RED_TSETTERS: {
         MBR_ACTION: fashion_action,
         NUM_MBRS: DEF_NUM_TSETTERS,
         NUM_MBRS_PROP: "num_tsetters",
         COLOR: DARKRED
     },
-    "Blue Followers": {
+    BLUE_FOLLOWERS: {
         MBR_ACTION: fashion_action,
         NUM_MBRS: DEF_NUM_FOLLOWERS,
         NUM_MBRS_PROP: "num_followers",
         COLOR: BLUE
     },
-    "Red Followers": {
+    RED_FOLLOWERS: {
         MBR_ACTION: fashion_action,
         NUM_MBRS: DEF_NUM_FOLLOWERS,
         NUM_MBRS_PROP: "num_followers",

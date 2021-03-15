@@ -223,6 +223,8 @@ class Model():
                        exec_key=self.exec_key, width=self.width,
                        height=self.height, action=env_action,
                        random_placing=random_placing)
+        self.env.user = self.user
+        self.env.user_type = self.user_type
         self.create_pop_hist()
         return self.env
 
