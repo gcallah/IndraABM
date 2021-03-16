@@ -26,17 +26,27 @@ from lib.env import Env
 from lib.user import APIUser, TermUser
 from lib.utils import Debug
 
-BILLION = 10 ** 9
-
 EXEC_KEY = "exec_key"
 
 ENV_NM = 'env'
 MODEL_NM = 'model'
 
+# SPECIAL EXEC KEY VALUES:
+# We want to create a test model (why not Basic?) that always is added to
+# the registry at a know exec key. This will make testing new endpoints
+# much easier!
+TEST_EXEC_KEY = 0
+MIN_EXEC_KEY = 1
+MAX_EXEC_KEY = 10 ** 9  # max is somewhat arbitrary, but make it big!
+
 registry = None
 
 
 def wrap_func_with_lock(func):
+    """
+    This is a decorator to prevent race conditions when updating
+    registry.
+    """
     def wrapper(*args, **kwargs):
         try:
             import uwsgidecorators
@@ -277,7 +287,7 @@ class Registry(object):
         del self.registries[key]
 
     def __get_unique_key(self):
-        key = random.randint(1, BILLION)
+        key = random.randint(MIN_EXEC_KEY, MAX_EXEC_KEY)
         '''
         Try to get a key that is not already being used.
         This means that key should not be in the registry for the current
@@ -285,7 +295,7 @@ class Registry(object):
         '''
         while key in self.registries.keys() or os.path.isfile(
                 self.__get_reg_file_name(key)):
-            key = random.randint(1, BILLION)
+            key = random.randint(MIN_EXEC_KEY, MAX_EXEC_KEY)
         return key
 
     def __get_reg_file_name(self, key):
