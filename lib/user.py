@@ -8,6 +8,7 @@ from abc import abstractmethod
 # from IPython import embed
 
 from lib.agent import Agent
+from lib.utils import PA_INDRA_HOME
 
 TERMINAL = "terminal"
 TEST = "test"
@@ -19,7 +20,7 @@ DEFAULT_CHOICE = '1'
 USER_EXIT = -999
 
 MENU_SUBDIR = "lib"
-menu_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
+menu_dir = os.getenv("INDRA_HOME", PA_INDRA_HOME)
 menu_dir += "/" + MENU_SUBDIR
 menu_file = "menu.json"
 menu_src = menu_dir + "/" + menu_file
@@ -253,6 +254,9 @@ class TermUser(User):
                 return menu_opt
         return None
 
+    def get_radio(self, item):
+        return item.get(RADIO_SET, False)
+
     def __call__(self):
         self.tell('\n' + self.stars + '\n' + self.menu_title + '\n'
                   + self.stars)
@@ -271,7 +275,7 @@ class TermUser(User):
             if choice >= 0:
                 for item in self.menu:
                     if item["id"] == choice:
-                        if item.get(RADIO_SET, False):
+                        if self.get_radio(item):
                             self.set_radio_options(item)
                         return menu_functions[item[FUNC]](self)
             self.tell_err(str(c) + " is an invalid option. "
@@ -283,9 +287,9 @@ class TermUser(User):
     def set_radio_options(self, item):
         radio_set = item[RADIO_SET]
         item[ACTIVE] = True
-        for menu_opt in self.menu:
-            if menu_opt is not item and menu_opt[RADIO_SET] == radio_set:
-                menu_opt[ACTIVE] = False
+        for opt in self.menu:
+            if (opt is not item and self.get_radio(opt) == radio_set):
+                opt[ACTIVE] = False
 
 
 class TestUser(TermUser):

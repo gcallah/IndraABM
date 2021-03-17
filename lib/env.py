@@ -5,7 +5,7 @@ of agents that share a timeline and a Space.
 import json
 import traceback
 
-from lib.agent import Agent, AgentEncoder
+from lib.agent import Agent, AgentEncoder, join
 import lib.display_methods as disp
 from lib.space import Space
 from lib.user import TEST, API
@@ -116,17 +116,20 @@ class Env(Space):
         # but only if they're really funcs!
         # cause we're gonna try to call them
         self.exclude_member = exclude_member
-        self.womb = []  # for agents waiting to be born
+        self.womb = {}  # for agents waiting to be born
 
     def from_json(self, serial_obj):
         super().from_json(serial_obj)
         self.pop_hist = PopHist(serial_pops=serial_obj["pop_hist"])
+        self.womb = serial_obj["womb"]
+        # don't spaces have names?
         self.name = serial_obj["name"]
 
     def to_json(self):
         rep = super().to_json()
         rep["type"] = self.type
         rep["pop_hist"] = self.pop_hist.to_json()
+        rep["womb"] = self.womb
         return rep
 
     def __repr__(self):
@@ -148,17 +151,28 @@ class Env(Space):
             grp_nm = group
         else:
             grp_nm = agent_by_name(group)
-        self.womb.append(grp_nm)
+        if grp_nm not in self.womb:
+            self.womb[grp_nm] = 1  # first addition!
+        else:
+            self.womb[grp_nm] += 1
 
     def handle_womb(self):
         """
-        The womb just contains group names -- they will be repeated
-        as many times as that group needs to add members.
-        We name the new members in the `member_creator()` method.
-        This should be re-written as dict with:
+        The structure of the womb is:
             {"group_name": #agents_to_create}
         """
-        pass
+        for grp_nm in self.womb:
+            print(f"Going to add {self.womb[grp_nm]} members to {grp_nm}")
+            grp = self.members[grp_nm]
+            num_to_add = self.womb[grp_nm]
+            mbr_num = grp.num_mbrs_ever
+            while num_to_add > 0:
+                new_agent = grp.mbr_creator(grp_nm, mbr_num,
+                                            exec_key=self.exec_key)
+                join(grp, new_agent)
+                self.place_member(new_agent)
+                num_to_add -= 1
+                mbr_num += 1
 
     def handle_pop_hist(self):
         self.pop_hist.add_period()
@@ -181,7 +195,7 @@ class Env(Space):
                       + f"{SEP_STR}Group census:\n{SEP_STR}")
         for name in self.members:
             grp = self.members[name]
-            census_str += f"  {name} (members: {len(grp)})\n"
+            census_str += f"  {name}: {len(grp)}\n"
         census_str += (f"{SEP_STR} Agent census:\n{SEP_STR}"
                        + f"  Agents who moved: {num_moves}\n"
                        + f"  Agents who switched groups: {num_switches}")
@@ -189,7 +203,7 @@ class Env(Space):
 
     def has_disp(self):
         if not disp.plt_present:
-            self.user.tell("ERROR: Graphing package encounters a problem: "
+            self.user.tell("ERROR: Graphing does not seem to be enabled: "
                            + disp.plt_present_error_message)
             return False
         else:

@@ -1,6 +1,7 @@
-from lib.agent import MOVE, DONT_MOVE
+from lib.agent import MOVE, DONT_MOVE, Agent
 from lib.display_methods import TAN, GRAY
 from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
+from lib.model import MBR_CREATOR
 from lib.utils import Debug
 from lib.space import get_num_of_neighbors, get_neighbor
 from registry.registry import get_model
@@ -23,10 +24,10 @@ SHEEP_LIFESPAN = 8
 SHEEP_REPRO_PERIOD = 2
 
 TIME_TO_REPRODUCE = "time_to_repr"
-TIME_TO_REPRODUCE_DEFAULT_VAL = 10
+DEF_TIME_TO_REPRO = 10
 
-AGT_WOLF_NAME = "wolf"
-AGT_SHEEP_NAME = "sheep"
+WOLF_GRP_NM = "wolf"
+SHEEP_GRP_NM = "sheep"
 
 
 def is_agent_dead(agent, **kwargs):
@@ -39,15 +40,14 @@ def is_agent_dead(agent, **kwargs):
 def reproduce(agent, **kwargs):
     # Check if it is time to produce
     if agent.get_attr(TIME_TO_REPRODUCE) == 0:
-        # reproduce function
         if Debug().debug:
             print(str(agent.name) + " is having a baby!")
 
-        # Create babies
-        get_model(agent.exec_key).add_child(agent.name)
+        # Create babies: need group name here!
+        get_model(agent.exec_key).add_child(agent.prim_group_nm())
 
         # Reset ttr
-        agent.set_attr(TIME_TO_REPRODUCE, TIME_TO_REPRODUCE_DEFAULT_VAL)
+        agent.set_attr(TIME_TO_REPRODUCE, DEF_TIME_TO_REPRO)
 
 
 def eat_sheep(agent, **kwargs):
@@ -67,7 +67,7 @@ def eat_sheep(agent, **kwargs):
 def handle_ttr(agent, **kwargs):
     # Initialize the attribute
     if agent.get_attr(TIME_TO_REPRODUCE) is None:
-        agent.set_attr(TIME_TO_REPRODUCE, TIME_TO_REPRODUCE_DEFAULT_VAL)
+        agent.set_attr(TIME_TO_REPRODUCE, DEF_TIME_TO_REPRO)
 
     # Decrease ttr
     agent.set_attr(TIME_TO_REPRODUCE, agent.get_attr(TIME_TO_REPRODUCE) - 1)
@@ -109,14 +109,30 @@ def wolf_action(agent, **kwargs):
     return MOVE
 
 
+def create_sheep(name, i, action=sheep_action, **kwargs):
+    """
+    Create a new sheep.
+    """
+    return Agent(name + str(i), action=action, **kwargs)
+
+
+def create_wolf(name, i, action=wolf_action, **kwargs):
+    """
+    Create a new sheep.
+    """
+    return Agent(name + str(i), action=action, **kwargs)
+
+
 wolfsheep_grps = {
-    AGT_SHEEP_NAME: {
+    SHEEP_GRP_NM: {
+        MBR_CREATOR: create_sheep,
         MBR_ACTION: sheep_action,
         NUM_MBRS: NUM_SHEEP,
         NUM_MBRS_PROP: "num_sheep",
         COLOR: GRAY,
     },
-    AGT_WOLF_NAME: {
+    WOLF_GRP_NM: {
+        MBR_CREATOR: create_wolf,
         MBR_ACTION: wolf_action,
         NUM_MBRS: NUM_WOLVES,
         NUM_MBRS_PROP: "num_wolves",

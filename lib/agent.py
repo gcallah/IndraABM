@@ -13,7 +13,7 @@ import pickle
 import numpy as np
 # from typing import Callable
 
-from lib.utils import get_func_name, Debug
+from lib.utils import get_func_name, Debug, PA_INDRA_HOME
 
 # x and y indices
 X = 0
@@ -237,7 +237,7 @@ class Agent(object):
         # only pickle if action is not none and it hasnt been pickled already
         if self.action is not None and self.action.__name__ not in \
                 registry[self.exec_key]['functions']:
-            indra_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
+            indra_dir = os.getenv("INDRA_HOME", PA_INDRA_HOME)
             db_dir = os.path.join(indra_dir, 'registry', 'db')
             pickle_file = os.path.join(db_dir, '{}-{}-{}.pkl'
                                        .format(self.exec_key, self.name,
