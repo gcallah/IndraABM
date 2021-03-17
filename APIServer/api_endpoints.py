@@ -117,11 +117,15 @@ class Props(Resource):
 
 @api.route('/models/menu/<int:execution_id>')
 class ModelMenu(Resource):
+    @api.response(200, 'Success')
+    @api.response(404, 'Not Found')
     def get(self, execution_id):
         """
         This returns the menu with which a model interacts with a user.
         """
         user = get_agent("API_USER", exec_key=execution_id)
+        if user is None:
+            raise (NotFound("User object not found."))
         return user()
 
 
