@@ -7,7 +7,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
 from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
-from registry.registry import registry, get_agent, create_exec_env
+from registry.registry import registry, get_agent, create_exec_env, get_user
 from registry.model_db import get_models
 from APIServer.api_utils import err_return
 from APIServer.api_utils import json_converter
@@ -123,7 +123,7 @@ class ModelMenu(Resource):
         """
         This returns the menu with which a model interacts with a user.
         """
-        user = get_agent("API_USER", exec_key=execution_id)
+        user = get_user(execution_id)
         if user is None:
             raise (NotFound("User object not found."))
         return user()
