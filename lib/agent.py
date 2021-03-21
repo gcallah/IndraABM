@@ -232,16 +232,20 @@ class Agent(object):
         from registry.registry import registry
         registry[self.exec_key]['functions'][func.__name__] = pickle_file
 
+    def __get_pickle_file(self):
+        indra_dir = os.getenv("INDRA_HOME", PA_INDRA_HOME)
+        db_dir = os.path.join(indra_dir, 'registry', 'db')
+        pickle_file = os.path.join(db_dir, '{}-{}-{}.pkl'
+                                   .format(self.exec_key, self.name,
+                                           self.action.__name__))
+        return pickle_file
+
     def to_json(self):
         from registry.registry import registry
         # only pickle if action is not none and it hasnt been pickled already
         if self.action is not None and self.action.__name__ not in \
                 registry[self.exec_key]['functions']:
-            indra_dir = os.getenv("INDRA_HOME", PA_INDRA_HOME)
-            db_dir = os.path.join(indra_dir, 'registry', 'db')
-            pickle_file = os.path.join(db_dir, '{}-{}-{}.pkl'
-                                       .format(self.exec_key, self.name,
-                                               self.action.__name__))
+            pickle_file = self.__get_pickle_file()
             self.__pickle_func(pickle_file, self.action)
             action_val = pickle_file
         elif self.action is not None and self.action.__name__ in \

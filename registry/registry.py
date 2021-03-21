@@ -23,7 +23,7 @@ import json
 import types
 from lib.agent import Agent
 from lib.env import Env
-from lib.user import APIUser, TermUser
+from lib.user import APIUser, TermUser, TestUser
 from lib.utils import Debug
 
 EXEC_KEY = "exec_key"
@@ -47,6 +47,7 @@ def wrap_func_with_lock(func):
     This is a decorator to prevent race conditions when updating
     registry.
     """
+
     def wrapper(*args, **kwargs):
         try:
             import uwsgidecorators
@@ -59,7 +60,7 @@ def wrap_func_with_lock(func):
 
 
 @wrap_func_with_lock
-def create_exec_env(save_on_register=True):
+def create_exec_env(save_on_register=True, create_for_test=False):
     """
     :param save_on_register: boolean
     :return: New registry for storing data for execution
@@ -70,7 +71,8 @@ def create_exec_env(save_on_register=True):
     If not resolved one thread will overwrite the registry of the other thread
     and corrupt the run time calls of the model.
     """
-    return registry.create_exec_env(save_on_register=save_on_register)
+    return registry.create_exec_env(save_on_register=save_on_register,
+                                    create_for_test=create_for_test)
 
 
 def get_exec_key(**kwargs):
@@ -393,11 +395,14 @@ class Registry(object):
             self.registries[exec_key]['model'] = restored_obj['model']
         return restored_obj
 
-    def create_exec_env(self, save_on_register=True):
+    def create_exec_env(self, save_on_register=True, create_for_test=False):
         """
         Create a new execution environment and return its key.
         """
-        key = self.__get_unique_key()
+        if create_for_test:
+            key = TEST_EXEC_KEY
+        else:
+            key = self.__get_unique_key()
         print("Creating new registry with key: {}".format(key))
         self.registries[key] = {}
         self.registries[key] = {'save_on_register': save_on_register}
@@ -423,3 +428,26 @@ class Registry(object):
 
 
 registry = Registry()
+
+
+def setup_test_model():
+    """
+    Set's up the basic model at exec_key = 0 for testing purposes.
+    Any model can setup for testing by adding a function called
+    `create_model_for_test` and calling that function here with props=None.
+    If custom props are needed the conventional api should be used.
+    This method is only executed at run time. Running it while running tests
+    will cause ImportError because of circular imports between Registry and
+    Model classes.
+    :return: None
+    """
+    user_type = os.getenv("user_type", TestUser)
+    if user_type == "test":
+        return
+    else:
+        from models.basic import create_model_for_test
+        create_model_for_test(props=None)
+        registry.save_reg(TEST_EXEC_KEY)
+
+
+setup_test_model()

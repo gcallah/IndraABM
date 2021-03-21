@@ -1,4 +1,3 @@
-
 """
 This is a minimal model that inherits from model.py
 and just sets up a couple of agents in two groups that
@@ -49,6 +48,19 @@ class Basic(Model):
     the system as a whole is working.
     It turns out that so far, we don't really need to subclass anything!
     """
+
+
+def create_model_for_test(props=None):
+    """
+    This set's up the Basic model at exec_key 0 for testing.
+    This method is to be called from registry only. Props may be
+    overridden here for testing but the conventional api would be the correct
+    way to do that.
+    :param props: None
+    :return: Basic
+    """
+    return Basic(MODEL_NAME, grp_struct=basic_grps, props=props,
+                 create_for_test=True)
 
 
 def create_model(serial_obj=None, props=None):
