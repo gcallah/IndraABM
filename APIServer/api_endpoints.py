@@ -192,6 +192,11 @@ class GetRegistry(Resource):
     This returns a JSON version of the registry for
     session `exec_key` to the client.
     """
+    @gpi.response(200, 'Success')
+    @api.response(404, 'Not Found')
+    def get_reg(self):
+        """ Get the registry """
+        
 
 
 @api.route('/registry/clear/<int:exec_key>')
