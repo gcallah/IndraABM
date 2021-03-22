@@ -8,6 +8,7 @@ from abc import abstractmethod
 # from IPython import embed
 
 from lib.agent import Agent
+from lib.utils import PA_INDRA_HOME
 
 TERMINAL = "terminal"
 TEST = "test"
@@ -19,10 +20,18 @@ DEFAULT_CHOICE = '1'
 USER_EXIT = -999
 
 MENU_SUBDIR = "lib"
-menu_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
+menu_dir = os.getenv("INDRA_HOME", PA_INDRA_HOME)
 menu_dir += "/" + MENU_SUBDIR
 menu_file = "menu.json"
 menu_src = menu_dir + "/" + menu_file
+
+ACTIVE = "active"
+RADIO_SET = "radio_set"
+FUNC = "func"
+
+SCATTER_PLOT = "scatter_plot"
+LINE_GRAPH = "line_graph"
+BAR_GRAPH = "bar_graph"
 
 
 def get_menu_json():
@@ -85,9 +94,9 @@ def view_model(user, update=False):
 menu_functions = {
     "run": run,
     "leave": leave,
-    "scatter_plot": scatter_plot,
-    "line_graph": line_graph,
-    "bar_graph": bar_graph,
+    SCATTER_PLOT: scatter_plot,
+    LINE_GRAPH: line_graph,
+    BAR_GRAPH: bar_graph,
     "view_model": view_model,
 }
 
@@ -115,14 +124,17 @@ class User(Agent):
         run(self, self.model)
 
     def to_json(self):
-        return {"user_msgs": self.user_msgs,
-                "debug": self.debug_msg,
-                "name": self.name}
+        json_rep = super().to_json()
+        json_rep["user_msgs"] = self.user_msgs
+        json_rep["debug"] = self.debug_msg
+        json_rep["name"] = self.name
+        return json_rep
 
     def from_json(self, serial_obj):
         """
         This must be written!
         """
+        super().from_json(serial_obj)
         self.user_msgs = serial_obj['user_msgs']
         self.name = serial_obj['name']
         self.debug_msg = serial_obj['debug']
@@ -179,6 +191,9 @@ class TermUser(User):
         self.show_line_graph = False
         self.show_scatter_plot = False
         self.show_bar_graph = False
+        if 'serial_obj' in kwargs:
+            self.from_json(kwargs['serial_obj'])
+        self.graph_options = [LINE_GRAPH, BAR_GRAPH, SCATTER_PLOT]
 
     def tell(self, msg, end='\n'):
         """
@@ -219,18 +234,38 @@ class TermUser(User):
         except ValueError:
             return False
 
+    def to_json(self):
+        json_rep = super().to_json()
+        json_rep["user_msgs"] = self.user_msgs
+        json_rep["debug"] = self.debug_msg
+        json_rep["name"] = self.name
+        return json_rep
+
+    def from_json(self, serial_obj):
+        super().from_json(serial_obj)
+
+    def get_opt_by_func_nm(self, func_nm):
+        """
+        For now we have this awkward business of fetching by func
+        name.
+        """
+        for menu_opt in self.menu:
+            if menu_opt[FUNC] == func_nm:
+                return menu_opt
+        return None
+
+    def get_radio(self, item):
+        return item.get(RADIO_SET, False)
+
     def __call__(self):
         self.tell('\n' + self.stars + '\n' + self.menu_title + '\n'
                   + self.stars)
         for item in self.menu:
             print(str(item["id"]) + ". ", item["question"])
-        if self.show_line_graph:
-            line_graph(self, update=True)
-        if self.show_scatter_plot:
-            scatter_plot(self, update=True)
-        if self.show_bar_graph:
-            pass
-            # bar_graph(self, update=True)
+        for func_nm in self.graph_options:
+            opt = self.get_opt_by_func_nm(func_nm)
+            if opt is not None and opt[ACTIVE]:
+                menu_functions[func_nm](self, update=True)
         self.tell("Please choose a number from the menu above:")
         c = input()
         if not c or c.isspace():
@@ -240,24 +275,21 @@ class TermUser(User):
             if choice >= 0:
                 for item in self.menu:
                     if item["id"] == choice:
-                        if item["func"] == "line_graph":
-                            self.show_line_graph = True
-                            self.show_scatter_plot = False
-                            self.show_bar_graph = False
-                        elif item["func"] == "scatter_plot":
-                            self.show_scatter_plot = True
-                            self.show_line_graph = False
-                            self.show_bar_graph = False
-                        elif item["func"] == "bar_graph":
-                            self.show_bar_graph = True
-                            self.show_line_graph = False
-                            self.show_scatter_plot = False
-                        return menu_functions[item["func"]](self)
+                        if self.get_radio(item):
+                            self.set_radio_options(item)
+                        return menu_functions[item[FUNC]](self)
             self.tell_err(str(c) + " is an invalid option. "
                           + "Please enter a valid option.")
         else:
             self.tell_err(str(c) + " is an invalid option. "
                           + "Please enter a valid option.")
+
+    def set_radio_options(self, item):
+        radio_set = item[RADIO_SET]
+        item[ACTIVE] = True
+        for opt in self.menu:
+            if (opt is not item and self.get_radio(opt) == radio_set):
+                opt[ACTIVE] = False
 
 
 class TestUser(TermUser):
@@ -279,6 +311,7 @@ class APIUser(User):
     frontend.
     This class needs from_json() and to_json() methods.
     """
+
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
         if 'serial_obj' in kwargs is not None:
@@ -321,12 +354,11 @@ class APIUser(User):
             return menu
 
     def to_json(self):
-        return {"user_msgs": self.user_msgs,
-                "name": self.name,
-                "debug": self.debug_msg
-                }
+        json_rep = super().to_json()
+        json_rep["user_msgs"] = self.user_msgs
+        json_rep["debug"] = self.debug_msg
+        json_rep["name"] = self.name
+        return json_rep
 
     def from_json(self, serial_obj):
-        self.user_msgs = serial_obj['user_msgs']
-        self.name = serial_obj['name']
-        self.debug_msg = serial_obj['debug']
+        super().from_json(serial_obj)

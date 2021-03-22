@@ -1,7 +1,5 @@
 """
-This is a minimal model that inherits from model.py
-and just sets up a couple of agents in two groups that
-do   nothing except move around randomly.
+El Farol Bar model: a famous model from the Santa Fe Institute.
 """
 
 import random
@@ -104,8 +102,7 @@ def drinker_action(agent, **kwargs):
 
 def create_drinker(name, i, exec_key=None, action=drinker_action):
     """
-    Create a drinker
-    drinkers starts with a random motivation
+    Create a drinker, who starts with a random motivation.
     """
     rand_motive = random.random()
     recent_crowds = [HALF_FULL]*mem_capacity
@@ -139,7 +136,7 @@ class ElFarol(Model):
 
 def create_model(serial_obj=None, props=None):
     """
-    This is for the sake of the API server:
+    `create_model()` exists for the sake of the API server:
     """
     global mem_capacity
     if serial_obj is not None:

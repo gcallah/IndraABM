@@ -7,13 +7,12 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restplus import Resource, Api, fields
 from propargs.constants import VALUE, ATYPE, INT, HIVAL, LOWVAL
-from registry.registry import registry, get_agent, create_exec_env
+from registry.registry import registry, get_agent, create_exec_env, get_user
 from registry.model_db import get_models
 from APIServer.api_utils import err_return
 from APIServer.api_utils import json_converter
 from APIServer.props_api import get_props
 from APIServer.model_api import run_model, create_model
-from lib.user import APIUser
 
 HEROKU_PORT = 1643
 
@@ -33,14 +32,6 @@ class HelloWorld(Resource):
         A trivial endpoint just to see if we are running at all.
         """
         return {'hello': 'world'}
-
-@api.route('/newendpoint')
-class NewEndPoint(Resource):
-	def get(self):
-		"""
-		The newly created endpoint just to see if we working.
-		"""
-		return {'Yes we' : 'are working'}
 
 
 @api.route('/endpoints')
@@ -74,6 +65,7 @@ class Models(Resource):
     """
     This class deals with the database of models.
     """
+
     @api.doc(params={'active': 'Show only active models'})
     def get(self, active=False):
         """
@@ -118,7 +110,6 @@ class Props(Resource):
         This should return a new model with the revised props.
         """
         exec_key = api.payload['exec_key'].get('val')
-        APIUser("API_USER", exec_key=exec_key)
         model = json_converter(create_model(model_id, api.payload, indra_dir))
         registry.save_reg(exec_key)
         return model
@@ -126,11 +117,15 @@ class Props(Resource):
 
 @api.route('/models/menu/<int:execution_id>')
 class ModelMenu(Resource):
+    @api.response(200, 'Success')
+    @api.response(404, 'Not Found')
     def get(self, execution_id):
         """
         This returns the menu with which a model interacts with a user.
         """
-        user = get_agent("API_USER", exec_key=execution_id)
+        user = get_user(execution_id)
+        if user is None:
+            raise (NotFound("User object not found."))
         return user()
 
 
@@ -159,15 +154,22 @@ class RunModel(Resource):
         return json_converter(model)
 
 
-@api.route('/agent')
+@api.route('/locations/get')
+class Locations(Resource):
+    def get(self):
+        return {'locations': 'locations will be here'}
+
+
+@api.route('/agent/get')
 class Agent(Resource):
     """
     This endpoint gets an agent given exec key and agent name
     """
+
     @api.doc(params={'exec_key': 'Indra execution key.',
                      'name': 'Name of agent to fetch.'})
     @api.response(200, 'Success')
-    @api.response(404, 'Not Found') # Returns a 404 error when no agent's are found
+    @api.response(404, 'Not Found')
     def get(self):
         """
         Get agent by name from the registry.
@@ -178,7 +180,7 @@ class Agent(Resource):
             return err_return("You must pass an agent name.")
         agent = get_agent(name, exec_key)
         if agent is None:
-            raise(NotFound(f"Agent {name} not found."))
+            raise (NotFound(f"Agent {name} not found."))
             # trying out raising an exception so comment dis out:
             # return err_return(f"Agent {name} not found.")
         return agent.to_json()
@@ -198,6 +200,7 @@ class ClearRegistry(Resource):
     This clears the entries for one `exec_key` out of the registry.
     Q: What is this for?
     """
+
     def get(self, exec_key):
         print("Clearing registry for key - {}".format(exec_key))
         try:

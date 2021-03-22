@@ -14,7 +14,6 @@ from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
 from registry import registry
 
-
 PROPS_PATH = "./props"
 DEF_TIME = 10
 DEF_NUM_MEMBERS = 1
@@ -103,16 +102,16 @@ class Model():
     def __init__(self, model_nm="BaseModel", props=None,
                  grp_struct=DEF_GRP_STRUCT,
                  env_action=None, random_placing=True,
-                 serial_obj=None, exec_key=None):
+                 serial_obj=None, exec_key=None, create_for_test=False):
         self.num_switches = 0
         if serial_obj is None:
             self.create_anew(model_nm, props, grp_struct, exec_key,
-                             env_action, random_placing)
+                             env_action, random_placing, create_for_test)
         else:
             self.create_from_serial_obj(serial_obj)
 
     def create_anew(self, model_nm, props, grp_struct, exec_key,
-                    env_action, random_placing):
+                    env_action, random_placing, create_for_test=False):
         """
         Create the model for the first time.
         """
@@ -124,7 +123,8 @@ class Model():
         elif self.props.get("exec_key", None) is not None:
             self.exec_key = self.props.get("exec_key")
         else:
-            self.exec_key = registry.create_exec_env()
+            self.exec_key = registry.create_exec_env(
+                create_for_test=create_for_test)
         self.create_user()
         registry.reg_model(self, self.exec_key)
         self.groups = self.create_groups()
@@ -223,6 +223,8 @@ class Model():
                        exec_key=self.exec_key, width=self.width,
                        height=self.height, action=env_action,
                        random_placing=random_placing)
+        self.env.user = self.user
+        self.env.user_type = self.user_type
         self.create_pop_hist()
         return self.env
 

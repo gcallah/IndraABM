@@ -11,6 +11,9 @@ prod: tests
 	-git commit -a
 	git push origin master
 
+docs:
+	pydoc3 -w ./*.py
+
 lint: $(patsubst %.py,%.pylint,$(PYTHONFILES))
 
 pytests: FORCE
