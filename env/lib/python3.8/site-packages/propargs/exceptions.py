@@ -1,0 +1,4 @@
+
+
+class PropsNotInitializedException(Exception):
+    pass
