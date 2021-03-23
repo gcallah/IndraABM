@@ -215,8 +215,13 @@ class GetRegistry(Resource):
     """
     @api.response(200, 'Success')
     @api.response(404, 'Not Found')
-    def get_reg(self):
+    def get_reg(self, exec_key):
         """ Get the registry """
+        print("Getting the registry for key - {}".format(exec_key))
+        if registry.save_reg(exec_key) is not None:
+            registry.save_reg(exec_key)
+            return {'success': True}
+        print("Registry Key - {} does not exist in registry".format(exec_key))
 
 
 @api.route('/registry/clear/<int:exec_key>')
