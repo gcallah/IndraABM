@@ -24,7 +24,7 @@ import types
 from lib.agent import Agent
 from lib.env import Env
 from lib.user import APIUser, TermUser, TestUser
-from lib.utils import Debug
+from lib.utils import Debug, PA_INDRA_HOME, INDRA_HOME_VAR
 
 EXEC_KEY = "exec_key"
 
@@ -224,7 +224,7 @@ class Registry(object):
     def __init__(self):
         print("Creating new registry")
         self.registries = dict()
-        indra_dir = os.getenv("INDRA_HOME", "/home/IndraABM/IndraABM")
+        indra_dir = os.getenv(INDRA_HOME_VAR, PA_INDRA_HOME)
         self.db_dir = os.path.join(indra_dir, 'registry', 'db')
         if not os.path.exists(self.db_dir):
             os.mkdir(self.db_dir)
