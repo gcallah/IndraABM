@@ -18,7 +18,7 @@
             "func": "scatter_plot",
             "question": "Display a scatter plot",
             "radio_set": 1,
-            "active": true
+            "active": false
         },
         {
             "id": 4,

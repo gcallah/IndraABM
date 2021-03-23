@@ -52,7 +52,7 @@ STEEP_GRADIENT = 20
 
 
 def gen_util_func(qty, divisibility):
-    return max_util * ((DIM_UTIL_BASE) ** (-qty/divisibility))
+    return max_util * ((DIM_UTIL_BASE) ** (-qty*divisibility))
 
 
 def penguin_util_func(qty, divisibility=None):
@@ -69,6 +69,11 @@ def bear_util_func(qty, divisibility=None):
 
 def steep_util_func(qty, divisibility=None):
     return 20 * (2 ** (-qty))
+
+
+def test_util_func(f, max, d):
+    for q in range(0, max):
+        print(f"Utility: {f(q, d)}")
 
 
 util_funcs = {
@@ -96,24 +101,11 @@ def get_util_func(fname):
 
 
 def trade_debug(agent1, agent2, good1, good2, amt1, amt2, gain, loss):
-    if Debug().debug:
+    if Debug.debug and (good1 == "gold" or good1 == "gold"):
         print(f"       {agent1.name} is offering {amt1} of {good1} to "
               + f"{agent2.name} for {amt2} of {good2} with a "
               + f"gain of {round(gain, 2)} and "
               + f"a loss of {round(loss, 2)}")
-
-
-def trader_debug(agent):
-    if Debug().debug:
-        print(f"{agent.name} has {goods_to_str(agent[GOODS])}")
-
-
-def offer_debug(agent, their_good, their_amt, counterparty=None):
-    if Debug().debug:
-        if counterparty is None:
-            counterparty = "Unknown"
-        print(f"       {agent.name} has received an offer of {their_amt} "
-              + f"of {their_good} from {counterparty}")
 
 
 def is_complement(trader, good, comp):
@@ -354,11 +346,13 @@ def negotiate(trade):
     """
     See if these two traders (held in `trade` can strike a deal.
     """
-    if Debug.debug:
-        print(f"Attempting {str(trade)}")
+    if Debug.debug2:
+        pass
+        # print(f"Attempting {str(trade)}")
     while trade.status != ACCEPT and trade.status != REJECT:
-        if Debug.debug:
-            print(f"{repr(trade)}")
+        if Debug.debug2:
+            pass
+            # print(f"{repr(trade)}")
         side1 = trade.get_side(TRADER1)
         side2 = trade.get_side(TRADER2)
         if trade.status == INIT1:

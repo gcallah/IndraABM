@@ -157,7 +157,7 @@ class RunModel(Resource):
 @api.route('/locations/get')
 class Locations(Resource):
     """
-    This endpoint gets an agent agent coordinate location 
+    This endpoint gets an agent agent coordinate location.
     """
     @api.doc(params={'exec_key': 'Indra execution key.',
                      'name': 'Name of agent to fetch.'})
@@ -177,8 +177,8 @@ class Locations(Resource):
 
         coord = agent.to_json()["pos"]
 
-        return {"x" : coord[0],
-                "y" : coord[1]}
+        return {"x": coord[0],
+                "y": coord[1]}
 
 
 @api.route('/agent/get')
@@ -217,7 +217,6 @@ class GetRegistry(Resource):
     @api.response(404, 'Not Found')
     def get_reg(self):
         """ Get the registry """
-        
 
 
 @api.route('/registry/clear/<int:exec_key>')
