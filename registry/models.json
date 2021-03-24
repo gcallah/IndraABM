@@ -36,7 +36,7 @@
         "module": "fashion"
     },
     {
-        "active": false,
+        "active": true,
         "doc": "Wolves eat sheep in a meadow and their populations' cycle.",
         "graph": "line",
         "modelID": 4,
@@ -45,7 +45,7 @@
         "module": "wolfsheep"
     },
     {
-        "active": false,
+        "active": true,
         "doc": "Examine how fires spread in a forest.",
         "graph": "scatter",
         "modelID": 5,
@@ -90,7 +90,7 @@
         "module": "money"
     },
     {
-        "active": false,
+        "active": true,
         "doc": "A model which simulates the spread of panic",
         "graph": "scatter",
         "modelID": 10,
