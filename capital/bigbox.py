@@ -11,6 +11,8 @@ from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
 from lib.utils import Debug
 import random
 
+DEBUG = Debug()
+
 MODEL_NAME = "bigbox"
 NUM_OF_CONSUMERS = 50
 NUM_OF_MP = 8
@@ -90,7 +92,7 @@ def consumer_action(agent, **kwargs):
     """
     Default basic model. To be fixed in next meeting
     """
-    if Debug().debug:
+    if DEBUG.debug:
         print("Agent {} is located at {}".format(agent.name,
                                                  agent.get_pos()))
     return MOVE
@@ -100,7 +102,7 @@ def mp_action(agent, **kwargs):
     """
     Default basic model. To be fixed in next meeting
     """
-    if Debug().debug:
+    if DEBUG.debug:
         print("Agent {} is located at {}".format(agent.name,
                                                  agent.get_pos()))
     return MOVE

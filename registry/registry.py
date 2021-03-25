@@ -26,6 +26,8 @@ from lib.env import Env
 from lib.user import APIUser, TermUser, TestUser
 from lib.utils import Debug, PA_INDRA_HOME, INDRA_HOME_VAR
 
+DEBUG = Debug()
+
 EXEC_KEY = "exec_key"
 
 ENV_NM = 'env'
@@ -420,7 +422,7 @@ class Registry(object):
         Remove an execution environment from the registry.
         """
         if self.__does_key_exists(key):
-            if Debug().debug_lib:
+            if DEBUG.debug_lib:
                 print("Clearing exec env {} from registry".format(key))
             del self.registries[key]
             if isfile(self.__get_reg_file_name(key)):

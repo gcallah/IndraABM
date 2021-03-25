@@ -8,6 +8,8 @@ import copy
 from registry.registry import get_env
 from lib.utils import Debug
 
+DEBUG = Debug()
+
 TRADE_STATUS = 0
 
 OFFER_FROM_1 = 5
@@ -101,7 +103,7 @@ def get_util_func(fname):
 
 
 def trade_debug(agent1, agent2, good1, good2, amt1, amt2, gain, loss):
-    if Debug.debug and (good1 == "gold" or good1 == "gold"):
+    if DEBUG.debug and (good1 == "gold" or good1 == "gold"):
         print(f"       {agent1.name} is offering {amt1} of {good1} to "
               + f"{agent2.name} for {amt2} of {good2} with a "
               + f"gain of {round(gain, 2)} and "
@@ -336,7 +338,7 @@ def trade_acceptable(trade_state, which_side):
     # but gives up some of its own:
     my_side_loss = utility_delta(my_side["trader"], my_side["good"],
                                  my_side["amt"])
-    if Debug.debug:
+    if DEBUG.debug:
         print(f"my gain: {my_side_gain}; my loss: {my_side_loss}")
     if my_side_gain > my_side_loss:
         return True
@@ -346,11 +348,11 @@ def negotiate(trade):
     """
     See if these two traders (held in `trade` can strike a deal.
     """
-    if Debug.debug2:
+    if DEBUG.debug2:
         pass
         # print(f"Attempting {str(trade)}")
     while trade.status != ACCEPT and trade.status != REJECT:
-        if Debug.debug2:
+        if DEBUG.debug2:
             pass
             # print(f"{repr(trade)}")
         side1 = trade.get_side(TRADER1)
@@ -376,7 +378,7 @@ def negotiate(trade):
         elif trade.status == OFFER_FROM_2:
             # eval trade from side1 POV:
             if trade_acceptable(trade, TRADER1):
-                if Debug.debug:
+                if DEBUG.debug:
                     print("Accepting trade!")
                 trade.status = ACCEPT
             else:

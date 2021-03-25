@@ -19,6 +19,8 @@ import capital.good_structure as gs
 import capital.trade_utils as tu
 from lib.utils import Debug
 
+DEBUG = Debug()
+
 MODEL_NAME = "complementary"
 DEF_NUM_TRADER = 2
 
@@ -166,7 +168,7 @@ def set_up(props=None):
 def main():
     set_up()
 
-    if Debug().debug:
+    if DEBUG.debug:
         get_env().user.tell(get_env().__repr__())
 
     get_env()()

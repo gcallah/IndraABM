@@ -10,6 +10,8 @@ from lib.model import COLOR, MBR_CREATOR
 from registry.registry import get_model
 from lib.utils import Debug
 
+DEBUG = Debug()
+
 AT_HOME = "At home"
 AT_BAR = "At bar"
 
@@ -64,7 +66,7 @@ def memory_check(agent):
     w_sum = weighted_sum(mem_attendance)
     total = add_up_to(len(mem_attendance))
     percent_full = w_sum / total
-    if Debug().debug:
+    if DEBUG.debug:
         print("Percent empty:", 1 - percent_full)
     return percent_full
 
@@ -75,7 +77,7 @@ def drinker_action(agent, **kwargs):
     The decision is based on the agent's memory of how crowded the
     bar has been recently (a parameter).
     """
-    if Debug().debug:
+    if DEBUG.debug:
         print("Alcoholic {} is located at {}".format(agent.name,
                                                      agent.get_pos()))
     bar = get_model(agent.exec_key)

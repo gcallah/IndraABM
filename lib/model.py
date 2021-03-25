@@ -14,6 +14,8 @@ from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
 from registry import registry
 
+DEBUG = Debug()
+
 PROPS_PATH = "./props"
 DEF_TIME = 10
 DEF_NUM_MEMBERS = 1
@@ -34,7 +36,7 @@ def def_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    if Debug().debug_lib:
+    if DEBUG.debug_lib:
         print("Agent {} is acting".format(agent.name))
     return DONT_MOVE
 
@@ -282,11 +284,11 @@ class Model():
             self.period += 1
 
             # now we call upon the env to act:
-            if Debug().debug_lib:
+            if DEBUG.debug_lib:
                 print("From model, calling env to act.")
             (num_acts, num_moves) = self.env()
             census_rpt = self.rpt_census(num_acts, num_moves)
-            if Debug().debug_lib:
+            if DEBUG.debug_lib:
                 print(census_rpt)
             self.user.tell(census_rpt)
             # these things need to be done before action loop:

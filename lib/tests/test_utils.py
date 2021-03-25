@@ -21,7 +21,7 @@ class DebugTestCase(TestCase):
 
     def setUp(self):
         self.true_values = ["1", "True", "true"]
-        self.false_values = ["0", "False", "false", ""]
+        self.false_values = ["0", "False", "false", "", "None"]
 
     def test_debug(self):
         env_var = INDRA_DEBUG_VAR

@@ -15,6 +15,8 @@ import numpy as np
 
 from lib.utils import get_func_name, Debug, PA_INDRA_HOME
 
+DEBUG = Debug()
+
 # x and y indices
 X = 0
 Y = 1
@@ -130,22 +132,22 @@ def switch(agent_nm, grp1_nm, grp2_nm, exec_key):
     from registry.registry import get_agent
     agent = get_agent(agent_nm, exec_key)
     if agent is None:
-        if Debug().debug_lib:
+        if DEBUG.debug_lib:
             print("In switch; could not find agent: " + str(agent))
         return
     grp1 = get_agent(grp1_nm, exec_key)
     if grp1 is None:
-        if Debug().debug_lib:
+        if DEBUG.debug_lib:
             print("In switch; could not find from group: " + str(grp1))
         return
     grp2 = get_agent(grp2_nm, exec_key)
     if grp2 is None:
-        if Debug().debug_lib:
+        if DEBUG.debug_lib:
             print("In switch; could not find to group: " + str(grp2))
         return
     split_em = split(grp1, agent)
     joined_em = join(grp2, agent)
-    if Debug().debug_lib and split_em and joined_em:
+    if DEBUG.debug_lib and split_em and joined_em:
         print("Switched agent " + str(agent)
               + " from grp " + grp1_nm
               + "(id: " + str(id(grp1)) + ")"
@@ -225,7 +227,7 @@ class Agent(object):
         self.from_json(serial_obj)
 
     def __pickle_func(self, pickle_file: str, func):
-        if Debug().debug_lib:
+        if DEBUG.debug_lib:
             print("Pickling to: {}".format(pickle_file))
         with open(pickle_file, 'wb') as file:
             pickle.dump(func, file)
@@ -399,7 +401,7 @@ class Agent(object):
                         angle = self["angle"]
                     self.move(max_move=max_move, angle=angle)
                     moved = True
-            elif Debug().debug2_lib:
+            elif DEBUG.debug2_lib:
                 print("I'm " + self.name
                       + " and I have no action!")
         else:

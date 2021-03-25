@@ -9,6 +9,8 @@ from lib.display_methods import RED, BLUE
 from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
 from lib.utils import Debug
 
+DEBUG = Debug()
+
 MODEL_NAME = "basic"
 DEF_RED_MBRS = 2
 DEF_BLUE_MBRS = 2
@@ -19,7 +21,7 @@ def basic_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    if Debug().debug:
+    if DEBUG.debug:
         print("Agent {} is located at {}".format(agent.name,
                                                  agent.get_pos()))
     return MOVE

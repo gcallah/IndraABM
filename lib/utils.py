@@ -87,7 +87,7 @@ class Debug:
         # Switches debugging for the library modules
         self.debug_lib = self.get_env_var(INDRA_DEBUG_LIB_VAR)
 
-        # Switches debugging for the library modules
+        # Switches deeper debugging for the library modules
         self.debug2_lib = self.get_env_var(INDRA_DEBUG2_LIB_VAR)
 
     def get_env_var(self, var_name):
@@ -98,7 +98,7 @@ class Debug:
             return False
 
         # Accept different styles of writing true
-        if env_var.lower() == "true" or env_var == "1":
+        if (env_var.lower() == "true") or (env_var == "1"):
             return True
         else:
             return False

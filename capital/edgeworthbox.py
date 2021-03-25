@@ -14,6 +14,8 @@ from capital.trade_utils2 import GEN_UTIL_FUNC, UTIL_FUNC, AMT_AVAIL
 from capital.trade_utils2 import seek_a_trade
 from lib.utils import Debug
 
+DEBUG = Debug()
+
 MODEL_NAME = "edgeworthbox"
 DEF_WINE_MBRS = 1
 DEF_CHEESE_MBRS = 1
@@ -108,7 +110,7 @@ class EdgeworthBox(Model):
         Directly accessing self.env.pop_hist breaks encapsulation.
         But that's OK since we plan to move pop_hist into model.
         """
-        if Debug().debug2:
+        if DEBUG.debug2:
             print(repr(self))
         cheesey = get_agent(CHEESE_AGENT, exec_key=self.exec_key)
         self.env.pop_hist.record_pop("cheese",
