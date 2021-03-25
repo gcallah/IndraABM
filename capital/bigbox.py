@@ -65,6 +65,7 @@ def get_rand_good():
     return random.choice(cons_goods)
 
 
+# create consumer, mom and pop, and big box
 def create_consumer(name, i, props=None, **kwargs):
     """
     Create consumers
@@ -78,7 +79,7 @@ def create_consumer(name, i, props=None, **kwargs):
                  action=consumer_action, **kwargs)
 
 
-def create_mp(store_grp, i, props=None, **kwargs):
+def create_mp(store_grp, i, **kwargs):
     """
     Create a mom and pop store.
     """
@@ -88,23 +89,41 @@ def create_mp(store_grp, i, props=None, **kwargs):
                  action=mp_action, **kwargs)
 
 
-def consumer_action(agent, **kwargs):
+def create_bb(name, **kwargs):
+    """
+    Create a big box store.
+    """
+    pass
+
+
+# action for consumer, mom and pop, and big box
+def consumer_action(consumer, **kwargs):
     """
     Default basic model. To be fixed in next meeting
     """
     if DEBUG.debug:
-        print("Agent {} is located at {}".format(agent.name,
-                                                 agent.get_pos()))
+        print("Consumer {} is located at {}".format(consumer.name,
+                                                    consumer.get_pos()))
     return MOVE
 
 
-def mp_action(agent, **kwargs):
+def mp_action(mp, **kwargs):
     """
     Default basic model. To be fixed in next meeting
     """
     if DEBUG.debug:
-        print("Agent {} is located at {}".format(agent.name,
-                                                 agent.get_pos()))
+        print("Mom and pop {} is located at {}".format(mp.name,
+                                                       mp.get_pos()))
+    return MOVE
+
+
+def bb_action(bb, **kwargs):
+    """
+    Default basic model. To be fixed in next meeting
+    """
+    if DEBUG.debug:
+        print("Mom and pop {} is located at {}".format(bb.name,
+                                                       bb.get_pos()))
     return MOVE
 
 
