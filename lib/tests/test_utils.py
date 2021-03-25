@@ -11,6 +11,14 @@ from lib.utils import INDRA_DEBUG_LIB_VAR, INDRA_DEBUG2_LIB_VAR
 
 
 class DebugTestCase(TestCase):
+    """
+    NOTE/README:
+    Here we initialize a new Debug object each time we test, because we keep
+    changing the environment variables for testing. The Debug class reads the
+    environment variables when it was created and thus a new Debug object needs
+    to be created whenever we change the environment variables for testing.
+    """
+
     def setUp(self):
         self.true_values = ["1", "True", "true"]
         self.false_values = ["0", "False", "false", ""]
