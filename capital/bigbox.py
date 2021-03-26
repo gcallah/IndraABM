@@ -9,6 +9,7 @@ from lib.agent import MOVE, Agent
 from lib.display_methods import BLACK, BLUE, GREEN, RED, ORANGE, PURPLE
 from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
 from lib.utils import Debug
+from lib.space import get_neighbor
 import random
 
 DEBUG = Debug()
@@ -93,18 +94,43 @@ def create_bb(name, **kwargs):
     """
     Create a big box store.
     """
-    pass
+    return Agent(name=name,
+                 attrs={"expense": bb_expense,
+                        "capital": bb_capital},
+                 action=bb_action)
 
 
 # action for consumer, mom and pop, and big box
 def consumer_action(consumer, **kwargs):
     """
-    Default basic model. To be fixed in next meeting
+    Check shops near consumer and
+    consumer decide where to shop at.
     """
-    if DEBUG.debug:
-        print("Consumer {} is located at {}".format(consumer.name,
-                                                    consumer.get_pos()))
+    global item_needed
+    item_needed = consumer["item needed"]
+    shop_at = get_neighbor(consumer, pred=sells_good)
+    if shop_at is None:
+        return MOVE
+
+    transaction(shop_at, consumer)
+    if DEBUG:
+        print("     someone shopped at ",   shop_at)
+    consumer["item needed"] = get_rand_good()
     return MOVE
+
+
+def sells_good(store):
+    pass
+    """
+    will be finished in the next meeting
+    """
+
+
+def transaction(store, consumer):
+    """
+    Add money to the store's capital from consumer.
+    """
+    store["capital"] += consumer["spending power"]
 
 
 def mp_action(mp, **kwargs):
