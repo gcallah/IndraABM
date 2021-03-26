@@ -109,22 +109,32 @@ def consumer_action(consumer, **kwargs):
 
 def mp_action(mp, **kwargs):
     """
-    Default basic model. To be fixed in next meeting
+    Deduct expenses from mom and pop stores and
+    check if mom and pop store goes out of business.
     """
-    if DEBUG.debug:
-        print("Mom and pop {} is located at {}".format(mp.name,
-                                                       mp.get_pos()))
-    return MOVE
+    common_action(mp)
 
 
 def bb_action(bb, **kwargs):
     """
-    Default basic model. To be fixed in next meeting
+    Common action to deduct expenses and
+    check whether the entity goes out of business
     """
-    if DEBUG.debug:
-        print("Mom and pop {} is located at {}".format(bb.name,
-                                                       bb.get_pos()))
-    return MOVE
+    common_action(bb)
+
+
+def common_action(business):
+    """
+    Common action to deduct expenses and
+    check whether the entity goes out of business
+    """
+    business["capital"] -= business["expense"]
+    if DEBUG:
+        print("       ", business, "has a capital of ", business["capital"])
+    if business["capital"] <= 0:
+        business.die()
+        if DEBUG:
+            print("       ", business, "is out of business.")
 
 
 bigbox_grps = {
@@ -165,7 +175,6 @@ def create_model(serial_obj=None, props=None):
 def main():
     model = create_model()
     model.run()
-
     return 0
 
 
