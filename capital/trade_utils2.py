@@ -336,18 +336,12 @@ def trade_acceptable(trade_state, which_side):
     my_side_gain = utility_delta(my_side["trader"], other_side["good"],
                                  other_side["amt"])
     # but gives up some of its own:
-<<<<<<< HEAD
     my_side_loss = -utility_delta(my_side["trader"], my_side["good"],
                                   -my_side["amt"])
     print("This is a comparison of -u_delta(-amt) vs u_delta(amt):")
     print(my_side_loss, utility_delta(my_side["trader"], my_side["good"],
                                       my_side["amt"]))
-    if Debug.debug:
-=======
-    my_side_loss = utility_delta(my_side["trader"], my_side["good"],
-                                 my_side["amt"])
     if DEBUG.debug:
->>>>>>> 3b324825638cc38bee44a221ff50ba52a08bc3e7
         print(f"my gain: {my_side_gain}; my loss: {my_side_loss}")
     if my_side_gain > my_side_loss:
         return True
