@@ -85,13 +85,6 @@ class Test(TestCase):
     def test_model_run(self):
         model_id = 0
         props = self.props.get(model_id)
-        for prop_name in props:
-            prop_val = props[prop_name]
-            # this cute attempt at randomization won't work:
-            # not all random combos of params are runnable!
-            # e.g., we can't put 400 agents in a 4 cell grid
-            # if prop_name != "exec_key" and prop_val['atype'] == "INT":
-            #    prop_val['val'] = random.randint(prop_val['lowval'], prop_val['hival'])
         with app.test_client() as client:
             client.environ_base['CONTENT_TYPE'] = 'application/json'
             rv = client.put('/models/props/' + str(model_id),

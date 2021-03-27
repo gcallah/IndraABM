@@ -4,5 +4,3 @@ flake8
 coverage
 nose
 urllib3
-asyncio
-aiohttp
