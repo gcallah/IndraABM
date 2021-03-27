@@ -9,7 +9,10 @@ from lib.agent import MOVE, Agent
 from lib.display_methods import BLACK, BLUE, GREEN, RED, ORANGE, PURPLE
 from lib.model import Model, NUM_MBRS, MBR_ACTION, NUM_MBRS_PROP, COLOR
 from lib.utils import Debug
+from lib.space import get_neighbor
 import random
+
+DEBUG = Debug()
 
 MODEL_NAME = "bigbox"
 NUM_OF_CONSUMERS = 50
@@ -63,6 +66,7 @@ def get_rand_good():
     return random.choice(cons_goods)
 
 
+# create consumer, mom and pop, and big box
 def create_consumer(name, i, props=None, **kwargs):
     """
     Create consumers
@@ -76,7 +80,7 @@ def create_consumer(name, i, props=None, **kwargs):
                  action=consumer_action, **kwargs)
 
 
-def create_mp(store_grp, i, props=None, **kwargs):
+def create_mp(store_grp, i, **kwargs):
     """
     Create a mom and pop store.
     """
@@ -86,24 +90,77 @@ def create_mp(store_grp, i, props=None, **kwargs):
                  action=mp_action, **kwargs)
 
 
-def consumer_action(agent, **kwargs):
+def create_bb(name, **kwargs):
     """
-    Default basic model. To be fixed in next meeting
+    Create a big box store.
     """
-    if Debug().debug:
-        print("Agent {} is located at {}".format(agent.name,
-                                                 agent.get_pos()))
+    return Agent(name=name,
+                 attrs={"expense": bb_expense,
+                        "capital": bb_capital},
+                 action=bb_action)
+
+
+# action for consumer, mom and pop, and big box
+def consumer_action(consumer, **kwargs):
+    """
+    Check shops near consumer and
+    consumer decide where to shop at.
+    """
+    global item_needed
+    item_needed = consumer["item needed"]
+    shop_at = get_neighbor(consumer, pred=sells_good)
+    if shop_at is None:
+        return MOVE
+
+    transaction(shop_at, consumer)
+    if DEBUG:
+        print("     someone shopped at ",   shop_at)
+    consumer["item needed"] = get_rand_good()
     return MOVE
 
 
-def mp_action(agent, **kwargs):
+def sells_good(store):
+    pass
     """
-    Default basic model. To be fixed in next meeting
+    will be finished in the next meeting
     """
-    if Debug().debug:
-        print("Agent {} is located at {}".format(agent.name,
-                                                 agent.get_pos()))
-    return MOVE
+
+
+def transaction(store, consumer):
+    """
+    Add money to the store's capital from consumer.
+    """
+    store["capital"] += consumer["spending power"]
+
+
+def mp_action(mp, **kwargs):
+    """
+    Deduct expenses from mom and pop stores and
+    check if mom and pop store goes out of business.
+    """
+    common_action(mp)
+
+
+def bb_action(bb, **kwargs):
+    """
+    Common action to deduct expenses and
+    check whether the entity goes out of business
+    """
+    common_action(bb)
+
+
+def common_action(business):
+    """
+    Common action to deduct expenses and
+    check whether the entity goes out of business
+    """
+    business["capital"] -= business["expense"]
+    if DEBUG:
+        print("       ", business, "has a capital of ", business["capital"])
+    if business["capital"] <= 0:
+        business.die()
+        if DEBUG:
+            print("       ", business, "is out of business.")
 
 
 bigbox_grps = {
@@ -144,7 +201,6 @@ def create_model(serial_obj=None, props=None):
 def main():
     model = create_model()
     model.run()
-
     return 0
 
 

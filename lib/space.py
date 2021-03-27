@@ -10,6 +10,8 @@ from lib.agent import is_group, AgentEncoder, X, Y
 from lib.group import Group
 from lib.utils import Debug
 
+DEBUG = Debug()
+
 DEF_WIDTH = 10
 DEF_HEIGHT = 10
 
@@ -44,7 +46,7 @@ def out_of_bounds(x, y, x1, y1, x2, y2):
 
 
 def debug_agent_pos(agent):
-    if Debug().debug_lib:
+    if DEBUG.debug_lib:
         print(str(agent), "with id", id(agent), "is at", agent.get_pos())
 
 
@@ -75,7 +77,7 @@ def in_hood(agent, other, hood_sz):
     the given distance
     """
     d = distance(agent, other)
-    if Debug().debug2_lib:
+    if DEBUG.debug2_lib:
         print("Distance between " + str(agent)
               + " and " + str(other) + " is "
               + str(d))
@@ -261,7 +263,7 @@ class Space(Group):
         Is da grid full?
         """
         if len(self.locations) >= self.grid_size():
-            if Debug().debug2_lib:
+            if DEBUG.debug2_lib:
                 print("num locations =", len(self.locations),
                       "; grid size =", self.grid_size())
             return True
@@ -291,12 +293,12 @@ class Space(Group):
                 if not is_group(mbr):
                     if curr_col < self.width:
                         self.place_member(mbr, xy=(curr_col, curr_row))
-                        if Debug().debug_lib:
+                        if DEBUG.debug_lib:
                             print("Placing member at (" + str(curr_col) + ","
                                   + str(curr_row) + ")")
                         curr_col += 1
                     if curr_col == self.width:
-                        if Debug().debug_lib:
+                        if DEBUG.debug_lib:
                             print("Moving up a row from", curr_row,
                                   "to", curr_row + 1)
                         curr_col = 0
@@ -592,16 +594,16 @@ class Space(Group):
         closest = None
         min_distance_seen = MAX_WIDTH * MAX_HEIGHT
         for key, other_nm in self.locations.items():
-            if Debug().debug_lib:
+            if DEBUG.debug_lib:
                 print("Checking ", other_nm, "for closeness")
             other = get_agent(other_nm, self.exec_key)
             if other is agent or other is None:
                 continue
             d = distance(agent, other)
-            if Debug().debug_lib:
+            if DEBUG.debug_lib:
                 print("Distance to ", other_nm, "is", d)
             if d < min_distance_seen:
-                if Debug().debug_lib:
+                if DEBUG.debug_lib:
                     print("Replacing closest with", other_nm)
                 min_distance_seen = d
                 closest = other
@@ -625,7 +627,7 @@ class Space(Group):
 
     def exists_neighbor(self, agent, pred=None, exclude_self=True, size=1,
                         region_type=None):
-        if Debug().debug2_lib:
+        if DEBUG.debug2_lib:
             print("agent save_neighbor false is", agent.get("save_neighbors",
                                                             False))
         region = region_factory(space=self, center=(agent.get_x(),
@@ -818,7 +820,7 @@ class Region():
         This fills self.my_agents with all neighbors, and maybe the center
         agents, depending upon `exclude_self`.
         """
-        if Debug().debug2_lib:
+        if DEBUG.debug2_lib:
             print("calling _load_agents in space.py")
         for y in range(self.height):
             y_coord = self.SW[Y] + y + 1

@@ -115,15 +115,15 @@ class Props(Resource):
         return model
 
 
-@api.route('/models/menu/<int:execution_id>')
+@api.route('/models/menu/<int:exec_key>')
 class ModelMenu(Resource):
     @api.response(200, 'Success')
     @api.response(404, 'Not Found')
-    def get(self, execution_id):
+    def get(self, exec_key):
         """
         This returns the menu with which a model interacts with a user.
         """
-        user = get_user(execution_id)
+        user = get_user(exec_key)
         if user is None:
             raise (NotFound("User object not found."))
         return user()
@@ -156,8 +156,29 @@ class RunModel(Resource):
 
 @api.route('/locations/get')
 class Locations(Resource):
+    """
+    This endpoint gets an agent agent coordinate location.
+    """
+    @api.doc(params={'exec_key': 'Indra execution key.',
+                     'name': 'Name of agent to fetch.'})
+    @api.response(200, 'Success')
+    @api.response(404, 'Not Found')
     def get(self):
-        return {'locations': 'locations will be here'}
+        """
+        Get agent location by name from the registry.
+        """
+        name = request.args.get('name')
+        exec_key = request.args.get('exec_key')
+        if name is None:
+            return err_return("You must pass an agent name.")
+        agent = get_agent(name, exec_key)
+        if agent is None:
+            raise (NotFound(f"Agent {name} not found."))
+
+        coord = agent.to_json()["pos"]
+
+        return {"x": coord[0],
+                "y": coord[1]}
 
 
 @api.route('/agent/get')
@@ -192,6 +213,15 @@ class GetRegistry(Resource):
     This returns a JSON version of the registry for
     session `exec_key` to the client.
     """
+    @api.response(200, 'Success')
+    @api.response(404, 'Not Found')
+    def get_reg(self, exec_key):
+        """ Get the registry """
+        print("Getting the registry for key - {}".format(exec_key))
+        if registry.save_reg(exec_key) is not None:
+            registry.save_reg(exec_key)
+            return {'success': True}
+        print("Registry Key - {} does not exist in registry".format(exec_key))
 
 
 @api.route('/registry/clear/<int:exec_key>')

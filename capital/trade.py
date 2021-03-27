@@ -15,6 +15,8 @@ from capital.trade_utils import seek_a_trade
 from capital.trade_utils import UTIL_FUNC, GEN_UTIL_FUNC, AMT_AVAIL
 import capital.trade_utils as tu
 
+DEBUG = Debug()
+
 MODEL_NAME = "trade"
 DEF_NUM_TRADER = 4
 DEF_NUM_RESOURCES = 20
@@ -88,7 +90,7 @@ def main():
 
     (trader_group, max_utility) = set_up()
 
-    if Debug().debug2:
+    if DEBUG.debug2:
         user_log_notif(get_env().__repr__())
 
     get_env()()

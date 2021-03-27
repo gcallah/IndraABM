@@ -71,8 +71,25 @@ def init_props(model_nm, props=None, model_dir=None,
 
 class Debug:
     """
-    Reads the environment variable to decide on enabling debug outputs
+    Reads the environment variables to decide on enabling debug outputs
     """
+
+    def __init__(self):
+        # Simple debugging level
+        self.debug = self.get_env_var(INDRA_DEBUG_VAR)
+
+        # Deeper debugging level
+        self.debug2 = self.get_env_var(INDRA_DEBUG2_VAR)
+
+        # Deepest debugging level
+        self.debug3 = self.get_env_var(INDRA_DEBUG3_VAR)
+
+        # Switches debugging for the library modules
+        self.debug_lib = self.get_env_var(INDRA_DEBUG_LIB_VAR)
+
+        # Switches deeper debugging for the library modules
+        self.debug2_lib = self.get_env_var(INDRA_DEBUG2_LIB_VAR)
+
     def get_env_var(self, var_name):
         env_var = os.getenv(var_name)
 
@@ -81,42 +98,7 @@ class Debug:
             return False
 
         # Accept different styles of writing true
-        if env_var.lower() == 'true' or env_var == '1':
+        if (env_var.lower() == "true") or (env_var == "1"):
             return True
         else:
             return False
-
-    @property
-    def debug(self):
-        """
-        Simple debugging level
-        """
-        return self.get_env_var(INDRA_DEBUG_VAR)
-
-    @property
-    def debug2(self):
-        """
-        Deeper debugging level
-        """
-        return self.get_env_var(INDRA_DEBUG2_VAR)
-
-    @property
-    def debug3(self):
-        """
-        Deepest debugging level
-        """
-        return self.get_env_var(INDRA_DEBUG3_VAR)
-
-    @property
-    def debug_lib(self):
-        """
-        Switches debugging for the library modules
-        """
-        return self.get_env_var(INDRA_DEBUG_LIB_VAR)
-
-    @property
-    def debug2_lib(self):
-        """
-        Switches debugging for the library modules
-        """
-        return self.get_env_var(INDRA_DEBUG2_LIB_VAR)

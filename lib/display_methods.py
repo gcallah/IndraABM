@@ -36,6 +36,8 @@ if user_type != API:
 
 global imageIO
 
+DEBUG = Debug()
+
 anim_func = None
 
 PURPLE = 'purple'
@@ -189,7 +191,7 @@ def draw_graph(graph, title, hierarchy=False, root=None):
 def get_color(var, i):
     if "color" in var:
         # Make sure it's a valid color
-        if Debug().debug_lib:
+        if DEBUG.debug_lib:
             print("Checking to see if {} is in {}".format(var["color"],
                                                           colors))
         if var["color"] in colors:
@@ -481,7 +483,7 @@ class ScatterPlot():
     def create_scats(self, varieties):
         self.scats = pd.DataFrame(columns=["x", "y", "color", "marker", "var"])
         for i, var in enumerate(varieties):
-            if Debug().debug_lib:
+            if DEBUG.debug_lib:
                 print("Appending {} to legend".format(var))
             self.legend.append(var)
             (x_array, y_array) = self.get_arrays(varieties, var)

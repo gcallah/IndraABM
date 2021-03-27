@@ -12,6 +12,8 @@ from operator import gt, lt
 # from lib.space import in_hood
 # from lib.agent import ratio_to_sin
 
+DEBUG = Debug()
+
 MODEL_NAME = "fashion"
 DEF_NUM_TSETTERS = 5
 DEF_NUM_FOLLOWERS = 55
@@ -28,7 +30,7 @@ def common_action(agent, others_red, others_blue, op1, op2, **kwargs):
     """
     Common action for both followers and trend setters
     """
-    if Debug().debug:
+    if DEBUG.debug:
         print("Agent", str(agent), "is acting.")
 
     # others_red.subset(in_hood, agent, HOOD_SIZE, name=agent.name)

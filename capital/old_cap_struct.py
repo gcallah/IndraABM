@@ -15,6 +15,8 @@ from registry.registry import user_tell
 from indra.space import DEF_HEIGHT, DEF_WIDTH
 from indra.utils import init_props, Debug
 
+DEBUG = Debug()
+
 MODEL_NAME = "capital"
 
 DEF_NUM_ENTR = 10
@@ -217,7 +219,7 @@ def main():
 
     (blue_group, red_group) = set_up()
 
-    if Debug().debug2:
+    if DEBUG.debug2:
         get_env().user.tell(get_env().__repr__())
 
     get_env()()

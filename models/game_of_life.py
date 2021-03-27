@@ -11,6 +11,8 @@ from registry.registry import get_agent
 from lib.agent import X, Y
 from lib.utils import Debug
 
+DEBUG = Debug()
+
 MODEL_NAME = "game_of_life"
 
 DEF_NUM_ALIVE = 4
@@ -33,7 +35,7 @@ def game_agent_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    if Debug().debug:
+    if DEBUG.debug:
         print("GofL agent {} is acting".format(agent.name))
     return DONT_MOVE
 
@@ -78,7 +80,7 @@ def live_or_die(agent):
 
 class GameOfLife(Model):
     def run(self):
-        if Debug().debug:
+        if DEBUG.debug:
             print("My groups are:", self.groups)
         return super().run()
 

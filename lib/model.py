@@ -14,6 +14,7 @@ from lib.user import USER_EXIT
 from lib.display_methods import RED, BLUE
 from registry import registry
 
+DEBUG = Debug()
 
 PROPS_PATH = "./props"
 DEF_TIME = 10
@@ -35,7 +36,7 @@ def def_action(agent, **kwargs):
     """
     A simple default agent action.
     """
-    if Debug().debug_lib:
+    if DEBUG.debug_lib:
         print("Agent {} is acting".format(agent.name))
     return DONT_MOVE
 
@@ -103,16 +104,16 @@ class Model():
     def __init__(self, model_nm="BaseModel", props=None,
                  grp_struct=DEF_GRP_STRUCT,
                  env_action=None, random_placing=True,
-                 serial_obj=None, exec_key=None):
+                 serial_obj=None, exec_key=None, create_for_test=False):
         self.num_switches = 0
         if serial_obj is None:
             self.create_anew(model_nm, props, grp_struct, exec_key,
-                             env_action, random_placing)
+                             env_action, random_placing, create_for_test)
         else:
             self.create_from_serial_obj(serial_obj)
 
     def create_anew(self, model_nm, props, grp_struct, exec_key,
-                    env_action, random_placing):
+                    env_action, random_placing, create_for_test=False):
         """
         Create the model for the first time.
         """
@@ -124,7 +125,8 @@ class Model():
         elif self.props.get("exec_key", None) is not None:
             self.exec_key = self.props.get("exec_key")
         else:
-            self.exec_key = registry.create_exec_env()
+            self.exec_key = registry.create_exec_env(
+                create_for_test=create_for_test)
         self.create_user()
         registry.reg_model(self, self.exec_key)
         self.groups = self.create_groups()
@@ -282,11 +284,11 @@ class Model():
             self.period += 1
 
             # now we call upon the env to act:
-            if Debug().debug_lib:
+            if DEBUG.debug_lib:
                 print("From model, calling env to act.")
             (num_acts, num_moves) = self.env()
             census_rpt = self.rpt_census(num_acts, num_moves)
-            if Debug().debug_lib:
+            if DEBUG.debug_lib:
                 print(census_rpt)
             self.user.tell(census_rpt)
             # these things need to be done before action loop:

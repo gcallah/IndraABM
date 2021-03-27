@@ -11,6 +11,8 @@ from random import choice
 from lib.agent import Agent, join, INF, is_group, AgentEncoder
 from lib.utils import get_func_name, Debug
 
+DEBUG = Debug()
+
 
 def grp_from_nm_dict(nm, dictionary):
     grp = Group(nm)
@@ -158,7 +160,7 @@ class Group(Agent):
         This should return the total of all
         agents who acted in a particular call.
         """
-        if Debug().debug_lib:
+        if DEBUG.debug_lib:
             print("Calling {} to act.".format(self.name))
         total_acts = 0
         total_moves = 0

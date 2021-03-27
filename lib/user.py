@@ -20,8 +20,8 @@ DEFAULT_CHOICE = '1'
 USER_EXIT = -999
 
 MENU_SUBDIR = "lib"
-menu_dir = os.getenv("INDRA_HOME", PA_INDRA_HOME)
-menu_dir += "/" + MENU_SUBDIR
+indra_home = os.getenv("INDRA_HOME", PA_INDRA_HOME)
+menu_dir = f"{indra_home}/{MENU_SUBDIR}"
 menu_file = "menu.json"
 menu_src = menu_dir + "/" + menu_file
 

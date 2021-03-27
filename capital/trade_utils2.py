@@ -8,6 +8,8 @@ import copy
 from registry.registry import get_env
 from lib.utils import Debug
 
+DEBUG = Debug()
+
 TRADE_STATUS = 0
 
 OFFER_FROM_1 = 5
@@ -71,6 +73,11 @@ def steep_util_func(qty, divisibility=None):
     return 20 * (2 ** (-qty))
 
 
+def test_util_func(f, max, d):
+    for q in range(0, max):
+        print(f"Utility: {f(q, d)}")
+
+
 util_funcs = {
     GEN_UTIL_FUNC: gen_util_func,
     "penguin_util_func": penguin_util_func,
@@ -96,24 +103,11 @@ def get_util_func(fname):
 
 
 def trade_debug(agent1, agent2, good1, good2, amt1, amt2, gain, loss):
-    if Debug().debug:
+    if DEBUG.debug and (good1 == "gold" or good1 == "gold"):
         print(f"       {agent1.name} is offering {amt1} of {good1} to "
               + f"{agent2.name} for {amt2} of {good2} with a "
               + f"gain of {round(gain, 2)} and "
               + f"a loss of {round(loss, 2)}")
-
-
-def trader_debug(agent):
-    if Debug().debug:
-        print(f"{agent.name} has {goods_to_str(agent[GOODS])}")
-
-
-def offer_debug(agent, their_good, their_amt, counterparty=None):
-    if Debug().debug:
-        if counterparty is None:
-            counterparty = "Unknown"
-        print(f"       {agent.name} has received an offer of {their_amt} "
-              + f"of {their_good} from {counterparty}")
 
 
 def is_complement(trader, good, comp):
@@ -342,12 +336,18 @@ def trade_acceptable(trade_state, which_side):
     my_side_gain = utility_delta(my_side["trader"], other_side["good"],
                                  other_side["amt"])
     # but gives up some of its own:
+<<<<<<< HEAD
     my_side_loss = -utility_delta(my_side["trader"], my_side["good"],
                                   -my_side["amt"])
     print("This is a comparison of -u_delta(-amt) vs u_delta(amt):")
     print(my_side_loss, utility_delta(my_side["trader"], my_side["good"],
                                       my_side["amt"]))
     if Debug.debug:
+=======
+    my_side_loss = utility_delta(my_side["trader"], my_side["good"],
+                                 my_side["amt"])
+    if DEBUG.debug:
+>>>>>>> 3b324825638cc38bee44a221ff50ba52a08bc3e7
         print(f"my gain: {my_side_gain}; my loss: {my_side_loss}")
     if my_side_gain > my_side_loss:
         return True
@@ -358,11 +358,13 @@ def negotiate(trade):
     """
     See if these two traders (held in `trade` can strike a deal.
     """
-    if Debug.debug:
-        print(f"Attempting {str(trade)}")
+    if DEBUG.debug2:
+        pass
+        # print(f"Attempting {str(trade)}")
     while trade.status != ACCEPT and trade.status != REJECT:
-        if Debug.debug:
-            print(f"{repr(trade)}")
+        if DEBUG.debug2:
+            pass
+            # print(f"{repr(trade)}")
         side1 = trade.get_side(TRADER1)
         side2 = trade.get_side(TRADER2)
         if trade.status == INIT1:
@@ -386,7 +388,7 @@ def negotiate(trade):
         elif trade.status == OFFER_FROM_2:
             # eval trade from side1 POV:
             if trade_acceptable(trade, TRADER1):
-                if Debug.debug:
+                if DEBUG.debug:
                     print("Accepting trade!")
                 trade.status = ACCEPT
             else:

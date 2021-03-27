@@ -7,6 +7,9 @@ from lib.space import neighbor_ratio
 from lib.display_methods import RED, BLUE
 from lib.model import Model, MBR_ACTION, NUM_MBRS
 from lib.model import COLOR, GRP_ACTION, NUM_MBRS_PROP
+from lib.utils import Debug
+
+DEBUG = Debug()
 
 MODEL_NAME = "segregation"
 
