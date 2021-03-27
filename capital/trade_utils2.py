@@ -52,7 +52,7 @@ STEEP_GRADIENT = 20
 
 
 def gen_util_func(qty, divisibility):
-    return max_util * ((DIM_UTIL_BASE) ** (-qty/divisibility))
+    return max_util * ((DIM_UTIL_BASE) ** (-qty*divisibility))
 
 
 def penguin_util_func(qty, divisibility=None):
@@ -342,12 +342,16 @@ def trade_acceptable(trade_state, which_side):
     my_side_gain = utility_delta(my_side["trader"], other_side["good"],
                                  other_side["amt"])
     # but gives up some of its own:
-    my_side_loss = utility_delta(my_side["trader"], my_side["good"],
-                                 my_side["amt"])
+    my_side_loss = -utility_delta(my_side["trader"], my_side["good"],
+                                  -my_side["amt"])
+    print("This is a comparison of -u_delta(-amt) vs u_delta(amt):")
+    print(my_side_loss, utility_delta(my_side["trader"], my_side["good"],
+                                      my_side["amt"]))
     if Debug.debug:
         print(f"my gain: {my_side_gain}; my loss: {my_side_loss}")
     if my_side_gain > my_side_loss:
         return True
+    return False
 
 
 def negotiate(trade):
@@ -447,12 +451,12 @@ def adjust_dura(trader, good, val):
     This function will check if durability is an attribute of
     the goods. If so, utility will be adjusted by durability.
     """
-    item = list(trader["goods"])[0]
-    if "durability" in trader["goods"][item]:
-        return val*(trader["goods"][good]["durability"] **
-                    (trader["goods"][good]["age"]/5))
-    else:
-        return val
+    # item = list(trader["goods"])[0]
+    # if "durability" in trader["goods"][item]:
+    #     return val*(trader["goods"][good]["durability"] **
+    #                 (trader["goods"][good]["age"]/5))
+    # else:
+    return val
 
 
 def get_lowest(agent, my_good, their_good, bidder=True):
